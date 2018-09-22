@@ -1,0 +1,9 @@
+#ifndef MOTION_GLOBALS_H
+#define MOTION_GLOBALS_H
+
+#define DRIVE_MOTOR_PIN_A 6
+#define DRIVE_MOTOR_PIN_B 7
+
+#define TURN_SERVO_PIN 8
+
+#endif

@@ -1,0 +1,43 @@
+# depslib dependency file v1.0
+1531193977 source:c:\users\jklei\desktop\projects\robomagellan-2019\main.cpp
+	<iostream>
+	"trajectory/trajectory.h"
+
+1531011326 source:c:\users\jklei\desktop\projects\robomagellan-2019\trajectory\waypoint.cpp
+	"waypoint.h"
+
+1531011275 c:\users\jklei\desktop\projects\robomagellan-2019\trajectory\waypoint.h
+	"waypoint_type.h"
+
+1531010025 c:\users\jklei\desktop\projects\robomagellan-2019\trajectory\waypoint_type.h
+
+1531197518 source:c:\users\jklei\desktop\projects\robomagellan-2019\trajectory\trajectory.cpp
+	"trajectory.h"
+
+1531194978 c:\users\jklei\desktop\projects\robomagellan-2019\trajectory\trajectory.h
+	<fstream>
+	<sstream>
+	<string>
+	"waypoint.h"
+
+1531193977 source:c:\users\jklei\desktop\projects\robomagellan-2019\main_board\main.cpp
+	<iostream>
+	"trajectory/trajectory.h"
+
+1531194978 c:\users\jklei\desktop\projects\robomagellan-2019\main_board\trajectory\trajectory.h
+	<fstream>
+	<sstream>
+	<string>
+	"waypoint.h"
+
+1531011275 c:\users\jklei\desktop\projects\robomagellan-2019\main_board\trajectory\waypoint.h
+	"waypoint_type.h"
+
+1531010025 c:\users\jklei\desktop\projects\robomagellan-2019\main_board\trajectory\waypoint_type.h
+
+1531197735 source:c:\users\jklei\desktop\projects\robomagellan-2019\main_board\trajectory\trajectory.cpp
+	"trajectory.h"
+
+1531011326 source:c:\users\jklei\desktop\projects\robomagellan-2019\main_board\trajectory\waypoint.cpp
+	"waypoint.h"
+
