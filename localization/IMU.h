@@ -1,8 +1,8 @@
-#ifndef IMU
-#define IMU
+#ifndef IMU_H
+#define IMU_H
 
 //https://github.com/adafruit/Adafruit_BNO055
-#include <Adafruit_BNO055>
+#include <Adafruit_BNO055.h>
 
 
 //Code for using the BN055 GPS
@@ -17,8 +17,10 @@ public:
 	float getX();
 	float getY();
 	float getZ();
-	void read() :
-    adafruit_bno055_offsets_t getOffset(); 
+	void read();
+
+	adafruit_bno055_offsets_t getOffset(); 
+	void IMU::setOffset(const uint8_t* calibData);
 private:
 	Adafruit_BNO055 bno;
 	sensors_event_t event;
