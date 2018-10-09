@@ -15,6 +15,8 @@ class RomaServo
 
         void begin(Motor m, int potPin, float maxPower);
 
+        void setPID(float kp, float ki, float kd);
+
         void writeToAngle(float angle);
 
     private:
@@ -24,6 +26,8 @@ class RomaServo
 
         float motorOutput;
         float maxMotorPower;
+
+        float potAngle;
 
         void processPot();
 };

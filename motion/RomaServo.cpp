@@ -8,28 +8,28 @@ RomaServo::RomaServo()
 RomaServo::RomaServo(Motor m, int potPin, float maxPower)
 {
     this->servoMotor = m;
-    this->potentiometer.begin(potPin, INPUT);
+    this->potentiometer.update(potPin, INPUT);
     this->maxMotorPower = maxPower;
 }
 
 void RomaServo::begin(Motor m, int potPin, float maxPower)
 {
     this->servoMotor = m;
-    this->potentiometer.begin(potPin, INPUT);
+    this->potentiometer.update(potPin, INPUT);
     this->maxMotorPower = maxPower;
 }
 
 void RomaServo::setPID(float kp, float ki, float kd)
 {
     pidControl.initialize(this->potAngle, kp, ki, kd);
-    pidControl.setOutputRange(this->motorSpeed, -this->motorSpeed);
+    pidControl.setOutputRange(this->maxMotorPower, -this->maxMotorPower);
 }
 
 void RomaServo::writeToAngle(float angle)
 {
     processPot();
-    this->motorPower = pidControl.getOutput(angle, this->potAngle);
-    this->servoMotor.output(this->motorPower);
+    this->motorOutput = pidControl.getOutput(angle, this->potAngle);
+    this->servoMotor.output(this->motorOutput);
 }
 
 /************************
