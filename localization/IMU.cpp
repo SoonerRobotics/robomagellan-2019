@@ -55,3 +55,11 @@ adafruit_bno055_offsets_t IMU::getOffset()
 void IMU::setOffset(const uint8_t* calibData) {
 	bno.setSensorOffsets(calibData);
 }
+
+imu::Vector<3> IMU::accelVector() {
+	return bno.getVector(VECTOR_ACCELEROMETER);
+}
+
+imu::Vector<3> IMU::eulerVector() {
+	return bno.getVector(VECTOR_EULER);
+}
