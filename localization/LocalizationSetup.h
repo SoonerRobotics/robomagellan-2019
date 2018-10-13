@@ -11,6 +11,16 @@ GPSQueue queue(&gps);
 
 IMU imu0; //apparently imu already exists
 
+struct DataPacket {
+    float curHeading;
+    float destHeading;
+};
+
+template <typename T> unsigned int I2C_writeAnything (const T& value){
+    Wire.write((byte *) &value, sizeof (value));
+    return sizeof (value);
+}
+
 // Setup the localization board
 void localizationSetup()
 {
@@ -22,6 +32,11 @@ void localizationSetup()
     //Add GPS points to the test queue for now
     //TODO: Add these points over I2C from raspberry pi
     queue.addPoint(35.210605, -97.443412); //a bit under Carson
+
+    imu0.begin();
+
+    Wire.begin();
 }
+
 
 #endif
