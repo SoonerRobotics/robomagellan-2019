@@ -1,6 +1,9 @@
 #ifndef MOTION_GLOBALS_H
 #define MOTION_GLOBALS_H
 
+//Decision Configuration
+#define DEGREES_OFF_ALLOWED 20
+
 //Drive motor pins
 #define DRIVE_MOTOR_A 4
 #define DRIVE_MOTOR_B 5
@@ -16,7 +19,7 @@
 #define MAX_TURN_POWER (float)(0.6)
 
 //I2C addresses
-#define SLAVE_ADDRESS 0x04
+#define MOTION_ADDR 0x18
 
 //I2C constants
 #define I2C_MAX  (float)(255)

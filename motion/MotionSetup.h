@@ -6,6 +6,10 @@
 
 Drivetrain drivetrain;
 
+DataPacket curData;
+float LHT;
+float RHT;
+
 //Forward declare I2C Handler code
 void sendData();
 void receiveData(int byteCount);
@@ -24,7 +28,7 @@ void motionSetup()
     }
 
     // initialize i2c as slave
-    Wire.begin(SLAVE_ADDRESS);
+    Wire.begin(MOTION_ADDR);
 
     // Initialize individual motors
     motor.begin(DRIVE_MOTOR_A, DRIVE_MOTOR_B, DRIVE_MOTOR_ENB);
@@ -51,37 +55,32 @@ void motionSetup()
 /******************************************
                 I2C Handler
 ******************************************/
+
+struct DataPacket {
+    float curHeading;
+    float destHeading;
+};
+
+template <typename T>
+unsigned int I2C_readAnything(T& value){
+    byte * p = (byte*) &value;
+    unsigned int i;
+    for (i = 0; i < sizeof value; i++)
+        *p++ = Wire.read();
+    return i;
+}
+
 // callback for received data
 void receiveData(int byteCount)
 {
-    //Declare local variables
-    int data;
-    float motorOutput;
+    if (byteCount >= (sizeof DataPacket)) {
+        I2C_readAnything(curData);
 
-    //Get all available bytes from the i2c buffer
-    while(Wire.available()) 
-    {
-        //Read i2c data
-        data = Wire.read();
+        float diff = curData.curHeading - curData.destHeading;
 
-        //Output i2c debugging data
-        if(IS_DEBUG)
-        {
-            Serial.print("data received: ");
-            Serial.println(data);
-        }
-
-        //Set drivetrain power based on i2c data
-        motorOutput = data / I2C_MAX;
-        drivetrain.setPower(motorOutput);
+        LHT = (diff) < 0 ? diff + 360 : diff; //Degrees required to move to heading turning left
+        RHT = -LHT + 360; //Degrees required to move to heading turning turn
     }
-}
-
-// callback for sending data
-void sendData()
-{
-    //TODO: Add functionality for sending data
-    Wire.write(0);
 }
 
 #endif
