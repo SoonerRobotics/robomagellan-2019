@@ -1,9 +1,27 @@
 #ifndef MOTION_GLOBALS_H
 #define MOTION_GLOBALS_H
 
-#define DRIVE_MOTOR_PIN_A 6
-#define DRIVE_MOTOR_PIN_B 7
+//Drive motor pins
+#define DRIVE_MOTOR_A 4
+#define DRIVE_MOTOR_B 5
+#define DRIVE_MOTOR_ENB 3
 
-#define TURN_SERVO_PIN 8
+//Servo motor pins
+#define SERVO_MOTOR_A 7
+#define SERVO_MOTOR_B 8
+#define SERVO_MOTOR_ENB 6
+#define TURN_POT_PIN A0
+
+//Servo motor constants
+#define MAX_TURN_POWER (float)(0.6)
+
+//I2C addresses
+#define SLAVE_ADDRESS 0x04
+
+//I2C constants
+#define I2C_MAX  (float)(255)
+
+//Debug flags
+#define IS_DEBUG 1
 
 #endif

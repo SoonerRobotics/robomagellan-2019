@@ -1,39 +1,38 @@
-#include "GPSModule.h"
-#include "GPSQueue.h"
-#include "IMU.h"
+#include "LocalizationSetup.h"
 
-GPSModule gps(3, 4);
-GPSQueue queue(&gps);
-
-IMU imu0; //apparently imu already exists
-
-void setup() {
-    Serial.begin(9600);
-
-    queue.addPoint(35.210605, -97.443412); //a bit under Carson
+void setup() 
+{
+    localizationSetup();
 }
 
-void intellectualWait(unsigned long ms) {
+void intellectualWait(unsigned long ms) 
+{
     unsigned long startTime = millis();
-    while (millis() - startTime < ms) {
+    while (millis() - startTime < ms) 
+    {
         gps.update();
         imu0.read();
     }
 }
 
-void loop() {
+void loop() 
+{
+    //Output the debug data for GPS coordinates
+    if(IS_DEBUG)
+    {
+        Serial.print("Distance | Heading");
+        Serial.print(queue.getDistToCur());
+        Serial.print(" | ");
+        Serial.println(queue.getCurHeading());
 
-    Serial.print("Distance | Heading");
-    Serial.print(queue.getDistToCur());
-    Serial.print(" | ");
-    Serial.println(queue.getCurHeading());
+        Serial.print("IMU x, y, z");
+        Serial.print(imu0.getX());
+        Serial.print(", ");
+        Serial.print(imu0.getY());
+        Serial.print(", ");
+        Serial.println(imu0.getZ());
+    }
 
-    Serial.print("IMU x, y, z");
-    Serial.print(imu0.getX());
-    Serial.print(", ");
-    Serial.print(imu0.getY());
-    Serial.print(", ");
-    Serial.println(imu0.getZ());
-    
+    // Wait intellectually
     intellectualWait(500);
 }

@@ -12,6 +12,15 @@ RomaServo::RomaServo(Motor m, int potPin, float maxPower)
     this->maxMotorPower = maxPower;
 }
 
+void RomaServo::operator=(const RomaServo& servo)
+{
+    this->servoMotor = servo.servoMotor;
+    this->potentiometer = servo.potentiometer;
+    this->maxMotorPower = servo.maxMotorPower;
+    this->potAngle = servo.potAngle;
+    this->pidControl = servo.pidControl;
+}
+
 void RomaServo::begin(Motor m, int potPin, float maxPower)
 {
     this->servoMotor = m;

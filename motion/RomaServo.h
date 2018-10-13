@@ -13,6 +13,8 @@ class RomaServo
         RomaServo();
         RomaServo(Motor m, int potPin, float maxPower);
 
+        void operator=(const RomaServo& servo);
+
         void begin(Motor m, int potPin, float maxPower);
 
         void setPID(float kp, float ki, float kd);
