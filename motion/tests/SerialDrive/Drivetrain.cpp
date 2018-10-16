@@ -4,16 +4,16 @@ Drivetrain::Drivetrain()
 {
 }
 
-Drivetrain::Drivetrain(Motor driveMotor, int turnServoPin)
+Drivetrain::Drivetrain(Motor driveMotor, RomaServo servo)
 {
     this->driveMotor = driveMotor;
-    this->turnServo.attach(turnServoPin);
+    this->turnServo = servo;
 }
 
-void Drivetrain::begin(Motor driveMotor, int turnServoPin)
+void Drivetrain::begin(Motor driveMotor, RomaServo servo)
 {
     this->driveMotor = driveMotor;
-    this->turnServo.attach(turnServoPin);
+    this->turnServo = servo;
 }
 
 void Drivetrain::setPower(float power)
@@ -23,5 +23,15 @@ void Drivetrain::setPower(float power)
 
 void Drivetrain::setTurn(float angle)
 {
-    this->turnServo.write(angle);
+    this->turnServo.writeToAngle(angle);
+}
+
+float Drivetrain::getTurnAngle()
+{
+    return this->turnServo.getAngle();
+}
+
+int Drivetrain::getRawTurnValue()
+{
+    return this->turnServo.getRawAngle();
 }
