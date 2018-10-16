@@ -6,6 +6,11 @@
 
 Drivetrain drivetrain;
 
+struct DataPacket {
+    float curHeading;
+    float destHeading;
+};
+
 DataPacket curData;
 float LHT;
 float RHT;
@@ -39,7 +44,7 @@ void motionSetup()
 
     // define callbacks for i2c communication
     Wire.onReceive(receiveData);
-    Wire.onRequest(sendData);
+    //Wire.onRequest(sendData);
 
     // Debug ready output
     if(IS_DEBUG)
@@ -56,11 +61,6 @@ void motionSetup()
                 I2C Handler
 ******************************************/
 
-struct DataPacket {
-    float curHeading;
-    float destHeading;
-};
-
 template <typename T>
 unsigned int I2C_readAnything(T& value){
     byte * p = (byte*) &value;
@@ -73,7 +73,7 @@ unsigned int I2C_readAnything(T& value){
 // callback for received data
 void receiveData(int byteCount)
 {
-    if (byteCount >= (sizeof DataPacket)) {
+    if (byteCount >= sizeof(DataPacket)) {
         I2C_readAnything(curData);
 
         float diff = curData.curHeading - curData.destHeading;
