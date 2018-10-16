@@ -12,6 +12,11 @@ typedef struct DataPacket {
 
 Drivetrain drivetrain;
 
+struct DataPacket {
+    float curHeading;
+    float destHeading;
+};
+
 DataPacket curData;
 float LHT;
 float RHT;

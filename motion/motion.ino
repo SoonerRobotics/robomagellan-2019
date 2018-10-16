@@ -17,12 +17,13 @@ void loop() {
     }
 
     if (LHT < RHT - DEGREES_OFF_ALLOWED) { // Faster to head left
-
+      driveTrain.setTurn(-10);
     } else if (RHT < LHT - DEGREES_OFF_ALLOWED) { // Faster to head right
-        
+      driveTrain.setTurn(10);
     } else { // On target
-        
+      driveTrain.setTurn(0);
     }
+    driveTrain.setPower(.5);
 
     delay(50);
 }
