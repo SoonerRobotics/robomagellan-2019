@@ -10,12 +10,8 @@ typedef struct DataPacket {
     float destHeading;
 } DataPacket;
 
+//Declare systems
 Drivetrain drivetrain;
-
-struct DataPacket {
-    float curHeading;
-    float destHeading;
-};
 
 DataPacket curData;
 float LHT;

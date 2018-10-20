@@ -16,11 +16,13 @@
 #define TURN_POT_PIN A0
 
 //Servo motor constants
-#define MAX_TURN_ANGLE  30              //Maximum servo turn angle in degrees
-#define MAX_TURN_POWER  (float)(0.6)
-#define SERVO_KP        (float)(0.6)
-#define SERVO_KI        (float)(0.0)
-#define SERVO_KD        (float)(0.001)
+#define MAX_TURN_ANGLE      30              //Maximum servo turn angle in degrees
+#define MAX_TURN_POWER      (float)(0.4)
+#define SERVO_KP            (float)(0.175)
+#define SERVO_KI            (float)(0.0)
+#define SERVO_KD            (float)(0.004)
+#define TURN_TOLERANCE      (float)(0.5)    //Most error allowed in turn angle
+#define SERVO_MOVE_TIMEOUT  (float)(750)    //milliseconds before giving up on servo turn
 
 //I2C addresses
 #define MOTION_ADDR 0x18
@@ -30,5 +32,9 @@
 
 //Debug flags
 #define IS_DEBUG 1
+
+//System update constants
+#define SERVO_UPDATE_EPS    50
+#define DT_UPDATE_EPS       20
 
 #endif

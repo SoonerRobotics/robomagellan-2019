@@ -18,12 +18,17 @@ void Drivetrain::begin(Motor driveMotor, RomaServo servo)
 
 void Drivetrain::setPower(float power)
 {
-    this->driveMotor.output2(power);
+    this->driveMotor.output(power);
 }
 
 void Drivetrain::setTurn(float angle)
 {
     this->turnServo.writeToAngle(angle);
+}
+
+void Drivetrain::holdTurnPosition()
+{
+    this->turnServo.holdPosition();
 }
 
 float Drivetrain::getTurnAngle()

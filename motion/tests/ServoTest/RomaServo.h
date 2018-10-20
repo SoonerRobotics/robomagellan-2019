@@ -23,6 +23,7 @@ class RomaServo
         void setPID(float kp, float ki, float kd);
 
         void writeToAngle(float angle);
+        void holdPosition();
 
         float getAngle();
         int getRawAngle();

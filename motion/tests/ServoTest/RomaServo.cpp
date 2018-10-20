@@ -40,11 +40,15 @@ void RomaServo::setPID(float kp, float ki, float kd)
     pidControl.setOutputRange(this->maxMotorPower, -this->maxMotorPower);
 }
 
+void RomaServo::holdPosition()
+{
+    this->servoMotor.outputBool(0);
+}
+
 void RomaServo::writeToAngle(float angle)
 {
     processPot();
     this->motorOutput = -pidControl.getOutput(angle, this->potAngle);
-    Serial.println(this->motorOutput);
     this->servoMotor.output(this->motorOutput);
 }
 
