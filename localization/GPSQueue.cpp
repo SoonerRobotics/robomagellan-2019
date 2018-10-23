@@ -28,30 +28,50 @@ float GPSQueue::getCurHeading() {
     return calcHeading(points_lat[0], points_long[0], gps->getLat(), gps->getLong());
 }
 
+// distance & bearings formula from:
+// https://www.sunearthtools.com/tools/distance.php
+
 float GPSQueue::calcDistance(double lat1, double long1, double lat2, double long2)
 {
-    double d2r = (PI / 180.0);
-    double dlong = (long2 - long1) * d2r;
-    double dlat = (lat2 - lat1) * d2r;
-    double a = pow(sin(dlat/2.0), 2) + cos(lat1*d2r) * cos(lat2*d2r) * pow(sin(dlong/2.0), 2);
-    double c = 2 * atan2(sqrt(a), sqrt(1-a));
-    double d = 6.367 * c;
+    double d2r = (PI / 180.0); // degree to radian conversion
 
-    return (float)d;
+    double earthDiameterMeters = 6372.795477598; // in KiloMeters
+    double currentLat = lat1 * d2r;
+    double currentLong = long1 * d2r;
+    double destLat = lat2 * d2r;
+    double destLong = long2 * d2r;
+    
+    double distance = earthDiameterMeters * 1000 * acos( sin(currentLat) * sin(destLat) + 
+              cos(currentLat) * cos(destLat) * cos(currentLong - destLong) );
+
+    return (float)distance * 1000; // in meters
 }
 
 float GPSQueue::calcHeading(double lat1, double long1, double lat2, double long2)
 {
-    double d2r = (PI / 180.0); //dont look at the next 4 lines please
-    lat1 *= d2r;
-    lat2 *= d2r;
-    long1 *= d2r;
-    long2 *= d2r;
+	// all angles are in radian except specified
+	double bearings, bearingsInDegrees, deltaTheta, deltaLong;
 
-    double y = sin(long2-long1) * cos(lat2);
-    double x = cos(lat1)*sin(lat2) - sin(lat1)*cos(lat2) * cos(long2-long1);
+	// convert all degree to radian -> degree * PI / 180
+	lat1 = lat1 * PI / 180;
+	long1 = long1 * PI / 180;
+	lat2 = lat2 * PI / 180;
+	long2 = long2 * PI / 180;
 
-    return atan2(y, x) * 1/d2r;
+	// log - natural log 
+	deltaTheta = log(tan(lat2 / 2 + PI / 4) / tan(lat1 / 2 + PI / 4));
+
+	// let deltaLong have negative result
+	deltaLong = long1 - long2;
+
+	// Calculate bearings in radian
+	bearings = atan2(deltaLong, deltaTheta);
+	// converting bearing's angle from radian to degree
+	bearingsInDegrees = bearings * 180 / PI;
+	// use floating point modulus to get the correct angle - 360 North
+	bearingsInDegrees = 360 - fmod((bearingsInDegrees + 360), 360);
+
+	return (float) bearingsInDegrees;
 }
 
 bool GPSQueue::hasNext() {
