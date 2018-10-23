@@ -46,7 +46,7 @@ float GPSQueue::calcDistance(double lat1, double long1, double lat2, double long
               cos(currentLat) * cos(destLat) * cos(currentLong - destLong) );
 
     return (float)distance * 1000; // in meters
-=======
+// =======
 /*
     double d2r = (PI / 180.0);
     double dlong = (long2 - long1) * d2r;
@@ -65,9 +65,9 @@ float GPSQueue::calcDistance(double lat1, double long1, double lat2, double long
     double a = (lat2 - lat1) * 111198.1567; // Works anywhere, probably
     double b = (long2 - long1) * 90850.59978; // This works only in Norman
     double d = sqrt(a*a + b*b); //thank you mr. pythagoras
-*/
 
-    return (float)d;
+   return (float)d;
+*/
 // >>>>>>> 6ecc6ba120a276d21bda10a36a5035d6d88c5802
 }
 
