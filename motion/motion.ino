@@ -1,34 +1,51 @@
 #include <Wire.h>
 #include <RobotLib.h>
-#include "MotionSetup.h"
-#include "MotionLoop.h"
 
-void setup() 
-{    
-  motionSetup();
+#define SLAVE_ADDRESS 0x04
+int number = 0;
+int state = 0;
+
+float max = 255;
+
+Motor motor1;
+Motor motor2;
+
+void setup() {
+    pinMode(13, OUTPUT);
+    Serial.begin(9600); // start serial for output
+    // initialize i2c as slave
+    Wire.begin(SLAVE_ADDRESS);
+
+    motor1.begin(4, 5, 3);
+    motor2.begin(7, 8, 6);
+
+    // define callbacks for i2c communication
+    Wire.onReceive(receiveData);
+    Wire.onRequest(sendData);
+
+    Serial.println("Ready!");
 }
 
-void loop() 
-{
-  //Either we haven't received our first packets from I2C
-  //or we received that we are at our final destination.
-  /*if (curData.curHeading == 0 && curData.destHeading == 0) 
-  {
-    drivetrain.setPower(0);
-    drivetrain.setTurn(0);
-    return;
-  }*/
+void loop() {
+    delay(100);
+}
 
-  /*
-  if (LHT < RHT - DEGREES_OFF_ALLOWED) { // Faster to head left
-    driveTrain.setTurn(-10);
-  } else if (RHT < LHT - DEGREES_OFF_ALLOWED) { // Faster to head right
-    driveTrain.setTurn(10);
-  } else { // On target
-    driveTrain.setTurn(0);
-  }
-  driveTrain.setPower(.5);
-  */
+// callback for received data
+void receiveData(int byteCount){
 
-  motionLoop();
+    while(Wire.available()) {
+        number = Wire.read();
+        Serial.print("data received: ");
+        Serial.println(number);
+
+        float motorOutput = number/max;
+
+        motor1.output(motorOutput);
+        motor2.output(motorOutput);
+    }
+}
+
+// callback for sending data
+void sendData(){
+    Wire.write(number);
 }

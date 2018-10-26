@@ -3,27 +3,23 @@
 
 #include <Arduino.h>
 #include <RobotLib.h>
-#include "RomaServo.h"
+#include <Servo.h>
 
 class Drivetrain
 {
     public:
         Drivetrain();
-        Drivetrain(Motor driveMotor, RomaServo servo);
+        Drivetrain(Motor driveMotor, int turnServoPin);
 
-        void begin(Motor driveMotor, RomaServo servo);
+        void begin(Motor driveMotor, int turnServoPin);
 
         void setPower(float power);
         void setTurn(float angle);
-        void holdTurnPosition();
-        
-        float getTurnAngle();
-        int   getRawTurnValue();
 
     private:
         Motor driveMotor;
 
-        RomaServo turnServo;
+        Servo turnServo;
 };
 
 #endif

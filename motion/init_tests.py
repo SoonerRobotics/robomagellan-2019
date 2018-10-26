@@ -1,7 +1,7 @@
 import glob
 from shutil import copy
 
-dst = ["tests/SerialDrive/", "tests/ServoTest/"]
+dst = ["tests/SerialDrive/"]
 
 for f in glob.glob('*.cpp'):
     for i in range(0, len(dst)):

@@ -5,15 +5,7 @@
 		},
 		{
 			"path": "localization"
-		},
-		{
-			"path": "watchdog"
 		}
 	],
-	"settings": {
-		"files.associations": {
-			"cmath": "cpp",
-			"cstdlib": "cpp"
-		}
-	}
+	"settings": {}
 }

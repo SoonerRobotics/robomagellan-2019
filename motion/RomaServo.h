@@ -3,12 +3,9 @@
 
 #include <Arduino.h>
 #include <RobotLib.h>
-#include "MotionGlobals.h"
 
-#define POT_MIN         301    //Min value of the analogRead
-#define POT_MAX         733    //Max value of analogRead
-#define POT_MIDPOINT    (float)((POT_MAX + POT_MIN) / 2.0f)
-                                //Middle point of the analogRead
+#define POT_MIDPOINT    512 //Midpoint of the analogRead
+#define MAX_TURN_ANGLE  30  //Maximum servo turn angle in degrees
 
 class RomaServo 
 {
@@ -16,17 +13,9 @@ class RomaServo
         RomaServo();
         RomaServo(Motor m, int potPin, float maxPower);
 
-        void operator=(const RomaServo& servo);
-
         void begin(Motor m, int potPin, float maxPower);
 
-        void setPID(float kp, float ki, float kd);
-
         void writeToAngle(float angle);
-        void holdPosition();
-
-        float getAngle();
-        int getRawAngle();
 
     private:
         Motor servoMotor;
@@ -35,9 +24,6 @@ class RomaServo
 
         float motorOutput;
         float maxMotorPower;
-
-        float potAngle;
-        int   rawAngle;
 
         void processPot();
 };
