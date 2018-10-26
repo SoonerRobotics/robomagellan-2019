@@ -1,15 +1,14 @@
 #ifndef MOTION_LOOP_H
 #define MOTION_LOOP_H
 
+#include "MotionSetup.h"
+
 //General state constants
 #define IDLE 0
 
 //Servo state constants
 #define SERVO_UPDATE 1
 #define SERVO_MOVE   2
-
-//DELETE THESE EVENTUALLY
-int testInt = 0;
 
 
 //State tracking variables
@@ -25,17 +24,15 @@ unsigned long lastDrivetrainUpdate;
 unsigned long servoTime       = 0;
 unsigned long lastServoUpdate = 0;
 
-//Forward Declare system loops
-void drivetrainLoop();
-void servoLoop();
-
-//Forward declare data updates
-float getServoTarget();
+//Declare system loops
+void drivetrainLoop(float power);
+void servoLoop(float servoAngle);
 
 void motionLoop()
 {
     currentTime = millis();
 
+/*
     //Drivetrain update loop
     if((currentTime - lastDrivetrainUpdate) >= DT_UPDATE_EPS
     || lastDrivetrainUpdate == 0)
@@ -48,49 +45,47 @@ void motionLoop()
     || lastServoUpdate == 0)
     {
         servoLoop();
+    }*/
+
+    /* Drivetrain Update */
+    drivetrainLoop(0.22);
+
+    /* Servo Update */
+    // Faster to head left
+    if (LHT < RHT - DEGREES_OFF_ALLOWED) 
+    { 
+        servoLoop(-10);
+    } 
+    // Faster to head right
+    else if (RHT < LHT - DEGREES_OFF_ALLOWED) 
+    { 
+        servoLoop(10);
+    } 
+    // On target
+    else 
+    { 
+        servoLoop(0);
     }
 }
 
 /**********************
     SYSTEM LOOPS
 **********************/
-void drivetrainLoop()
+void drivetrainLoop(float power)
 {
-    
-    //TODO: make a real loop for the drivetrain
-    if(testInt == 0)
+    if (curData.curHeading == 0 && curData.destHeading == 0) 
     {
-        drivetrain.setPower(-0.1625f);
+        drivetrain.setPower(0);
+        drivetrain.setTurn(0);
+        return;
     }
-    else if(testInt == 1)
-    {
-        drivetrain.setPower(-0.1875f);
-    }
-    else if(testInt == 2)
-    {
-        drivetrain.setPower(-0.2f);
-    }
-    else if(testInt == 3)
-    {
-        drivetrain.setPower(-0.25f);
-    }
-    else if(testInt == 4)
-    {
-        drivetrain.setPower(-0.2f);
-    }
-    else
-    {
-        drivetrain.setPower(-0.1625f);
-    }
+
+    drivetrain.setPower(power);
 }
 
 
-void servoLoop()
+void servoLoop(float servoAngle)
 {
-    float servoAngle = getServoTarget();
-    Serial.print(servoAngle);
-    Serial.print("\t");
-    Serial.println(drivetrain.getTurnAngle());
     switch(servoState)
     {
         case IDLE:
@@ -123,13 +118,6 @@ void servoLoop()
             {
                 servoState = IDLE;
                 drivetrain.holdTurnPosition();
-                testInt++;
-                if(testInt == 4)
-                {
-                    testInt = 0;
-                }
-
-                delay(4000);
             }
 
             break;
@@ -140,33 +128,5 @@ void servoLoop()
     }
 }
 
-
-/**********************
-      DATA LOOPS
-**********************/
-
-float getServoTarget()
-{
-    return 30.0f;
-    
-    //TODO: calculate servo angle from position data
-    if(testInt == 0)
-    {
-        return 30.0f;
-    }
-    else if(testInt == 1)
-    {
-        return 30.0f;
-    }
-    else if(testInt == 2)
-    {
-        return 30.0f;
-    }
-    else if(testInt == 3)
-    {
-        return 30.0f;
-    }
-    
-}
 
 #endif
