@@ -1,7 +1,15 @@
 #include <SPI.h>
 #include "RF24.h"
 
-unsigned long message = 1;
+const int kill_button = 2;
+const int reset_button = 3;
+const int pause_button = 4;
+const int success_led = 5;
+const int fail_led = 6;
+
+const unsigned long kill = 1;
+const unsigned long reset = 2;
+const unsigned long pause = 3;
 
 RF24 radio(9,10);
 
@@ -10,6 +18,12 @@ byte addresses[][6] = {"1Node","2Node"};
 void setup(){
 	Serial.begin(115200);
 	Serial.println(F("Starting Transmitter..."));
+
+	pinMode(kill_button, INPUT);
+	pinMode(success_led, OUTPUT);
+	digitalWrite(success_led, LOW);
+	pinMode(fail_led, OUTPUT);
+	digitalWrite(fail_led, LOW);
 
 	radio.begin();
 
@@ -22,7 +36,10 @@ void setup(){
 	radio.startListening();
 }
 
-void loop(){
+int send_message(unsigned long message){
+	Serial.print(F("Sending "));
+	Serial.println(message);
+
 	radio.stopListening();
 
 	if(!radio.write(&message,sizeof(unsigned long))){
@@ -52,10 +69,39 @@ void loop(){
 		//Check response
 		if(response == message){
 			Serial.println(F("Transmission successful"));
+			return(1); //success
 		}else{
 			Serial.println(F("Transmission corrupted"));
 		}
 	}
+	return(0); //fail
+}
 
-	delay(1000);
+unsigned long read_buttons(){
+	if(digitalRead(kill_button)){
+		return(kill);
+	}else if(digitalRead(reset_button)){
+		return(reset);
+	}else if(digitalRead(pause_button)){
+		return(pause);
+	}else{
+		return(0);
+	}
+}
+void loop(){
+	unsigned long button;
+	if(button = read_buttons()){
+		if(send_message(button)){
+			digitalWrite(success_led, HIGH);
+			delay(1000);
+			digitalWrite(success_led, LOW);
+		}else{
+			for(int i=0;i<5;i++){
+				digitalWrite(fail_led, HIGH);
+				delay(100);
+				digitalWrite(fail_led, LOW);
+				delay(100);
+			}
+		}
+	}
 }
