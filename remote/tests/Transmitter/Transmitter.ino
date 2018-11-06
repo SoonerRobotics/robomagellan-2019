@@ -16,6 +16,7 @@ RF24 radio(9,10);
 byte addresses[][6] = {"1Node","2Node"};
 
 void setup(){
+	//When connected to a serial monitor the transmission will fail often; when disconnected it rarely fails.
 	Serial.begin(115200);
 	Serial.println(F("Starting Transmitter..."));
 
@@ -44,6 +45,7 @@ int send_message(unsigned long message){
 
 	if(!radio.write(&message,sizeof(unsigned long))){
 		Serial.println(F("Failed, unable to write"));
+		return(0);
 	}
 
 	//Listen for confirmation message
@@ -88,6 +90,7 @@ unsigned long read_buttons(){
 		return(0);
 	}
 }
+
 void loop(){
 	unsigned long button;
 	if(button = read_buttons()){
