@@ -32,7 +32,7 @@ end
 
 % HELPER FUNCTIONS %
 function [x, P] = predict(x, P)
-    A = eye(N); %Function of the motion model state
+    A = eye(4); %Function of the motion model state
     
     %Predict the next state given the previous state
     x = A*x;
@@ -42,7 +42,7 @@ function [x, P] = predict(x, P)
 end
 
 function [x, P, S] = update(x, P, y, S_old)
-    H = eye(N); %Function of the measurement model state
+    H = eye(4); %Function of the measurement model state
     
     %Calculate the innovation
     v = y - (H * x);

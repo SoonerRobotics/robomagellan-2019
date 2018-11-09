@@ -20,7 +20,7 @@ public:
 	float getOrientY();
 	float getOrientZ();
 
-  imu::Vector<3> IMU::getAccel();
+    imu::Vector<3> IMU::getAccel();
 
 	void update();
 private:
