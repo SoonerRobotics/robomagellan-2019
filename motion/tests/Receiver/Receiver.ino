@@ -16,17 +16,24 @@ void setup() {
 
 	//This level might have to be increased for real use.
 	radio.setPALevel(RF24_PA_LOW);
+	radio.maskIRQ(1,1,0);
 
 	radio.openWritingPipe(addresses[0]);
 	radio.openReadingPipe(0,addresses[1]);
 
 	radio.startListening();
 
+	attachInterrupt(0, receive, FALLING);
+
 	motionSetup();
 	drivetrain.setPower(0.5);
 }
 
 void loop() {
+	delay(10000);
+}
+
+void receive() {
 	unsigned long message;
 
 	if(radio.available()) {
