@@ -14,11 +14,11 @@ GPSModule::~GPSModule() {
     delete ss;
 }
 
-int GPSModule::availableGPS() {
+int GPSModule::available() {
     return ss->available();
 }
 
-void GPSModule::updateGPS() {
+void GPSModule::update() {
     while (ss->available())
         gps.encode(ss->read());
 }

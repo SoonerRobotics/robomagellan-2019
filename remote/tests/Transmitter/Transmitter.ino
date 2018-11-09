@@ -56,7 +56,7 @@ int send_message(unsigned long message){
 
 	//Don't wait forever
 	while(!radio.available()){
-		if(micros() - wait_start > 200000){
+		if(micros() - wait_start > 1000000){
 			timeout = true;
 			break;
 		}

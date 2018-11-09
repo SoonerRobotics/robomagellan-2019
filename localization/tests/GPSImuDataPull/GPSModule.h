@@ -12,9 +12,9 @@ public:
     GPSModule(uint8_t receivePin, uint8_t transmitPin, long baud);
     ~GPSModule();
 
-    void updateGPS();
+    void update();
 
-    int availableGPS();
+    int available();
 
     float getLat();
     float getLong();
