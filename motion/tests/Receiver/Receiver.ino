@@ -1,14 +1,17 @@
 #include <SPI.h>
 #include "RF24.h"
+#include "MotionSetup.h"
+#include "MotionLoop.h"
+
+const unsigned long kill = 1;
+const unsigned long reset = 2;
+const unsigned long pause = 3;
 
 RF24 radio(9,10);
 
 byte addresses[][6] = {"1Node","2Node"};
 
 void setup() {
-	Serial.begin(115200);
-	Serial.println(F("Starting Receiver..."));
-
 	radio.begin();
 
 	//This level might have to be increased for real use.
@@ -18,6 +21,9 @@ void setup() {
 	radio.openReadingPipe(0,addresses[1]);
 
 	radio.startListening();
+
+	motionSetup();
+	drivetrain.setPower(0.5);
 }
 
 void loop() {
@@ -28,14 +34,16 @@ void loop() {
 			radio.read(&message, sizeof(unsigned long));
 		}
 
-		Serial.print(F("Received message "));
-		Serial.println(message);
-
 		//Send confirmation of message
 		radio.stopListening();
 		radio.write(&message, sizeof(unsigned long));
 		radio.startListening();
 
-		Serial.println(F("Responded"));
+		if(message==kill){
+			drivetrain.disable();
+		}else if(message==reset){
+			drivetrain.enable();
+			drivetrain.setPower(0.3);
+		}
 	}
 }
