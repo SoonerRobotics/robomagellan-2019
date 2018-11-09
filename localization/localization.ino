@@ -1,39 +1,45 @@
 #include "GPSModule.h"
 #include "GPSQueue.h"
 #include "IMU.h"
-
-GPSModule gps(3, 4);
-GPSQueue queue(&gps);
-
-IMU imu0; //apparently imu already exists
+#include "LocalizationSetup.h"
 
 void setup() {
-    Serial.begin(9600);
-
-    queue.addPoint(35.210605, -97.443412); //a bit under Carson
+    localizationSetup();
 }
 
 void intellectualWait(unsigned long ms) {
     unsigned long startTime = millis();
     while (millis() - startTime < ms) {
         gps.update();
-        imu0.read();
+        imu0.update();
     }
 }
 
 void loop() {
 
-    Serial.print("Distance | Heading");
+  if (imu0.calibrated()) {
+
+    Serial.print("Distance, Heading: ");
     Serial.print(queue.getDistToCur());
-    Serial.print(" | ");
+    Serial.print(", ");
     Serial.println(queue.getCurHeading());
 
-    Serial.print("IMU x, y, z");
-    Serial.print(imu0.getX());
+    Serial.print("Orient x, y, z: ");
+    Serial.print(imu0.getOrientX());
     Serial.print(", ");
-    Serial.print(imu0.getY());
+    Serial.print(imu0.getOrientY());
     Serial.print(", ");
-    Serial.println(imu0.getZ());
+    Serial.println(imu0.getOrientZ());
+
+    imu::Vector<3> accel = imu0.getAccel();
+
+    Serial.print("Accel x, y, z: ");
+    Serial.print(accel.x());
+    Serial.print(", ");
+    Serial.print(accel.y());
+    Serial.print(", ");
+    Serial.println(accel.z());
+  }
     
     intellectualWait(500);
 }

@@ -11,18 +11,23 @@
    data into what XYZ pull from call read*/
 class IMU {
 public:
-	IMU();
+	void begin();
 	bool connected();
-	bool calibrated();
-	float getX();
-	float getY();
-	float getZ();
-	void read();
 
-	adafruit_bno055_offsets_t getOffset(); 
-	void IMU::setOffset(const uint8_t* calibData);
+	bool calibrated();
+	
+	float getOrientX();
+	float getOrientY();
+	float getOrientZ();
+
+	imu::Vector<3> getAccel();
+
+	void update();
 private:
 	Adafruit_BNO055 bno;
-	sensors_event_t event;
+	scr_sensors_event_t orientation;
+	scr_sensors_event_t acceleration;
+
+	void calibrate();
 };
 #endif
