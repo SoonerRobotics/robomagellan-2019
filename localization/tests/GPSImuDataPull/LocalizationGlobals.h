@@ -1,0 +1,6 @@
+#ifndef LOCALIZATION_GLOBALS_H
+#define LOCALIZATION_GLOBALS_H
+
+
+
+#endif

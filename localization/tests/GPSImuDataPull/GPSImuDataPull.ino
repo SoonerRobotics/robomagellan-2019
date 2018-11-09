@@ -1,38 +1,67 @@
 #include "GPSModule.h"
 #include "GPSQueue.h"
 #include "IMU.h"
-
-GPSModule gps(3, 4);
-
-IMU imu0;
+#include "LocalizationSetup.h"
 
 void setup() {
-  Serial.begin(9600);
+    localizationSetup();
+    Serial.print("Latitude, Longitude, Distance, Heading, Orient(x, y, z), Accel(x, y, z)");
+}
+
+void intellectualWait(unsigned long ms) {
+    unsigned long startTime = millis();
+    while (millis() - startTime < ms) {
+        gps.update();
+        imu0.update();
+    }
 }
 
 void loop() {
-  //Check available sensors
-  bool useGps = false;
-  if (gps.availableGPS() != 0)
-    useGps = true;
-  bool useIMU = imu0.calibrated();
-  Serial.print("GPS Good? ");
-  Serial.println(useGps);
-  Serial.print("IMU Good? ");
-  Serial.println(useIMU);
+    Serial.print(millis());
+    Serial.print(", ");
+    Serial.print(gps.getLat());
+    Serial.print(", ");
+    Serial.print(gps.getLong());
+    Serial.print(", ");
+  if (imu0.calibrated()) {
 
-  //Set Current State
-  if (useGps) {
-    Serial.print("Lat:");
-    Serial.println(gps.getLat());
-    Serial.print("Long:");
-    Serial.println(gps.getLong());
+    Serial.print(queue.getDistToCur());
+    Serial.print(", ");
+    Serial.println(queue.getCurHeading());
+
+    Serial.print(imu0.getOrientX());
+    Serial.print(", ");
+    Serial.print(imu0.getOrientY());
+    Serial.print(", ");
+    Serial.println(imu0.getOrientZ());
+
+    imu::Vector<3> accel = imu0.getAccel();
+
+    Serial.print(accel.x());
+    Serial.print(", ");
+    Serial.print(accel.y());
+    Serial.print(", ");
+    Serial.println(accel.z());
   }
-  if(useIMU)
-    Serial.print("X:");
-    Serial.println(imu0.getX());
-    Serial.print("Y:");
-    Serial.println(imu0.getY());
-    Serial.print("Z:");
-    Serial.println(imu0.getZ());
+  else {
+    Serial.print("X");
+    Serial.print(", ");
+    Serial.println("X");
+
+    Serial.print("X");
+    Serial.print(", ");
+    Serial.print("X");
+    Serial.print(", ");
+    Serial.println("X");
+
+    imu::Vector<3> accel = imu0.getAccel();
+
+    Serial.print("X");
+    Serial.print(", ");
+    Serial.print("X");
+    Serial.print(", ");
+    Serial.println("X");
+ }
+    
+    intellectualWait(500);
 }
