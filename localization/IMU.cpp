@@ -79,5 +79,5 @@ float IMU::getAccelZ() {
 
 void IMU::update() {
 	bno.getOrientationEvent(&orientation);
-	bno.getAcceleartionEvent(&acceleration);
+	bno.getAccelerationEvent(&acceleration);
 }

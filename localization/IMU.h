@@ -19,8 +19,9 @@ public:
 	float getOrientX();
 	float getOrientY();
 	float getOrientZ();
-
-	imu::Vector<3> getAccel();
+  float getAccelX();
+  float getAccelY();
+  float getAccelZ();
 
 	void update();
 private:

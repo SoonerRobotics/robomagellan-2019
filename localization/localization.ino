@@ -31,14 +31,12 @@ void loop() {
     Serial.print(", ");
     Serial.println(imu0.getOrientZ());
 
-    imu::Vector<3> accel = imu0.getAccel();
-
     Serial.print("Accel x, y, z: ");
-    Serial.print(accel.x());
+    Serial.print(imu0.getAccelX());
     Serial.print(", ");
-    Serial.print(accel.y());
+    Serial.print(imu0.getAccelY());
     Serial.print(", ");
-    Serial.println(accel.z());
+    Serial.println(imu0.getAccelZ());
   }
     
     intellectualWait(500);
