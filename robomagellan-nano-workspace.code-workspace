@@ -1,11 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "motion"
-		},
-		{
-			"path": "localization"
-		}
-	],
+    "folders": [
+        {
+            "path": "motion"
+        },
+        {
+            "path": "localization"
+        },
+        {
+            "path": "remote"
+        }
+    ],
 	"settings": {}
 }
