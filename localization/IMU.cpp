@@ -49,31 +49,35 @@ bool IMU::calibrated() {
 	uint8_t accel = 0;
 	uint8_t mag = 0;
 	bno.getCalibration(&sys, &gyro, &accel, &mag);
-  Serial.println("Calibs: ");
-  Serial.println(sys);
-  Serial.println(gyro);
-  Serial.println(accel);
-  Serial.println(mag);
 	return (gyro == 3 && accel == 3 && mag == 3);
 }
 
 float IMU::getOrientX(){
-    return event.orientation.x;
+    return orientation.orientation.x;
 }
 
 float IMU::getOrientY() {
-	return event.orientation.y;
+	return orientation.orientation.y;
 }
 
 float IMU::getOrientZ() {
-	return event.orientation.z;
+	return orientation.orientation.z;
 }
 
-imu::Vector<3> IMU::getAccel() {
-  return bno.getVector(bno.VECTOR_ACCELEROMETER);
+float IMU::getAccelX(){
+    return acceleration.acceleration.x;
+}
+
+float IMU::getAccelY() {
+	return acceleration.acceleration.y;
+}
+
+float IMU::getAccelZ() {
+	return acceleration.acceleration.z;
 }
 
 
 void IMU::update() {
-	bno.getEvent(&event);
+	bno.getOrientationEvent(&orientation);
+	bno.getAcceleartionEvent(&acceleration);
 }

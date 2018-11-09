@@ -20,12 +20,13 @@ public:
 	float getOrientY();
 	float getOrientZ();
 
-  imu::Vector<3> IMU::getAccel();
+	imu::Vector<3> getAccel();
 
 	void update();
 private:
 	Adafruit_BNO055 bno;
-	sensors_event_t event;
+	scr_sensors_event_t orientation;
+	scr_sensors_event_t acceleration;
 
 	void calibrate();
 };
