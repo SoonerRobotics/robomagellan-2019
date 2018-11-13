@@ -5,11 +5,11 @@
 #Any E-Stop or pause commands
 #Timestamps for each log entry
 
-#logerror.py
+#logs.py
 import logging
 
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-
+logging.basicConfig(filename='logsTest.log', format='%(asctime)s %(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+	
 def systemError():
 	logging.warning('There is a system error!')
 	
@@ -35,7 +35,7 @@ def routeComplete ():
 	logging.info('Waypoint is completed!')
 
 def eStop ():
-	logging.info('E-stop!')
+	logging.warning('E-stop!')
 
 def paused ():
-	logging.info('Robot is on paused!')
+	logging.warning('Robot is on paused!')
