@@ -1,16 +1,14 @@
 #include "IMU.h"
 
 void IMU::begin() {
-
 	if (!bno.begin(bno.OPERATION_MODE_CONFIG))
 	{
 		/* There was a problem detecting the BNO055 ... check your connections */
-		//throw new Exception("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!"); no exceptions in arduino lul
 		Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
 	}
 	calibrate();
 
-  bno.setMode(bno.OPERATION_MODE_NDOF);
+	bno.setMode(bno.OPERATION_MODE_NDOF);
 
 	//Use the external 32.768KHz crystal
 	bno.setExtCrystalUse(true);
@@ -79,5 +77,6 @@ float IMU::getAccelZ() {
 
 void IMU::update() {
 	bno.getOrientationEvent(&orientation);
+	prev_acceleration = acceleration;
 	bno.getAccelerationEvent(&acceleration);
 }

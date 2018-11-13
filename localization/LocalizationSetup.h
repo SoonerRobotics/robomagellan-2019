@@ -4,7 +4,7 @@
 GPSModule gps(3, 4);
 GPSQueue queue(&gps);
 
-IMU imu0; //apparently imu already exists
+IMU imu0; //apparently the name imu already exists
 
 void localizationSetup()
 {

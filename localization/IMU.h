@@ -2,7 +2,7 @@
 #define IMU_H
 
 //https://github.com/adafruit/Adafruit_BNO055
-#include <Adafruit_BNO055.h>
+#include <IMU_BNO055.h>
 
 
 //Code for using the BN055 GPS
@@ -15,19 +15,20 @@ public:
 	bool connected();
 
 	bool calibrated();
-	
+
 	float getOrientX();
 	float getOrientY();
 	float getOrientZ();
-    float getAccelX();
-    float getAccelY();
-    float getAccelZ();
+	float getAccelX();
+	float getAccelY();
+	float getAccelZ();
 
 	void update();
 private:
-	Adafruit_BNO055 bno;
-	scr_sensors_event_t orientation;
-	scr_sensors_event_t acceleration;
+	IMU_BNO055 bno;
+	scr_sensors_event_t orientation; //the current orinetation
+	scr_sensors_event_t acceleration; //the current acceleration
+	scr_sensors_event_t prev_acceleration; //the acceleration one time step back
 
 	void calibrate();
 };

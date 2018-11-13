@@ -1,13 +1,15 @@
 #include "GPSModule.h"
 
 GPSModule::GPSModule(uint8_t receivePin, uint8_t transmitPin) {
-    ss = new SoftwareSerial(receivePin, transmitPin);
-    ss->begin(9600);
+   GPSModule(receivePin,transmitPin,baud);
 }
 
 GPSModule::GPSModule(uint8_t receivePin, uint8_t transmitPin, long baud) {
     ss = new SoftwareSerial(receivePin, transmitPin);
     ss->begin(baud);
+    this->receivePin = receivePin;
+    this->transmitPin = transmitPin;
+    this->baud = baud;
 }
 
 GPSModule::~GPSModule() {
@@ -43,4 +45,10 @@ float GPSModule::getCourse() {
 
 float GPSModule::getSpeed() {
     return gps.f_speed_mph();
+}
+
+
+GPSModule GPSModule::operator=(const GPSModule& gps){
+  GPSModule newGPS(gps.receivePin,gps.transmitPin,gps.baud);
+  return newGPS;
 }
