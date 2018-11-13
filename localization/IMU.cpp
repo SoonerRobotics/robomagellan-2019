@@ -74,9 +74,25 @@ float IMU::getAccelZ() {
 	return acceleration.acceleration.z;
 }
 
+float IMU::getVelocityX()
+{
+    return this->velocity.x;
+}
+
+float IMU::getVelocityY()
+{
+    return this->velocity.y;
+}
 
 void IMU::update() {
 	bno.getOrientationEvent(&orientation);
 	prev_acceleration = acceleration;
 	bno.getAccelerationEvent(&acceleration);
+
+    //Find time difference
+    dT = ((acceleration.timestamp - prev_acceleration.timestamp) / 1000000.0);
+
+    //Integrate to find velocity
+    this->vel.x += 0.5 * (acceleration.acceleration.x + prev_acceleration.acceleration.x) * dT;
+    this->vel.y += 0.5 * (acceleration.acceleration.y + prev_acceleration.acceleration.y) * dT;
 }

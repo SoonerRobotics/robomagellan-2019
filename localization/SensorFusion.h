@@ -6,14 +6,14 @@
 
 class SensorFusion {
 public:
-	SensorFusion(GPSModule gps, IMU imu);
+	SensorFusion(GPSModule gps, IMU imu0);
   void printIMU();
 
 private:
 	int heading = 0;
 	float lat = 0;
 	float lon = 0;
-	IMU imu;
+	IMU imu0;
 	GPSModule gps;
 	void updateIMU();
   float prevLat = 9999;

@@ -1,7 +1,7 @@
 #include "SensorFusion.h"
 
-SensorFusion::SensorFusion(GPSModule gps, IMU imu) {
-	this->imu = imu;
+SensorFusion::SensorFusion(GPSModule gps, IMU imu0) {
+	this->imu0 = imu0;
 	this->gps = gps;
 
 }
@@ -9,9 +9,9 @@ SensorFusion::SensorFusion(GPSModule gps, IMU imu) {
 void SensorFusion::updateIMU() {
 	//Check available sensors
 	bool useGps = false;
-	if (gps.available != 0)
+	if (gps.available() != 0)
 		useGps = true;
-	bool useIMU = imu.calibrated();
+	bool useIMU = imu0.calibrated();
 
 	//Set Prior State
 	prevLat = lat;
@@ -24,7 +24,7 @@ void SensorFusion::updateIMU() {
 		longi = gps.getLong();
 	}
 	if(useIMU)
-		heading = imu.getX();
+		heading = imu0.getOrientX();
 
 }
 
