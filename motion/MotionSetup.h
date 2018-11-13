@@ -5,15 +5,38 @@
 #include "MotionGlobals.h"
 #include "Drivetrain.h"
 
-typedef struct DataPacket {
+typedef struct PiDataPacket_s
+{
+    float error;
+} PiDataPacket;
+
+typedef struct ArdiunoDataPacket_s
+{
+    bool nearCone; //TRUE if near cone, FALSE if notF
     float curHeading;
     float destHeading;
-} DataPacket;
+
+} ArdiunoDataPacket;
+
+typedef union DataPacket_u {
+    short ID; //ID of device so we know who's sending it
+    ArdiunoDataPacket aPack;
+    PiDataPacket piPack;
+} Datapacket;
+
+const short PI_ID = 0;
+const short ARD_ID = 1;
 
 //Declare systems
 Drivetrain drivetrain;
 
+//Contains the most recent reads from each computer
+DataPacket newestPiRead;
+DataPacket newestArdRead;
+
+//Probably replace  curData with newestArdRead in most cases atm
 DataPacket curData;
+
 float LHT;
 float RHT;
 
@@ -23,15 +46,17 @@ void receiveData(int byteCount);
 
 void motionSetup()
 {
+    readsSinceLastPiRead = 0;
+    readsSinceLastArdRead = 0;
     //Declare local variables
     Motor motor;
     Motor servo;
     RomaServo romaServo;
 
     // start serial for output
-    if(IS_DEBUG)
+    if (IS_DEBUG)
     {
-        Serial.begin(9600); 
+        Serial.begin(9600);
     }
 
     // initialize i2c as slave
@@ -50,7 +75,7 @@ void motionSetup()
     //Wire.onRequest(sendData);
 
     // Debug ready output
-    if(IS_DEBUG)
+    if (IS_DEBUG)
     {
         Serial.println("Ready!");
     }
@@ -59,14 +84,14 @@ void motionSetup()
     drivetrain.begin(motor, romaServo);
 }
 
-
 /******************************************
                 I2C Handler
 ******************************************/
 
 template <typename T>
-unsigned int I2C_readAnything(T& value){
-    byte * p = (byte*) &value;
+unsigned int I2C_readAnything(T &value)
+{
+    byte *p = (byte *)&value;
     unsigned int i;
     for (i = 0; i < sizeof value; i++)
         *p++ = Wire.read();
@@ -76,13 +101,32 @@ unsigned int I2C_readAnything(T& value){
 // callback for received data
 void receiveData(int byteCount)
 {
-    if (byteCount >= (sizeof(DataPacket))) {
+
+    //It's possible this computation needs to be done elsewhere 
+    //for accomidating different types of dataPackets
+    if (byteCount >= (sizeof(DataPacket)))
+    {
         I2C_readAnything(curData);
+        //If we're Receiving data from the pi
+        if (curData.ID == PI_ID)
+        {
+            newestPiRead = curData;
 
-        float diff = curData.curHeading - curData.destHeading;
+            //Recalculate LHT and RHT to determine turning
+            
+            // use curData.PiDataPacket.error
 
-        LHT = (diff) < 0 ? diff + 360 : diff; //Degrees required to move to heading turning left
-        RHT = -LHT + 360; //Degrees required to move to heading turning turn
+            //LHT = ;
+            //RHT = ;
+        }
+        else
+        {
+            newestArdRead = curData;
+            float diff = curData.curHeading - curData.destHeading;
+
+            LHT = (diff) < 0 ? diff + 360 : diff; //Degrees required to move to heading turning left
+            RHT = -LHT + 360;                     //Degrees required to move to heading turning turn
+        }
     }
 }
 
