@@ -5,27 +5,37 @@
 #include "MotionGlobals.h"
 #include "Drivetrain.h"
 
+//IDs for external I2C communication
+#define PI_ID = 0;
+#define LOC_ID = 1;
+
+//Format for data sent from the raspberry pi
 typedef struct PiDataPacket_s
 {
-    float error;
+    float error;    //error in the robot centering on the cone
 } PiDataPacket;
 
-typedef struct ArdiunoDataPacket_s
+//Format for data sent from the localization nano
+typedef struct LocationDataPacket_s
 {
-    bool nearCone; //TRUE if near cone, FALSE if notF
-    float curHeading;
-    float destHeading;
+    bool nearCone;      //TRUE if near cone, FALSE if not
+    float curHeading;   //current robot heading
+    float destHeading;  //target robot heading
 
-} ArdiunoDataPacket;
+} LocationDataPacket;
 
-typedef union DataPacket_u {
+//Full I2C data packet
+typedef struct DataPacket_u 
+{
     short ID; //ID of device so we know who's sending it
-    ArdiunoDataPacket aPack;
-    PiDataPacket piPack;
+    
+    //Data transferred over I2C can of 2 differenc types
+    typedef union Packet
+    {
+        LocationDataPacket aPack;   //Data from the localization device
+        PiDataPacket piPack;        //Data from the raspberry pi (opencv, obstacle detection)
+    } Packet;
 } Datapacket;
-
-const short PI_ID = 0;
-const short ARD_ID = 1;
 
 //Declare systems
 Drivetrain drivetrain;
@@ -44,6 +54,9 @@ float RHT;
 //void sendData();
 void receiveData(int byteCount);
 
+/**
+ * Sets up the motion board and all its external devices
+ */
 void motionSetup()
 {
     readsSinceLastPiRead = 0;
@@ -98,7 +111,9 @@ unsigned int I2C_readAnything(T &value)
     return i;
 }
 
-// callback for received data
+/**
+ * Callback for received data
+ */
 void receiveData(int byteCount)
 {
 
