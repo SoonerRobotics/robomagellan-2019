@@ -22,14 +22,19 @@ public:
     float getCourse();
     float getSpeed();
 
+    GPSModule operator=(const GPSModule& gps);
+
+    uint8_t receivePin = NULL;
+    uint8_t transmitPin = NULL;
+    long baud = 9600;
+
 private:
 
     TinyGPS gps;
     SoftwareSerial* ss = nullptr;
-
-    float lat;
-    float lon;
-    unsigned long age;
+    float lat = 00000;
+    float lon = 00000;
+    unsigned long age = 00000;
 
 };
 
