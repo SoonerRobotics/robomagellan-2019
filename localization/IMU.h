@@ -14,6 +14,7 @@ public:
 	bool connected();
 
 	bool calibrated();
+  void zero();
 
 	float getOrientX();
 	float getOrientY();
@@ -41,6 +42,9 @@ private:
 	IMU_BNO055 bno;
 	scr_sensors_event_t orientation; //the current orinetation
 	scr_sensors_event_t acceleration; //the current acceleration
+  float accel_offset_x = 0;
+  float accel_offset_y = 0;
+  float accel_offset_z = 0;
 	scr_sensors_event_t prev_acceleration; //the acceleration one time step back
     velocity vel;   //velocity vector
 
