@@ -15,6 +15,9 @@ S = P;
 %Plotting variables
 X = [];
 
+%CSV Data
+D = csvread("11_16_good_move_data.csv");
+
 %Run the filter on a dataset
 while true
     %Predict the future
