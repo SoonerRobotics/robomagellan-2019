@@ -3,8 +3,14 @@
 #include "IMU.h"
 #include "LocalizationSetup.h"
 
+#define VERBOSITY 0
+
 void setup() {
     localizationSetup();
+
+    intellectualWait(10000);
+
+    imu0.zero();
 }
 
 void intellectualWait(unsigned long ms) {
@@ -16,13 +22,14 @@ void intellectualWait(unsigned long ms) {
 }
 
 void loop() {
-    Serial.print("GPS coord lat, long: ");
-    Serial.print(gps.getLat());
-    Serial.print(", ");
-    Serial.print(gps.getLong());
-    
-  if (imu0.calibrated()) {
 
+  if (VERBOSITY) {
+    Serial.print("GPS coord lat, long: ");
+    Serial.print(gps.getLat() * 1000000);
+    Serial.print(", ");
+    Serial.print(gps.getLong() * 1000000);
+    Serial.println();
+    
     Serial.print("Distance, Heading: ");
     Serial.print(queue.getDistToCur());
     Serial.print(", ");
@@ -41,6 +48,31 @@ void loop() {
     Serial.print(imu0.getAccelY());
     Serial.print(", ");
     Serial.println(imu0.getAccelZ());
+  } else {
+    Serial.print(gps.getLat() * 1000000);
+    Serial.print(", ");
+    Serial.print(gps.getLong() * 1000000);
+    Serial.print(", ");
+    Serial.print(queue.getDistToCur());
+    Serial.print(", ");
+    Serial.print(queue.getCurHeading());
+    Serial.print(", ");
+    Serial.print(imu0.getOrientX());
+    Serial.print(", ");
+    Serial.print(imu0.getOrientY());
+    Serial.print(", ");
+    Serial.print(imu0.getOrientZ());
+    Serial.print(", ");
+    Serial.print(imu0.getAccelX());
+    Serial.print(", ");
+    Serial.print(imu0.getAccelY());
+    Serial.print(", ");
+    Serial.print(imu0.getAccelZ());
+    Serial.print(", ");
+    Serial.print(imu0.getVelocityX());
+    Serial.print(", ");
+    Serial.println(imu0.getVelocityY());
+
   }
     
     intellectualWait(500);
