@@ -46,7 +46,42 @@ bool IMU::calibrated() {
 	uint8_t gyro = 0;
 	uint8_t accel = 0;
 	uint8_t mag = 0;
+  uint8_t self_test_result = 0;
+  uint8_t system_error = 0;
 	bno.getCalibration(&sys, &gyro, &accel, &mag);
+ 
+  if(sys != 0){
+    bno.getSystemStatus(&sys, &self_test_result,&system_error);
+    Serial.print(sys);
+    Serial.print(", ");
+    Serial.print(self_test_result);
+    Serial.print(", ");
+    Serial.println(system_error);
+  }
+  if(gyro != 0){
+    bno.getSystemStatus(&gyro, &self_test_result,&system_error);
+    Serial.print(gyro);
+    Serial.print(", ");
+    Serial.print(self_test_result);
+    Serial.print(", ");
+    Serial.println(system_error);
+  }
+  if(accel != 0){
+    bno.getSystemStatus(&accel, &self_test_result,&system_error);
+    Serial.print(accel);
+    Serial.print(", ");
+    Serial.print(self_test_result);
+    Serial.print(", ");
+    Serial.println(system_error);
+  }
+  if(mag != 0){
+    bno.getSystemStatus(&mag, &self_test_result,&system_error);
+    Serial.print(mag);
+    Serial.print(", ");
+    Serial.print(self_test_result);
+    Serial.print(", ");
+    Serial.println(system_error);
+  }
 	return (gyro == 3 && accel == 3 && mag == 3);
 }
 
