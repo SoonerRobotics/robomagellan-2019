@@ -16,7 +16,11 @@ void intellectualWait(unsigned long ms) {
 }
 
 void loop() {
-
+    Serial.print("GPS coord lat, long: ");
+    Serial.print(gps.getLat());
+    Serial.print(", ");
+    Serial.print(gps.getLong());
+    
   if (imu0.calibrated()) {
 
     Serial.print("Distance, Heading: ");

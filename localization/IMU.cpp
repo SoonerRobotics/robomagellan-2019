@@ -76,12 +76,12 @@ float IMU::getAccelZ() {
 
 float IMU::getVelocityX()
 {
-    return this->velocity.x;
+    return this->vel.x;
 }
 
 float IMU::getVelocityY()
 {
-    return this->velocity.y;
+    return this->vel.y;
 }
 
 void IMU::update() {
