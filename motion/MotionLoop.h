@@ -29,37 +29,23 @@ void servoLoop(float servoAngle);
 
 void motionLoop()
 {
+    /* TIME UPADTE */
     currentTime = millis();
 
-    /*
-    //Drivetrain update loop
-    if((currentTime - lastDrivetrainUpdate) >= DT_UPDATE_EPS
-    || lastDrivetrainUpdate == 0)
-    {
-        drivetrainLoop();
-    }
-
-    //Servo update loop
-    if((currentTime - lastServoUpdate) >= SERVO_UPDATE_EPS
-    || lastServoUpdate == 0)
-    {
-        servoLoop();
-    }*/
-
-    /* Drivetrain Update */
-    drivetrainLoop(0.22);
-
-    /* Servo Update */
+    //Check if we're near the next cone
     if (newestArdRead.nearCone)
     {
-        //Use the error calculations from newestPiRead
-        //Also need to initiate read but idk how to even start that
+        /* DRIVETRAIN UPADTE */
+        drivetrainLoop(DEFAULT_POWER / 2);
 
-        if(newestPiRead.error > (0 + DEGREES_OFF_ALLOWED))
+        // Maybe build in some functionality for if we start off unable to see
+        
+        /* SERVO UPDATE */
+        if(newestPiRead.error > (0 + OPENCV_ALLOWED_ERROR))
         {
             servoLoop(-10);
         }
-        else if (newestPiRead.error < (0 - DEGREES_OFF_ALLOWED))
+        else if (newestPiRead.error < (0 - OPENCV_ALLOWED_ERROR))
         {
             servoLoop(10);
         }
@@ -70,19 +56,24 @@ void motionLoop()
     }
     else
     {
+        /* DRIVETRAIN UPADTE */
+        drivetrainLoop(DEFAULT_POWER);
 
-        // Faster to head left
-        if (LHT < RHT - DEGREES_OFF_ALLOWED)
+        float diff = newestArdRead.curHeading - newestArdRead.destHeading;
+
+        float LHT = (diff) < 0 ? diff + 360 : diff; //Degrees required to move to heading turning left
+
+
+        /* SERVO UPDATE */
+        if (LHT < (-LHT + 360) - DEGREES_OFF_ALLOWED)        // Faster to head left
         {
             servoLoop(-10);
         }
-        // Faster to head right
-        else if (RHT < LHT - DEGREES_OFF_ALLOWED)
+        else if (LHT > (-LHT + 360) - DEGREES_OFF_ALLOWED)   // Faster to head right
         {
             servoLoop(10);
         }
-        // On target
-        else
+        else                                        // On target
         {
             servoLoop(0);
         }

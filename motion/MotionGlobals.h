@@ -3,6 +3,7 @@
 
 //Decision Configuration
 #define DEGREES_OFF_ALLOWED 20
+#define OPENCV_ALLOWED_ERROR 25
 
 //Drive motor pins
 #define DRIVE_MOTOR_A   4
@@ -24,6 +25,11 @@
 #define TURN_TOLERANCE      (float)(0.5)    //Most error allowed in turn angle
 #define SERVO_MOVE_TIMEOUT  (float)(1250)    //milliseconds before giving up on servo turn
 
+//Switches
+#define LIMIT_PIN = 9;   //Pin with limit switch for cone contact on it
+
+//Default power
+#define DEFAULT_POWER 0.22
 //I2C addresses
 #define MOTION_ADDR 0x18
 

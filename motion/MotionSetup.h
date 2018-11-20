@@ -9,9 +9,6 @@
 #define PI_ID = 0;
 #define LOC_ID = 1;
 
-//Pin with limit switch for cone contact on it
-#define LIMIT_PIN = 9999;
-
 //Format for data sent from the raspberry pi
 typedef struct PiDataPacket_s
 {
@@ -49,9 +46,6 @@ DataPacket newestLocRead;
 
 //Probably replace  curData with newestArdRead in most cases atm
 DataPacket curData;
-
-float LHT;
-float RHT;
 
 //Forward declare I2C Handler code
 //void sendData();
@@ -117,7 +111,6 @@ unsigned int I2C_readAnything(T &value)
 // callback for received data
 void receiveData(int byteCount)
 {
-
     //It's possible this computation needs to be done elsewhere 
     //for accomidating different types of dataPackets
     if (byteCount >= (sizeof(DataPacket)))
@@ -131,10 +124,6 @@ void receiveData(int byteCount)
         else
         {
             newestLocRead = curData;
-            float diff = curData.curHeading - curData.destHeading;
-
-            LHT = (diff) < 0 ? diff + 360 : diff; //Degrees required to move to heading turning left
-            RHT = -LHT + 360;                     //Degrees required to move to heading turning turn
         }
     }
 }
