@@ -9,10 +9,13 @@
 #define PI_ID = 0;
 #define LOC_ID = 1;
 
+//Pin with limit switch for cone contact on it
+#define LIMIT_PIN = 9999;
+
 //Format for data sent from the raspberry pi
 typedef struct PiDataPacket_s
 {
-    float error;    //error in the robot centering on the cone
+    float error;    //error between center screen and percieved cone
 } PiDataPacket;
 
 //Format for data sent from the localization nano
@@ -92,6 +95,9 @@ void motionSetup()
 
     //Initialize Drivetrain
     drivetrain.begin(motor, romaServo);
+
+    //attach an inturrupt to the limit switch to reverse when pressed
+    attachInterrupt(LIMIT_PIN, reverseRoutine, RISING);
 }
 
 /******************************************
@@ -121,13 +127,6 @@ void receiveData(int byteCount)
         if (curData.ID == PI_ID)
         {
             newestPiRead = curData;
-
-            //Recalculate LHT and RHT to determine turning
-            
-            // use curData.PiDataPacket.error
-
-            //LHT = ;
-            //RHT = ;
         }
         else
         {

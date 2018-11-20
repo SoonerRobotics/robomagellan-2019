@@ -54,6 +54,19 @@ void motionLoop()
     {
         //Use the error calculations from newestPiRead
         //Also need to initiate read but idk how to even start that
+
+        if(newestPiRead.error > (0 + DEGREES_OFF_ALLOWED))
+        {
+            servoLoop(-10);
+        }
+        else if (newestPiRead.error < (0 - DEGREES_OFF_ALLOWED))
+        {
+            servoLoop(10);
+        }
+        else
+        {
+            servoLoop(0);
+        }
     }
     else
     {
@@ -134,4 +147,23 @@ void servoLoop(float servoAngle)
     }
 }
 
+/**********************
+      ROUTINES
+ **********************/
+
+/**
+ * Routine to run when the robot needs to revese away from an obsticle
+ */
+void reverseRoutine()
+{
+
+    //Reverse the motor
+    drivetrain.setPower(-0.22);
+    
+    //Wait for 1 second
+    intellectualWait(1000);
+
+    //Stop the reverse to avoid anything silly
+    drivetrain.setPower(0);
+}
 #endif

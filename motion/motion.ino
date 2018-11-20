@@ -3,9 +3,11 @@
 #include "MotionSetup.h"
 #include "MotionLoop.h"
 
+
 void setup() 
 {    
   motionSetup();
+
 }
 
 void loop() 
@@ -32,3 +34,4 @@ void loop()
 
   motionLoop();
 }
+
