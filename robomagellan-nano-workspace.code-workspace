@@ -8,6 +8,9 @@
         },
         {
             "path": "remote"
+        },
+        {
+            "path": "main_board"
         }
     ],
 	"settings": {}
