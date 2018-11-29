@@ -1,0 +1,24 @@
+%CSV Data
+D = csvread("11_16_good_move_data.csv");
+
+%Eventual output
+X = zeros(length(D));
+
+%Split data into lat/long
+lat = D(:,1);
+lon = D(:,2);
+
+%Set up a queue of 5 most recent data points
+lat_queue = zeros(5);
+lon_queue = zeros(5);
+
+%Iterate through and apply the moving average to the data
+for i = 1:length(D)
+    %Add 
+    lat_queue(mod(i, 5)) = D(i);
+    total = sum(queue);
+    cur_lat = lat(i) / total;
+    X(i,1) = cur_location;
+end
+
+X
