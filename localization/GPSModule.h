@@ -32,9 +32,11 @@ private:
 
     TinyGPS gps;
     SoftwareSerial* ss = nullptr;
-    float lat = 00000;
-    float lon = 00000;
-    unsigned long age = 00000;
+    float lat = 0;
+    float lon = 0;
+    unsigned long age = 0;
+
+    
 
 };
 

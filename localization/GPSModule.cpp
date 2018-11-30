@@ -26,12 +26,25 @@ void GPSModule::update() {
 }
 
 float GPSModule::getLat() {
-    gps.f_get_position(&lat, &lon, &age);
+    float lat_temp = 0;
+    float lon_temp = 0;
+
+    gps.f_get_position(&lat_temp, &lon_temp, &age);
+
+    lat = 0.9 * lat + 0.1 * lat_temp;
+    lon = 0.9 * lon + 0.1 * lon_temp;
+
     return lat;
 }
 
 float GPSModule::getLong() {
-    gps.f_get_position(&lat, &lon, &age);
+    float lat_temp = 0;
+    float lon_temp = 0;
+
+    gps.f_get_position(&lat_temp, &lon_temp, &age);
+
+    lat = 0.9 * lat + 0.1 * lat_temp;
+    lon = 0.9 * lon + 0.1 * lon_temp;
     return lon;
 }
 
