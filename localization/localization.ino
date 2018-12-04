@@ -1,14 +1,17 @@
 #include "GPSModule.h"
-#include "GPSQueue.h"
 #include "IMU.h"
+#include "LocalizationGlobals.h"
 #include "LocalizationSetup.h"
+#include <ArduinoJson.h>
 
-#define VERBOSITY 0
+const int capacity = JSON_OBJECT_SIZE(7);
+StaticJsonBuffer<capacity> jb;
+JsonObject& obj = jb.createObject();
 
 void setup() {
     localizationSetup();
 
-    intellectualWait(10000);
+    intellectualWait(1000);
 
     imu0.zero();
 }
@@ -23,57 +26,16 @@ void intellectualWait(unsigned long ms) {
 
 void loop() {
 
-  if (VERBOSITY) {
-    Serial.print("GPS coord lat, long: ");
-    Serial.print(gps.getLat() * 1000000);
-    Serial.print(", ");
-    Serial.print(gps.getLong() * 1000000);
-    Serial.println();
-    
-    Serial.print("Distance, Heading: ");
-    Serial.print(queue.getDistToCur());
-    Serial.print(", ");
-    Serial.println(queue.getCurHeading());
+    obj["gps_lat"] = gps.getLat();
+    obj["gps_lon"] = gps.getLong();
+    obj["imu_heading"] = imu0.getOrientX();
+    obj["imu_accel_x"] = imu0.getAccelX();
+    obj["imu_accel_y"] = imu0.getAccelY();
+    obj["encoder_dx"] = 0;
+    obj["encoder_dt"] = 0;
 
-    Serial.print("Orient x, y, z: ");
-    Serial.print(imu0.getOrientX());
-    Serial.print(", ");
-    Serial.print(imu0.getOrientY());
-    Serial.print(", ");
-    Serial.println(imu0.getOrientZ());
+    obj.printTo(Serial);
+    Serial.write("\n");
 
-    Serial.print("Accel x, y, z: ");
-    Serial.print(imu0.getAccelX());
-    Serial.print(", ");
-    Serial.print(imu0.getAccelY());
-    Serial.print(", ");
-    Serial.println(imu0.getAccelZ());
-  } else {
-    Serial.print(gps.getLat() * 1000000);
-    Serial.print(", ");
-    Serial.print(gps.getLong() * 1000000);
-    Serial.print(", ");
-    Serial.print(queue.getDistToCur());
-    Serial.print(", ");
-    Serial.print(queue.getCurHeading());
-    Serial.print(", ");
-    Serial.print(imu0.getOrientX());
-    Serial.print(", ");
-    Serial.print(imu0.getOrientY());
-    Serial.print(", ");
-    Serial.print(imu0.getOrientZ());
-    Serial.print(", ");
-    Serial.print(imu0.getAccelX());
-    Serial.print(", ");
-    Serial.print(imu0.getAccelY());
-    Serial.print(", ");
-    Serial.print(imu0.getAccelZ());
-    Serial.print(", ");
-    Serial.print(imu0.getVelocityX());
-    Serial.print(", ");
-    Serial.println(imu0.getVelocityY());
-
-  }
-    
-    intellectualWait(500);
+    intellectualWait(1000 / SERIAL_SEND_RATE);
 }
