@@ -33,7 +33,7 @@ void motionLoop()
     currentTime = millis();
 
     //Check if we're near the next cone
-    if (newestArdRead.nearCone)
+    if (curData.nearCone)
     {
         /* DRIVETRAIN UPADTE */
         drivetrainLoop(DEFAULT_POWER / 2);
@@ -41,11 +41,11 @@ void motionLoop()
         // Maybe build in some functionality for if we start off unable to see
         
         /* SERVO UPDATE */
-        if(newestPiRead.error > (0 + OPENCV_ALLOWED_ERROR))
+        if(curData.opencv_error > (0 + OPENCV_ALLOWED_ERROR))
         {
             servoLoop(-10);
         }
-        else if (newestPiRead.error < (0 - OPENCV_ALLOWED_ERROR))
+        else if (curData.opencv_error < (0 - OPENCV_ALLOWED_ERROR))
         {
             servoLoop(10);
         }
@@ -59,7 +59,7 @@ void motionLoop()
         /* DRIVETRAIN UPADTE */
         drivetrainLoop(DEFAULT_POWER);
 
-        float diff = newestArdRead.curHeading - newestArdRead.destHeading;
+        float diff = curData.curHeading - curData.destHeading;
 
         float LHT = (diff) < 0 ? diff + 360 : diff; //Degrees required to move to heading turning left
 
@@ -138,23 +138,5 @@ void servoLoop(float servoAngle)
     }
 }
 
-/**********************
-      ROUTINES
- **********************/
 
-/**
- * Routine to run when the robot needs to revese away from an obsticle
- */
-void reverseRoutine()
-{
-
-    //Reverse the motor
-    drivetrain.setPower(-0.22);
-    
-    //Wait for 1 second
-    intellectualWait(1000);
-
-    //Stop the reverse to avoid anything silly
-    drivetrain.setPower(0);
-}
 #endif

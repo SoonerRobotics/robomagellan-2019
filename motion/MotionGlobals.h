@@ -26,10 +26,11 @@
 #define SERVO_MOVE_TIMEOUT  (float)(1250)    //milliseconds before giving up on servo turn
 
 //Switches
-#define LIMIT_PIN = 9;   //Pin with limit switch for cone contact on it
+#define LIMIT_PIN 9   //Pin with limit switch for cone contact on it
 
 //Default power
 #define DEFAULT_POWER 0.22
+
 //I2C addresses
 #define MOTION_ADDR 0x18
 
@@ -42,5 +43,8 @@
 //System update constants
 #define SERVO_UPDATE_EPS    50
 #define DT_UPDATE_EPS       20
+
+//JSON constants
+#define NUM_JSON_VALUES 5 //Number of JSON values in a data packet
 
 #endif

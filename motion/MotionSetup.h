@@ -4,129 +4,121 @@
 #include <Wire.h>
 #include "MotionGlobals.h"
 #include "Drivetrain.h"
+#include "ArduinoJson.h"
 
-//IDs for external I2C communication
-#define PI_ID = 0;
-#define LOC_ID = 1;
-
-//Format for data sent from the raspberry pi
-typedef struct PiDataPacket_s
+//Full serial data packet
+typedef struct DataPacket_u
 {
-    float error;    //error between center screen and percieved cone
-    int pad[2];     //pad bytes for making the packets the same size
-} PiDataPacket;
+    //GPS Location Stuff
+    bool nearCone;     //true if near cone, false if not
+    float curHeading;  //current robot heading
+    float destHeading; //target robot heading
 
-//Format for data sent from the localization nano
-typedef struct LocationDataPacket_s
-{
-    bool nearCone;      //TRUE if near cone, FALSE if not
-    float curHeading;   //current robot heading
-    float destHeading;  //target robot heading
-
-} LocationDataPacket;
-
-//Full I2C data packet
-typedef struct DataPacket_u {
-    short ID; //ID of device so we know who's sending it
-    
-    //Data packet from either the localization 
-    typedef union Packet_t
-    {
-        LocationDataPacket locPack; //Data from the localization device
-        PiDataPacket       piPack;  //Data from the raspberry pi (opencv, obstacle detection)
-    } Packet;
-
+    //OpenCV Stuff
+    float opencv_error;     //error between center screen and percieved cone
+    bool canSeeCone; //tells if the cone is in the viewport of the camera
 } DataPacket;
 
 //Declare systems
 Drivetrain drivetrain;
 
-//Contains the most recent reads from each computer
-DataPacket newestPiRead;
-DataPacket newestLocRead;
-
-//Probably replace  curData with newestArdRead in most cases atm
+//Most recent data from the raspberry pi
 DataPacket curData;
 
-//Forward declare I2C Handler code
-//void sendData();
-void receiveData(int byteCount);
+//Size of the data string
+const int json_str_size = JSON_OBJECT_SIZE(NUM_JSON_VALUES);
+
+//Forward Declare Routines
+void reverseRoutine();
 
 void motionSetup()
 {
-    readsSinceLastPiRead = 0;
-    readsSinceLastArdRead = 0;
     //Declare local variables
     Motor motor;
     Motor servo;
     RomaServo romaServo;
 
-    // start serial for output
-    if (IS_DEBUG)
-    {
-        Serial.begin(9600);
-    }
+    //Start serial for input
+    Serial.begin(115200);
 
-    // initialize i2c as slave
+    //Initialize i2c as slave
     Wire.begin(MOTION_ADDR);
 
-    // Initialize individual motors
+    //Initialize individual motors
     motor.begin(DRIVE_MOTOR_A, DRIVE_MOTOR_B, DRIVE_MOTOR_ENB);
     servo.begin(SERVO_MOTOR_A, SERVO_MOTOR_B, SERVO_MOTOR_ENB);
 
-    // Fully set up the RomaServo
+    //Fully set up the RomaServo
     romaServo.begin(servo, TURN_POT_PIN, MAX_TURN_POWER);
     romaServo.setPID(SERVO_KP, SERVO_KI, SERVO_KD);
-
-    // define callbacks for i2c communication
-    Wire.onReceive(receiveData);
-    //Wire.onRequest(sendData);
-
-    // Debug ready output
-    if (IS_DEBUG)
-    {
-        Serial.println("Ready!");
-    }
 
     //Initialize Drivetrain
     drivetrain.begin(motor, romaServo);
 
-    //attach an inturrupt to the limit switch to reverse when pressed
+    //Attach an inturrupt to the limit switch to reverse when pressed
     attachInterrupt(LIMIT_PIN, reverseRoutine, RISING);
 }
 
 /******************************************
-                I2C Handler
+            JSON Serial Handler
 ******************************************/
 
-template <typename T>
-unsigned int I2C_readAnything(T &value)
+//Callback for received data
+void serialEvent()
 {
-    byte *p = (byte *)&value;
-    unsigned int i;
-    for (i = 0; i < sizeof value; i++)
-        *p++ = Wire.read();
-    return i;
+    //Declare local variabls
+    String rawInput;
+    StaticJsonBuffer<json_str_size> jsonBuffer;
+    
+    //Initialize Local variables
+    rawInput = "";
+
+    //Read data off the bus
+    while(Serial.available())
+    {
+        //Get a data character and add it to the string
+        char data = (char)Serial.read();
+        rawInput += data;
+
+        //End transmission on newline
+        if(data == '\n')
+        {
+            break;
+        }
+    } 
+
+    //Parse the input string
+    JsonObject& jsonObject = jsonBuffer.parseObject(rawInput);
+
+    //If the parse was successful, add the data to the struct
+    if(jsonObject.success())
+    {
+        curData.nearCone        = jsonObject["nearCone"].as<bool>();
+        curData.curHeading      = jsonObject["curHeading"].as<float>();
+        curData.destHeading     = jsonObject["destHeading"].as<float>();
+        curData.opencv_error    = jsonObject["opencv_error"].as<int>();
+        curData.canSeeCone      = jsonObject["canSeeCone"].as<bool>();
+    }
 }
 
-// callback for received data
-void receiveData(int byteCount)
+/**********************
+      ROUTINES
+ **********************/
+
+/**
+ * Routine to run when the robot needs to revese away from an obsticle
+ */
+void reverseRoutine()
 {
-    //It's possible this computation needs to be done elsewhere 
-    //for accomidating different types of dataPackets
-    if (byteCount >= (sizeof(DataPacket)))
-    {
-        I2C_readAnything(curData);
-        //If we're Receiving data from the pi
-        if (curData.ID == PI_ID)
-        {
-            newestPiRead = curData;
-        }
-        else
-        {
-            newestLocRead = curData;
-        }
-    }
+    //Reverse the motor
+    drivetrain.setPower(-0.22);
+    
+    //Wait for 1 second
+    //intellectualWait(1000);
+    delay(1000);
+
+    //Stop the reverse to avoid anything silly
+    drivetrain.setPower(0);
 }
 
 #endif
