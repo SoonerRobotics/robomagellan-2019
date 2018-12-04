@@ -13,12 +13,13 @@
 typedef struct PiDataPacket_s
 {
     float error;    //error between center screen and percieved cone
+    int pad[2];     //pad bytes for making the packets the same size
 } PiDataPacket;
 
 //Format for data sent from the localization nano
 typedef struct LocationDataPacket_s
 {
-    bool nearCone;      //TRUE if near cone, FALSE if notF
+    bool nearCone;      //TRUE if near cone, FALSE if not
     float curHeading;   //current robot heading
     float destHeading;  //target robot heading
 

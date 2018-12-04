@@ -67,3 +67,4 @@ class lidar:
                 samples.append(data / 4)
             
             #Find the start angle
+            

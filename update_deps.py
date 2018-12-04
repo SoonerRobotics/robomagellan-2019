@@ -6,13 +6,15 @@ from os.path import basename
 git_links = ["https://github.com/Sooner-Competitive-Robotics/RobotLib",
 				"https://github.com/Sooner-Competitive-Robotics/SCR_Adafruit_BNO055",
 				"https://github.com/adafruit/Adafruit_Sensor",
-				"https://github.com/mikalhart/TinyGPS"]
+				"https://github.com/mikalhart/TinyGPS",
+				"https://github.com/bblanchon/ArduinoJson.git"]
 
 #Path to the user's directory. This is the parent of the documents directory
 user_path = expanduser("~")
 
 #Relative path from the user path to the actual libs folder
-relative_path_to_libs = "Documents\Arduino\libraries"
+f = open("deps.ini", "r")
+relative_path_to_libs = f.readline()
 
 #full lib path
 full_path = os.path.join(user_path, relative_path_to_libs)
