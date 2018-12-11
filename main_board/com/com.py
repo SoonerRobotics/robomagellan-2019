@@ -27,6 +27,8 @@ class serial_controller():
 	#Starts loop
 	def start(self):
 		self.stop = False
+		for d in devices:
+			d.open()
 		self.process = multiprocessing.Process(target=self.loop_forever)
 		self.process.start()
 

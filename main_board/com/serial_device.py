@@ -11,7 +11,8 @@ class serial_device():
 		self.address = address
 		self.baud = baud
 		self.read_queue = list()
-		ser = serial.Serial(
+		self.status = "Closed"
+		self.ser = serial.Serial(
 			port=address,
         	baudrate = baud,
         	parity=serial.PARITY_NONE,
@@ -19,6 +20,24 @@ class serial_device():
         	bytesize=serial.EIGHTBITS,
         	timeout=1
         )
+
+	def open(self):
+		try:
+			self.open()
+			self.status = "Opened"
+			return True
+		except Exception as e:
+			print(e)
+			return False
+
+	def close(self):
+		try:
+			self.close()
+			self.status = "Closed"
+			return True
+		except Exception as e:
+			print(e)
+			return False
 
 	#Reads line already pulled from device and stored in queue
 	def readline(self, release=True):
