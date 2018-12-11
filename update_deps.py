@@ -14,10 +14,11 @@ user_path = expanduser("~")
 
 #Relative path from the user path to the actual libs folder
 f = open("deps.ini", "r")
-relative_path_to_libs = f.readline()
+relative_path_to_libs = f.readline().replace("\n", "")
 
 #full lib path
 full_path = os.path.join(user_path, relative_path_to_libs)
+print(full_path)
 
 #change to the libraries folder
 os.chdir(full_path)

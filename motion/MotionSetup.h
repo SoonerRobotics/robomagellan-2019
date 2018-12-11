@@ -10,13 +10,13 @@
 typedef struct DataPacket_u
 {
     //GPS Location Stuff
-    bool nearCone;     //true if near cone, false if not
-    float curHeading;  //current robot heading
-    float destHeading; //target robot heading
+    bool nearCone;          //true if near cone, false if not
+    float curHeading;       //current robot heading
+    float destHeading;      //target robot heading
 
     //OpenCV Stuff
     float opencv_error;     //error between center screen and percieved cone
-    bool canSeeCone; //tells if the cone is in the viewport of the camera
+    bool canSeeCone;        //tells if the cone is in the viewport of the camera
 } DataPacket;
 
 //Declare systems
@@ -39,7 +39,8 @@ void motionSetup()
     RomaServo romaServo;
 
     //Start serial for input
-    Serial.begin(115200);
+    //Note: this baud rate must be standard across devices
+    Serial.begin(STD_BAUD_RATE);
 
     //Initialize i2c as slave
     Wire.begin(MOTION_ADDR);
@@ -57,6 +58,17 @@ void motionSetup()
 
     //Attach an inturrupt to the limit switch to reverse when pressed
     attachInterrupt(LIMIT_PIN, reverseRoutine, RISING);
+
+    //Wait until the raspberry pi has booted up
+    while(Serial.peek() == -1)
+    { 
+        //Send messsages into the void
+        Serial.println("gimme bytes"); 
+        delay(20); 
+    }
+
+    //Send first acknowledgement
+    Serial.println(MOTION_DEVICE_ID);
 }
 
 /******************************************
@@ -72,6 +84,9 @@ void serialEvent()
     
     //Initialize Local variables
     rawInput = "";
+
+    //Serial output device ID
+    Serial.println(MOTION_DEVICE_ID);
 
     //Read data off the bus
     while(Serial.available())
@@ -93,12 +108,16 @@ void serialEvent()
     //If the parse was successful, add the data to the struct
     if(jsonObject.success())
     {
-        curData.nearCone        = jsonObject["nearCone"].as<bool>();
-        curData.curHeading      = jsonObject["curHeading"].as<float>();
-        curData.destHeading     = jsonObject["destHeading"].as<float>();
+        curData.nearCone        = jsonObject["gps_near_cone"].as<bool>();
+        curData.curHeading      = jsonObject["gps_heading"].as<float>();
+        curData.destHeading     = jsonObject["traj_heading"].as<float>();
         curData.opencv_error    = jsonObject["opencv_error"].as<int>();
-        curData.canSeeCone      = jsonObject["canSeeCone"].as<bool>();
+        curData.canSeeCone      = jsonObject["opencv_cone_visible"].as<bool>();
     }
+
+    //Serial Test code REMOVE LATER
+    //jsonObject.printTo(Serial);
+    //Serial.println();
 }
 
 /**********************
@@ -106,7 +125,7 @@ void serialEvent()
  **********************/
 
 /**
- * Routine to run when the robot needs to revese away from an obsticle
+ * Routine to run when the robot needs to revese away from an obstacle
  */
 void reverseRoutine()
 {
@@ -114,7 +133,6 @@ void reverseRoutine()
     drivetrain.setPower(-0.22);
     
     //Wait for 1 second
-    //intellectualWait(1000);
     delay(1000);
 
     //Stop the reverse to avoid anything silly

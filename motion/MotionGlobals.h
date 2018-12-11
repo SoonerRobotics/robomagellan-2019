@@ -45,6 +45,8 @@
 #define DT_UPDATE_EPS       20
 
 //JSON constants
-#define NUM_JSON_VALUES 5 //Number of JSON values in a data packet
+#define NUM_JSON_VALUES     5       //Number of JSON values in a data packet
+#define MOTION_DEVICE_ID    9001    //Device ID for initial serial packets
+#define STD_BAUD_RATE       115200  //Baud rate of all devices
 
 #endif
