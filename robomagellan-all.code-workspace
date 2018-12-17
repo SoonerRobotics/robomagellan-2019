@@ -1,0 +1,22 @@
+{
+	"folders": [
+        {
+            "path": "motion"
+        },
+        {
+            "path": "localization"
+        },
+        {
+            "path": "main_board"
+        },
+        {
+            "path": "remote"
+        }
+    ],
+	"settings": {
+		"files.associations": {
+			"cmath": "cpp",
+			"cstdlib": "cpp"
+		}
+	}
+}
