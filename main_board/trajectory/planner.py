@@ -1,5 +1,3 @@
-#!/usr/local/bin/python2.7
-
 from trajectory import trajectory
 
 #Test stuff

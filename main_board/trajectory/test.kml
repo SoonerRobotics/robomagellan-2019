@@ -7,31 +7,84 @@
 			<width>1</width>
 		</LineStyle>
 		<PolyStyle>
-			<color>ffff0000</color>
+			<color>ff0000ff</color>
 		</PolyStyle>
 	</Style>
 		<Placemark>
 			<name>Robot Path</name>
 			<visibility>1</visibility>
 		<LookAt>
-			<latitude>47.36873333333333</latitude>
-			<longitude>121.46585</longitude>
+			<latitude>29.761463833333334</latitude>
+			<longitude>-95.785261</longitude>
 			<altitude>0</altitude>
 			<heading>0</heading>
 			<tilt>0</tilt>
-			<range>2000</range>
+			<range>200</range>
 		</LookAt>
 		<styleUrl>#SCR</styleUrl>
 			<LineString>
 				<extrude>1</extrude>
 				<tessellate>1</tessellate>
-				 <altitudeMode> relativeToGround </altitudeMode>
+				<altitudeMode> relativeToGround </altitudeMode>
 				<coordinates>
-				47.36873333333333, 121.46585, 2000
-				47.418733333333336, 121.39855, 2000
-				47.516, 121.49918333333333, 2000
+				-95.785261,29.761463833333334,20
+				-95.78476933333333,29.761183333333335,20
+				-95.7849805,29.76086,20
+				-95.78485833333333,29.7607,20
+				-95.78518883333334,29.760738833333335,20
+				-95.785286,29.761058333333335,20
+				-95.7856555,29.7611055,20
 				</coordinates>
 			</LineString>
 		</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-95.785261,29.761463833333334,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-95.78476933333333,29.761183333333335,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-95.7849805,29.76086,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-95.78485833333333,29.7607,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-95.78518883333334,29.760738833333335,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-95.785286,29.761058333333335,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-95.7856555,29.7611055,20
+						</coordinates>
+					</Point>
+				</Placemark>
 	</Document>
 </kml>

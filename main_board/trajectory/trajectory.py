@@ -31,7 +31,7 @@ class trajectory:
                 else:
                     # Get the position data for the path
                     data = line.split(' ')
-
+                    
                     # Convert the position data to decimal coords if needed
                     if convert == True:
                         lat = self.convertCoordinate(data[0], float(data[1]), float(data[2]))
@@ -65,7 +65,7 @@ class trajectory:
         }
 
         # Convert DMS to decimal
-        decimal = degree + (minute / 60) * dirs.get(direction, 1)
+        decimal = (degree + (minute / 60)) * dirs.get(direction, 1)
         return decimal
 
     # Export the current trajectory to KML format
@@ -85,7 +85,7 @@ class trajectory:
             self.kml.write("\t\t\t<width>1</width>\n")
             self.kml.write("\t\t</LineStyle>\n")
             self.kml.write("\t\t<PolyStyle>\n")
-            self.kml.write("\t\t\t<color>ffff0000</color>\n")
+            self.kml.write("\t\t\t<color>ff0000ff</color>\n")
             self.kml.write("\t\t</PolyStyle>\n")
             self.kml.write("\t</Style>\n")
             self.kml.write("\t\t<Placemark>\n")
@@ -101,24 +101,37 @@ class trajectory:
             self.kml.write("\t\t\t<altitude>0</altitude>\n")
             self.kml.write("\t\t\t<heading>0</heading>\n")
             self.kml.write("\t\t\t<tilt>0</tilt>\n")
-            self.kml.write("\t\t\t<range>2000</range>\n")
+            self.kml.write("\t\t\t<range>200</range>\n")
             self.kml.write("\t\t</LookAt>\n")
             self.kml.write("\t\t<styleUrl>#SCR</styleUrl>\n")
             self.kml.write("\t\t\t<LineString>\n")
             self.kml.write("\t\t\t\t<extrude>1</extrude>\n")
             self.kml.write("\t\t\t\t<tessellate>1</tessellate>\n")
-            self.kml.write("\t\t\t\t <altitudeMode> relativeToGround </altitudeMode>\n")
+            self.kml.write("\t\t\t\t<altitudeMode> relativeToGround </altitudeMode>\n")
             self.kml.write("\t\t\t\t<coordinates>\n")
 
             # Write all current coordinates here in the file
             for i in range(0, len(self.points)):
-                coord = "\t\t\t\t" + str(self.points[i].getLat()) + ", " + str(self.points[i].getLon()) + ", 2000\n"
+                #This MUST be lon, lat because that's what google earth expects
+                coord = "\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
                 self.kml.write(coord)
 
             # Finish writing to the file
             self.kml.write("\t\t\t\t</coordinates>\n")
             self.kml.write("\t\t\t</LineString>\n")
             self.kml.write("\t\t</Placemark>\n")
+
+            #Place markers to show info about points on path
+            for i in range(0, len(self.points)):
+                #Place a marker at the point
+                self.kml.write("\t\t\t\t<Placemark>\n\t\t\t\t\t<Point>\n\t\t\t\t\t\t<coordinates>\n")
+
+                #This MUST be lon, lat because that's what google earth expects
+                coord = "\t\t\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
+                self.kml.write(coord)
+
+                self.kml.write("\t\t\t\t\t\t</coordinates>\n\t\t\t\t\t</Point>\n\t\t\t\t</Placemark>\n")
+
             self.kml.write("\t</Document>\n")
             self.kml.write("</kml>\n")
 
