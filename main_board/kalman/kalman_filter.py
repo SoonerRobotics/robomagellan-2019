@@ -101,6 +101,8 @@ class kalman_filter:
         # Subtract x_estimate from zk and return this vector (vk)
         return (zk - self.x_estimate)
 
+    # Convert motor power readings into a velocity estimate
+    # Note: this might be best to do on the arduino nanos. If it is implemented there, it will be removed here
     def power_fn(self, motor_power):
         return (self.TOP_SPEED * motor_power / self.MAX_VOLTAGE)
 
