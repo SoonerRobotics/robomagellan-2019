@@ -11,6 +11,9 @@
         },
         {
             "path": "remote"
+        },
+        {
+            "path": "utilities"
         }
     ],
 	"settings": {
