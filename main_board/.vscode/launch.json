@@ -47,6 +47,14 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/kalman"
+        },
+        {
+            "name": "Python: LiDAR",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/lidar"
         }
     ]
 }

@@ -17,7 +17,7 @@ class lidar:
     # Class constants
     DEBUG = True
 
-    def __init__(self, port, baudRate):
+    def __init__(self, port = None, baudRate = 128000):
         # Initialize a list of the 360 cells we want to look at
         self.cells = np.zeros(360)
 
