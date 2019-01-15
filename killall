@@ -1,0 +1,6 @@
+colton   10777  0.0  0.0  12540  3044 ?        S    00:07   0:00 bash /usr/bin/banshee --redirect-log --play-enqueued
+colton   10786  5.2  1.8 2563324 148740 ?      Sl   00:07   1:00 banshee /usr/lib/banshee/Banshee.exe --redirect-log --play-enqueued
+colton   17902  2.1  1.4 2308636 120348 ?      Sl   00:23   0:03 banshee /usr/lib/banshee/Banshee.exe --redirect-log --play-enqueued
+colton   18787  1.6  1.3 1359128 106112 ?      Sl   00:23   0:02 banshee /usr/lib/banshee/Banshee.exe --redirect-log --play-enqueued
+colton   20898  5.7  1.5 2242596 123332 ?      Sl   00:24   0:05 banshee /usr/lib/banshee/Banshee.exe --redirect-log --play-enqueued
+colton   24286  0.0  0.0  14224  1020 pts/0    S+   00:26   0:00 grep --color=auto banshee
