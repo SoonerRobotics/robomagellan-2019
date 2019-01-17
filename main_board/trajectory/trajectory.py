@@ -2,12 +2,22 @@
 
 # Import the point class
 from point import point
+from math import sin, cos, sqrt, atan2, radians
+import numpy as np
 import os
 
 class trajectory:
 
+    # Max Deviation allowed off of paths (in meters)
+    PATH_DEVIATION_ALLOWED = 2
+
+    # Accepted closeness to point to accept as "reached" (in meters)
+    # This only applies to non-cone points. Cone points must be touched
+    ACCEPTED_DISTANCE_WITHIN_GOAL = 1
+
     # Initialize the trajectory builder
     def __init__(self):
+        self.curLocation = (0,0)
         self.numPoints = 0
         self.curPoint = 0
         self.points = []
@@ -47,6 +57,8 @@ class trajectory:
                     newPoint = point(lat, lon, mode)
                     self.points.append(newPoint)
 
+            numPoints = len(points)
+
             # Close the file
             self.file.close()
 
@@ -67,6 +79,45 @@ class trajectory:
         # Convert DMS to decimal
         decimal = (degree + (minute / 60)) * dirs.get(direction, 1)
         return decimal
+
+    # Get the distance between a point and a coordinate pair
+    def getDistance(lat, lon, point):
+        # approximate radius of earth in km
+        R = 6373.0
+
+        lat1 = lat
+        lon1 = lon
+        lat2 = point.getLat()
+        lon2 = point.getLon()
+
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+
+        a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        distance = R * c
+        return distance
+
+    # Update position
+    def updatePosition(self, lat, lon):
+        self.curLocation = (lat, lon)
+        if self.getDistance(lat, lon, self.point[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL:
+            curPoint++
+            return
+
+        p1 = (self.points[self.curPoint-1].getLat(), self.points[self.curPoint-1].getLon())
+        p2 = (self.points[self.curPoint].getLat(), self.points[self.curPoint].getLon())
+        if np.abs(np.cross(p2-p1, p1-self.curLocation)) / norm(p2-p1)) > self.PATH_DEVIATION_ALLOWED:
+            #TODO We have deviated too far, do we need to path intelligently back on, or can we just go straight to next point?
+
+    # Get next point
+    def getHeading(self):
+        #TODO: Calculate the heading we need to travel at to reach the next point. This should take into account self.curLocation and the current point
+
+    # Get desired speed
+    def getPower(self):
+        #TODO: Calculate the power (speed) we should travel at to reach the next point
 
     # Export the current trajectory to KML format
     def exportToKML(self, kml):
