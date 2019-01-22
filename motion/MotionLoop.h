@@ -33,27 +33,36 @@ void motionLoop()
     currentTime = millis();
 
     //Check if we're near the next cone
-    if (curData.nearCone)
-    {
-        /* DRIVETRAIN UPADTE */
-        drivetrainLoop(DEFAULT_POWER / 2);
+	if (curData.nearCone)
+	{
+		/* DRIVETRAIN UPADTE */
+		drivetrainLoop(DEFAULT_POWER / 2);
 
-        // Maybe build in some functionality for if we start off unable to see
-        
-        /* SERVO UPDATE */
-        if(curData.opencv_error > (0 + OPENCV_ALLOWED_ERROR))
-        {
-            servoLoop(-10);
-        }
-        else if (curData.opencv_error < (0 - OPENCV_ALLOWED_ERROR))
-        {
-            servoLoop(10);
-        }
-        else
-        {
-            servoLoop(0);
-        }
-    }
+			if (curData.canSeeCone)
+			{
+				//We can see the cone
+				if (curData.opencv_error > (0 + OPENCV_ALLOWED_ERROR))
+				{
+					//I'm not sure what data opencv_error contains but this should probably be not 10 and some sort of open cv calculation
+					servoLoop(-10);
+				}
+				else if (curData.opencv_error < (0 - OPENCV_ALLOWED_ERROR))
+				{
+					servoLoop(10);
+				}
+				else
+				{
+					servoLoop(0);
+				}
+			}
+			else
+			{
+				//We have passed the cone and should turn around, Justin has a more complicated
+				// algorithmic idea for this, until then hopefully 
+				// turning 45 degrees we can see the cone again in a cycle or two
+				servoLoop(45);
+			}
+	}
     else
     {
         /* DRIVETRAIN UPADTE */
