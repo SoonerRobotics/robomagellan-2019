@@ -2,6 +2,7 @@
 
 # Import the matrix libraries and necessary modules
 from math import cos, sin, tan, radians, pow
+from multiprocessing import Process, Pipe
 import numpy as np
 from numpy.linalg import inv
 import time
@@ -39,8 +40,8 @@ class kalman_filter:
         # Set the initial conditions of the filter
         self.x_estimate = np.zeros(self.NUM_STATE_VARS)
         self.x_last = xo
-        self.Pk = np.zeros(self.NUM_STATE_VARS)
-        self.Pk_last = np.identity(self.NUM_STATE_VARS) * 0.1
+        self.Pk = np.identity(self.NUM_STATE_VARS) * 0.1
+        self.Pk_last = Po
 
         # Start the timing variables
         self.last_time = time.time()
@@ -118,6 +119,7 @@ class kalman_filter:
     # After prediction is complete, we need to update the predicted values by fusing them with real values
     # These real values are also noisy, so we use the kalman gain (Gk) to determine the tradeoff between sensor
     # and model data.
+    # sensor_data is a dict of all the sensor values included in this update
     # This will return the current state of the robot
     def update(self, sensor_data):
         # Calculate the Kalman Gain
@@ -147,3 +149,25 @@ class kalman_filter:
         # Return the current coordinates according to the filter
         coords = np.array(self.x_estimate[0], self.x_estimate[1])
         return coords
+
+    def process_data(self, in_pipe, out_pipe):
+        # Run the process until an exit command is sent
+        while True:
+            # Receive data from the other process
+            sensor_data = in_pipe.recv()
+
+            # Process the sensor data if it is not an exit command
+            if sensor_data != "exit":
+                # Run the kalman filter on the sensor data
+                cur_state = self.run(sensor_data)
+
+                # Output the result to the out facing pipe
+                out_pipe.send(cur_state)
+
+            # Otherwise exit the process
+            else:
+                break
+
+        # Close the pipe connections
+        in_pipe.close()
+        out_pipe.close()

@@ -25,10 +25,12 @@ Drivetrain drivetrain;
 //Most recent data from the raspberry pi
 DataPacket curData;
 
-//Size of the data string
-const int json_str_size = JSON_OBJECT_SIZE(NUM_JSON_VALUES);
+//Size of the data strings
+const int json_str_size_in = NUM_JSON_VALUES_IN;
+const int json_str_size_out = NUM_JSON_VALUES_OUT;
 
-//Forward Declare Routines
+//Forward Declare Functions as needed
+void sendMotionSerialData(bool birth_packet);
 void reverseRoutine();
 
 void motionSetup()
@@ -63,12 +65,12 @@ void motionSetup()
     while(Serial.peek() == -1)
     { 
         //Send messsages into the void
-        Serial.println("gimme bytes"); 
-        delay(20); 
+        sendMotionSerialData(true);
+        delay(100); 
     }
 
     //Send first acknowledgement
-    Serial.println(MOTION_DEVICE_ID);
+    sendMotionSerialData(true);
 }
 
 /******************************************
@@ -80,13 +82,10 @@ void serialEvent()
 {
     //Declare local variabls
     String rawInput;
-    StaticJsonBuffer<json_str_size> jsonBuffer;
+    DyynamicJsonBuffer jsonBuffer(json_str_size_in);
     
     //Initialize Local variables
     rawInput = "";
-
-    //Serial output device ID
-    Serial.println(MOTION_DEVICE_ID);
 
     //Read data off the bus
     while(Serial.available())
@@ -103,21 +102,58 @@ void serialEvent()
     } 
 
     //Parse the input string
-    JsonObject& jsonObject = jsonBuffer.parseObject(rawInput);
+    JsonObject& root = jsonBuffer.parseObject(rawInput);
 
     //If the parse was successful, add the data to the struct
     if(jsonObject.success())
     {
-        curData.nearCone        = jsonObject["gps_near_cone"].as<bool>();
-        curData.curHeading      = jsonObject["gps_heading"].as<float>();
-        curData.destHeading     = jsonObject["traj_heading"].as<float>();
-        curData.opencv_error    = jsonObject["opencv_error"].as<int>();
-        curData.canSeeCone      = jsonObject["opencv_cone_visible"].as<bool>();
+        curData.nearCone        = root["data"]["gps_near_cone"].as<bool>();
+        curData.curHeading      = root["data"]["gps_heading"].as<float>();
+        curData.destHeading     = root["data"]["traj_heading"].as<float>();
+        curData.power           = root["data"]["traj_power"].as<float>();
+        curData.opencv_error    = root["data"]["opencv_error"].as<int>();
+        curData.canSeeCone      = root["data"]["opencv_cone_visible"].as<bool>();
     }
 
     //Serial Test code REMOVE LATER
     //jsonObject.printTo(Serial);
     //Serial.println();
+}
+
+/**
+ * Function that sends data to the main board. Will also send a birth packet to set up serial communication
+ */
+void sendMotionSerialData(bool birth_packet)
+{
+    //Open a JSON buffer and create a root object for the data transfer
+    DyynamicJsonBuffer jsonBuffer(json_str_size_out);
+    JsonObject& root = jsonBuffer.createObject();
+
+    //Set the device ID
+    root["id"] = 1;
+
+    //For regular operation, send the robot's status
+    if(!birth_packet)
+    {
+        //Indicate normal operations
+        root["event"] = "feedback";
+
+        //Make the data array
+        JsonArray& dataArray = root.createNestedArray("data");
+        dataArray["steer_ang"] = drivetrain.getAngle();
+    }
+    else
+    {
+        //Indicate normal operations
+        root["event"] = "birth";
+
+        //Make the data array
+        JsonArray& dataArray = root.createNestedArray("data");
+        dataArray["steer_ang"] = drivetrain.getAngle();
+    }
+
+    //Send data to the main board
+    root.printTo(Serial);
 }
 
 /**********************
