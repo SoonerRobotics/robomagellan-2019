@@ -12,10 +12,12 @@ import struct
 import time
 
 
-class lidar:
+class Lidar:
 
     # Class constants
     DEBUG = True
+
+    # TODO Figure out the usb port this is on dynamically
 
     def __init__(self, port = None, baudRate = 128000):
         # Initialize a list of the 360 cells we want to look at

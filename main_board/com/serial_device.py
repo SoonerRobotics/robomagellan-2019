@@ -1,5 +1,6 @@
 import serial
 import json
+import queue
 
 # Serial Device and Passthrough Classes
 # Author: Colton Sandvik
@@ -11,6 +12,7 @@ class SerialDevice:
 		self.address = address
 		self.baud = baud
 		self.read_queue = list()
+		self.command_queue = queue()
 		self.status = "Closed"
 		self.id = 0
 		self.birth_packet = """
@@ -63,6 +65,15 @@ class SerialDevice:
 			return t
 		else:
 			return ""
+
+	# Must be implemented on a per device basis
+	# Executes commands that are in the command queue, executed every time main com thread loops
+	def execute_commands(self):
+		pass
+
+	# Gets the command queue to send commands/variable data to
+	def get_command_queue(self):
+		return self.command_queue
 
 	# Releases data from queue, by default is done after readline
 	def finish_read(self):
@@ -125,6 +136,50 @@ class SerialPassthrough:
 			self.to_device.tx(feed)
 		return feed
 
+
+class SerialBirther:
+
+	def __init__(self, address, baud):
+		self.address = address
+		self.baud = baud
+		self.status = "Closed"
+		self.id = 0
+		self.birthed = False
+		self.new_id = -1
+		self.birth_packet = """
+		{
+			device_id: 0,
+			name: "Main board",
+			event: "birth",
+			data: []
+		}
+		"""
+		try:
+			self.ser = serial.Serial(
+				port=self.address,
+				baudrate=baud,
+				parity=serial.PARITY_NONE,
+				stopbits=serial.STOPBITS_ONE,
+				bytesize=serial.EIGHTBITS,
+				timeout=1,
+				write_timeout=10
+			)
+			self.ser.write(self.birth_packet)
+		except Exception as e:
+			raise e
+			self.ser = None
+
+	def check_response(self):
+		line = self.ser.readline()
+		if line != "":
+			self.birthed = True
+			payload = json.loads(line)
+			self.new_id = payload['id']
+		return self.birthed
+
+	def close(self):
+		self.ser.close()
+
 # Creating Communication Endpoint
 # Create class that extends the serial_device base class
 # Override the parse_rx method to convert the stringified JSON from the device into the standardized JSON command
@@ -142,7 +197,6 @@ class SerialPassthrough:
 
 # WIP Motion Endpoint
 
-
 class MotionSerial(SerialDevice):
 
 	def __init__(self, address, baud):
@@ -151,6 +205,10 @@ class MotionSerial(SerialDevice):
 
 	def parse_rx(self, msg):
 		j = json.loads(msg)
+
+	def execute_commands(self):
+		c = self.command_queue.get()
+		event = c['event']
 
 
 class LocalizationSerial(SerialDevice):
@@ -161,3 +219,7 @@ class LocalizationSerial(SerialDevice):
 
 	def parse_rx(self, msg):
 		j = json.loads(msg)
+
+	def execute_commands(self):
+		c = self.command_queue.get()
+		event = c['event']
