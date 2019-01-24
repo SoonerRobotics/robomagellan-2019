@@ -27,13 +27,12 @@ if __name__ == '__main__':
     EKF = kalman_filter(xo, Po, ROBOT_LENGTH)
 
     # Set up the pipes to and from the EKF
-    this_proc_out_1, this_proc_in_1 = Pipe()
-    this_proc_out_2, this_proc_in_2 = Pipe()
+    this_pipe_end, other_pipe_end = Pipe(True)
 
     # NOTE: Send data to the EKF over out_1, and receive over in_2
 
     # Set up the separate process for running the EKF
-    proc = Process(target = EKF.process_data, args = (this_proc_out_1, this_proc_in_2))
+    proc = Process(target = EKF.process_data, args = (other_pipe_end,))
     proc.start()
 
     # Run the separate process as long as the first element in the queue is not 'exit'
@@ -43,6 +42,3 @@ if __name__ == '__main__':
         pass
 
     proc.join()
-
-
-

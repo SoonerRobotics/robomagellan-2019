@@ -150,24 +150,25 @@ class kalman_filter:
         coords = np.array(self.x_estimate[0], self.x_estimate[1])
         return coords
 
-    def process_data(self, in_pipe, out_pipe):
+    def process_data(self, pipe):
         # Run the process until an exit command is sent
         while True:
-            # Receive data from the other process
-            sensor_data = in_pipe.recv()
+            # We only care if there is data
+            if pipe.poll():
+                # Receive data from the other process
+                sensor_data = pipe.recv()
 
-            # Process the sensor data if it is not an exit command
-            if sensor_data != "exit":
-                # Run the kalman filter on the sensor data
-                cur_state = self.run(sensor_data)
+                # Process the sensor data if it is not an exit command
+                if sensor_data != "exit":
+                    # Run the kalman filter on the sensor data
+                    cur_state = self.run(sensor_data)
 
-                # Output the result to the out facing pipe
-                out_pipe.send(cur_state)
+                    # Output the result
+                    pipe.send(cur_state)
 
-            # Otherwise exit the process
-            else:
-                break
+                # Otherwise exit the process
+                else:
+                    break
 
         # Close the pipe connections
-        in_pipe.close()
-        out_pipe.close()
+        pipe.close()

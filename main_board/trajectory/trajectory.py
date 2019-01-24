@@ -1,9 +1,11 @@
 # This class constructs a trajectory for the robot to follow
 
 # Import the point class
+import copy
 from point import point
 from math import sin, cos, sqrt, atan2, radians
 import numpy as np
+from numpy.linalg import norm
 import os
 
 class trajectory:
@@ -17,7 +19,8 @@ class trajectory:
 
     # Initialize the trajectory builder
     def __init__(self):
-        self.robotPoint = point()
+        # TODO: make -1 an invalid point in point()
+        self.robotPoint = point(0, 0, -1)
         self.curPoint = 1
         self.points = [copy.deepcopy(self.robotPoint)]
 
@@ -78,7 +81,7 @@ class trajectory:
         return decimal
 
     # Get the distance between a point and a coordinate pair
-    def getDistance(lat, lon, point):
+    def getDistance(self, lat, lon, point):
         # approximate radius of earth in km
         R = 6373.0
 
@@ -101,8 +104,8 @@ class trajectory:
         self.robotPoint.setLat(lat)
         self.robotPoint.setLon(lon)
 
-        if self.robotPoint.getDistanceTo(self.point[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL:
-            curPoint = curPoint + 1
+        if self.robotPoint.getDistanceTo(self.points[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL:
+            self.curPoint = self.curPoint + 1
             return
 
         # Calculate the distance we are currently from the line
@@ -110,8 +113,9 @@ class trajectory:
         p2 = (self.points[self.curPoint].getLat(), self.points[self.curPoint].getLon())
         p3 = (self.robotPoint.getLat(), self.robotPoint.getLon())
 
-        if np.abs(np.cross(p2-p1, p1-p3)) / norm(p2-p1)) > self.PATH_DEVIATION_ALLOWED:
+        if np.abs(np.cross(p2-p1, p1-p3) / norm(p2-p1)) > self.PATH_DEVIATION_ALLOWED:
             #TODO We have deviated too far, do we need to path intelligently back on, or can we just go straight to next point?
+            pass
 
     # Get next point
     def getHeading(self):
@@ -121,7 +125,7 @@ class trajectory:
     def getPower(self):
         oldVel = self.points[self.curPoint - 1].getVelocity()
         newVel = self.points[self.curPoint].getVelocity()
-        distancePercent = (self.points[self.curPoint].distanceTo(self.points[self.curPoint-1] / self.points[self.curPoint - 1].distanceTo(self.points[self.curPoint]))
+        distancePercent = (self.points[self.curPoint].distanceTo(self.points[self.curPoint-1] / self.points[self.curPoint - 1].distanceTo(self.points[self.curPoint])))
         return ((1 - distancePercent) * oldVel + distancePercent * newVel) / (11.11) # assumes power 1 is 11.11 m/s
 
     # Export the current trajectory to KML format
