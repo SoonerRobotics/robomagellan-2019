@@ -1,5 +1,7 @@
 # This is the point class for a trajectory on the course.
 
+from math import cos, sin, radians, degrees, sqrt, atan2
+
 class point:
 
     # Initialize the point as a location on the map
@@ -12,21 +14,21 @@ class point:
         self.status = False
 
     def getHeadingTo(self, otherPoint):
-        lat1 = math.radians(self.getLat())
-        lat2 = math.radians(otherPoint.getLat())
+        lat1 = radians(self.getLat())
+        lat2 = radians(otherPoint.getLat())
 
-        diffLong = math.radians(otherPoint.getLon() - self.getLon())
+        diffLong = radians(otherPoint.getLon() - self.getLon())
 
-        x = math.sin(diffLong) * math.cos(lat2)
-        y = math.cos(lat1) * math.sin(lat2) - (math.sin(lat1)
-                * math.cos(lat2) * math.cos(diffLong))
+        x = sin(diffLong) * cos(lat2)
+        y = cos(lat1) * sin(lat2) - (sin(lat1)
+                * cos(lat2) * cos(diffLong))
 
-        initial_bearing = math.atan2(x, y)
+        initial_bearing = atan2(x, y)
 
-        # Now we have the initial bearing but math.atan2 return values
+        # Now we have the initial bearing but atan2 return values
         # from -180° to + 180° which is not what we want for a compass bearing
         # The solution is to normalize the initial bearing as shown below
-        initial_bearing = math.degrees(initial_bearing)
+        initial_bearing = degrees(initial_bearing)
         compass_bearing = (initial_bearing + 360) % 360
         return compass_bearing
     
