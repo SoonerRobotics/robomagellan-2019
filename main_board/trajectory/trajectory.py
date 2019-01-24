@@ -17,10 +17,9 @@ class trajectory:
 
     # Initialize the trajectory builder
     def __init__(self):
-        self.curLocation = (0,0)
-        self.numPoints = 0
-        self.curPoint = 0
-        self.points = []
+        self.robotPoint = point()
+        self.curPoint = 1
+        self.points = [copy.deepcopy(self.robotPoint)]
 
     # Load the base waypoints from a file
     def loadWaypoints(self, filename, convert):        
@@ -56,8 +55,6 @@ class trajectory:
                     # Add a waypoint to the trajectory
                     newPoint = point(lat, lon, mode)
                     self.points.append(newPoint)
-
-            numPoints = len(points)
 
             # Close the file
             self.file.close()
@@ -101,23 +98,31 @@ class trajectory:
 
     # Update position
     def updatePosition(self, lat, lon):
-        self.curLocation = (lat, lon)
-        if self.getDistance(lat, lon, self.point[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL:
-            curPoint++
+        self.robotPoint.setLat(lat)
+        self.robotPoint.setLon(lon)
+
+        if self.robotPoint.getDistanceTo(self.point[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL:
+            curPoint = curPoint + 1
             return
 
+        # Calculate the distance we are currently from the line
         p1 = (self.points[self.curPoint-1].getLat(), self.points[self.curPoint-1].getLon())
         p2 = (self.points[self.curPoint].getLat(), self.points[self.curPoint].getLon())
-        if np.abs(np.cross(p2-p1, p1-self.curLocation)) / norm(p2-p1)) > self.PATH_DEVIATION_ALLOWED:
+        p3 = (self.robotPoint.getLat(), self.robotPoint.getLon())
+
+        if np.abs(np.cross(p2-p1, p1-p3)) / norm(p2-p1)) > self.PATH_DEVIATION_ALLOWED:
             #TODO We have deviated too far, do we need to path intelligently back on, or can we just go straight to next point?
 
     # Get next point
     def getHeading(self):
-        #TODO: Calculate the heading we need to travel at to reach the next point. This should take into account self.curLocation and the current point
+        return self.robotPoint.getHeadingTo(self.points[self.curPoint])
 
     # Get desired speed
     def getPower(self):
-        #TODO: Calculate the power (speed) we should travel at to reach the next point
+        oldVel = self.points[self.curPoint - 1].getVelocity()
+        newVel = self.points[self.curPoint].getVelocity()
+        distancePercent = (self.points[self.curPoint].distanceTo(self.points[self.curPoint-1] / self.points[self.curPoint - 1].distanceTo(self.points[self.curPoint]))
+        return ((1 - distancePercent) * oldVel + distancePercent * newVel) / (11.11) # assumes power 1 is 11.11 m/s
 
     # Export the current trajectory to KML format
     def exportToKML(self, kml):
