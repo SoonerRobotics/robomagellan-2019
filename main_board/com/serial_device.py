@@ -1,5 +1,6 @@
 import serial
 import json
+import queue
 
 # Serial Device and Passthrough Classes
 # Author: Colton Sandvik
@@ -11,6 +12,7 @@ class SerialDevice:
 		self.address = address
 		self.baud = baud
 		self.read_queue = list()
+		self.command_queue = queue()
 		self.status = "Closed"
 		self.id = 0
 		self.birth_packet = """
@@ -63,6 +65,15 @@ class SerialDevice:
 			return t
 		else:
 			return ""
+
+	# Must be implemented on a per device basis
+	# Executes commands that are in the command queue, executed every time main com thread loops
+	def execute_commands(self):
+		pass
+
+	# Gets the command queue to send commands/variable data to
+	def get_command_queue(self):
+		return self.command_queue
 
 	# Releases data from queue, by default is done after readline
 	def finish_read(self):
@@ -152,6 +163,10 @@ class MotionSerial(SerialDevice):
 	def parse_rx(self, msg):
 		j = json.loads(msg)
 
+	def execute_commands(self):
+		c = self.command_queue.get()
+		event = c['event']
+
 
 class LocalizationSerial(SerialDevice):
 
@@ -161,3 +176,7 @@ class LocalizationSerial(SerialDevice):
 
 	def parse_rx(self, msg):
 		j = json.loads(msg)
+
+	def execute_commands(self):
+		c = self.command_queue.get()
+		event = c['event']

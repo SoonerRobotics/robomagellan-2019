@@ -3,6 +3,7 @@ import numpy
 import math
 from enum import Enum
 
+
 class ConePipeline:
     
     def __init__(self):
@@ -40,7 +41,6 @@ class ConePipeline:
         self.__filter_contours_max_ratio = 1000
 
         self.filter_contours_output = None
-
 
     def process(self, source0):
         """

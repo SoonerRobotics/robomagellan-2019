@@ -9,6 +9,13 @@ from lidar import lidar
 import numpy as np
 import sys
 import time
+from multiprocessing import Process, Pipe
+from picamera import PiCamera
+from conecv import ConePipeline
+from picamera.array import PiRGBArray
+import time
+import io
+
 
 # Program constants
 UPDATE_PERIOD = 2   # seconds to wait before saving another log to the file
@@ -19,45 +26,81 @@ if len(sys.argv) > 1:
     lidar_port = sys.argv[1]
 
 # Set up the scanner on a given port, and at the required baud rate of 128000
-scanner = lidar(lidar_port, 128000)
+
 
 # Create a log file name based on the start time of the run
 map_filename = "maps/LiDAR_mapping_log_" + str(datetime.utcnow()).replace(' ', '_').replace(':', '_') + ".csv"
 
-# Set up timers for periodic logging
-run_start_time = time.time()
-last_time = run_start_time
-cur_time = run_start_time
-
-# Start scanning the environment
-scanner.startScan()
 
 # Scan the environment while the robot is running
-while True:
-    # Get the current time
-    cur_time = time.time()
-    
-    # Read the raw data from the scanner and process it
-    scanner.readData()
+class Mapper(Process):
+    def __init__(self):
+        Process.__init__(self)
+        self.scanner = lidar(lidar_port, 128000)
+        self.run_start_time = time.time()
+        self.last_time = self.run_start_time
+        self.cur_time = self.run_start_time
+        # Start scanning the environment
+        self.obstacle = False
+        self.scanner.startScan()
+        self.camera = PiCamera()
+        self.camera.resolution = (640, 480)
+        self.camera.framerate = 5
+        self.camera_enabled = False
+        self.stream = PiRGBArray(self.camera, size=(640, 480))
+        # This is the proper python syntax and terminology pls don't change
+        self.daddy_pipe, self.child_pipe = Pipe()
 
-    # Retrieve the current state of the environment
-    env_state = scanner.getData()
+    def run(self):
+        while True:
+            # Get the current time
+            if self.daddy_pipe.poll():
+                event = self.daddy_pipe.recv()
+                data = event['data']
+                if event['event'] == 'camera':
+                    start = data['start']
+                    self.camera_enabled = start
+                elif event['event'] == 'obstacle':
+                    obstacle = data['obstacle']
+                    self.obstacle = obstacle
 
-    # Periodically log the data to a file for later viewing
-    if (cur_time - last_time) > 2:
-        # Log the current cell data to a file
-        with open(map_filename, 'a', newline = '') as map_file:
-            wr = csv.writer(map_file, dialect = 'excel')
-            wr.writerow(list(env_state))
-            map_file.close()
-        
-        # Reset the last time to the current time
-        last_time = cur_time
+            self.cur_time = time.time()
+            if self.cur_time - self.run_start_time > 2 and self.camera_enabled:
+                self.camera.capture(self.stream, format="bgr", use_video_port=True)
+                image = self.stream.array
+                ConePipeline.process(image)
+                contours = ConePipeline.output
 
-    # TODO: Obstacle avoidance 
+                # TODO do something with the contours... like find the code the gives
+                #  you the angle off center of the cone
 
-    # TODO: SLAM?
+                # clear the stream in preparation for the next frame
+                self.stream.truncate(0)
+            # Read the raw data from the scanner and process it
+            self.scanner.readData()
 
+            # Retrieve the current state of the environment
+            env_state = self.scanner.getData()
 
-# Stop scanning if the program ends
-scanner.stopScan()
+            # Periodically log the data to a file for later viewing
+            if (self.cur_time - self.last_time) > 2:
+                # Log the current cell data to a file
+                self.daddy_pipe.send(env_state)
+                with open(map_filename, 'a+', newline='') as map_file:
+                    wr = csv.writer(map_file, dialect='excel')
+                    wr.writerow(list(env_state))
+                    map_file.close()
+
+                # Reset the last time to the current time
+                self.last_time = self.cur_time
+
+            # TODO: Obstacle avoidance
+
+            # TODO: SLAM?
+
+    def stop(self):
+        # Stop scanning if the program ends)
+        self.scanner.stopScan()
+
+    def get_pipe(self):
+        return self.child_pipe
