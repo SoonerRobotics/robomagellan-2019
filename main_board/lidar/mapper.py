@@ -27,7 +27,6 @@ if len(sys.argv) > 1:
 
 # Set up the scanner on a given port, and at the required baud rate of 128000
 
-
 # Create a log file name based on the start time of the run
 map_filename = "maps/LiDAR_mapping_log_" + str(datetime.utcnow()).replace(' ', '_').replace(':', '_') + ".csv"
 

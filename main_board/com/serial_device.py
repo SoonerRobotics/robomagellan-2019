@@ -136,6 +136,50 @@ class SerialPassthrough:
 			self.to_device.tx(feed)
 		return feed
 
+
+class SerialBirther:
+
+	def __init__(self, address, baud):
+		self.address = address
+		self.baud = baud
+		self.status = "Closed"
+		self.id = 0
+		self.birthed = False
+		self.new_id = -1
+		self.birth_packet = """
+		{
+			device_id: 0,
+			name: "Main board",
+			event: "birth",
+			data: []
+		}
+		"""
+		try:
+			self.ser = serial.Serial(
+				port=self.address,
+				baudrate=baud,
+				parity=serial.PARITY_NONE,
+				stopbits=serial.STOPBITS_ONE,
+				bytesize=serial.EIGHTBITS,
+				timeout=1,
+				write_timeout=10
+			)
+			self.ser.write(self.birth_packet)
+		except Exception as e:
+			raise e
+			self.ser = None
+
+	def check_response(self):
+		line = self.ser.readline()
+		if line != "":
+			self.birthed = True
+			payload = json.loads(line)
+			self.new_id = payload['id']
+		return self.birthed
+
+	def close(self):
+		self.ser.close()
+
 # Creating Communication Endpoint
 # Create class that extends the serial_device base class
 # Override the parse_rx method to convert the stringified JSON from the device into the standardized JSON command
@@ -152,7 +196,6 @@ class SerialPassthrough:
 # This may eventually be automated but is good enough for now.
 
 # WIP Motion Endpoint
-
 
 class MotionSerial(SerialDevice):
 
