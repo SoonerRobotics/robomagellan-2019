@@ -1,7 +1,7 @@
 # Turn calculation files
 
 from point import point 
-from math import cos, fmod, radians, sqrt
+from math import cos, sin, fmod, radians, sqrt
 
 class turn_builder:
 
@@ -50,10 +50,10 @@ class turn_builder:
             turn_angle = self.calc_sweep(hdg_2, self.hdg_wrap(hdg_1 + 180), turn_dir)
 
             # Calculate the half turn angle
-            half_turn = turn_angle / 2.0
+            half_ang = turn_angle / 2.0
             
             # Calculate length from vertex to turn center
-            vertex_to_cntr = max_start_offset / cos(radians(half_turn))
+            vertex_to_cntr = max_start_offset / cos(radians(half_ang))
 
             # Calculate the turn radius
             turn_radius = sqrt(pow(vertex_to_cntr, 2) + pow(max_start_offset, 2))
@@ -61,13 +61,16 @@ class turn_builder:
             # Compute turn speed
             turn_speed = sqrt(turn_radius * self.coeff_friction * self.robot_normal_force)
 
-            # TODO: Calculate the position of the turn center
-            turn_center = point(0, 0, -1)
+            # Calculate the position of the turn center
+            lat = vertex.getLat() + self.meters_to_gps_dec(vertex_to_cntr * cos(radians(hdg_1)))
+            lon = vertex.getLon() + self.meters_to_gps_dec(vertex_to_cntr * sin(radians(hdg_1)))
+            turn_center = point(lat, lon, 5) # TODO: make a point mode be a turn center point
 
-            return (turn_center, turn_radius, turn_speed)
+            # Return turn calc data (true because a turn was calculated)
+            return (True, turn_center, turn_radius, turn_speed)
 
-
-        pass
+        # If no turn is calculated, return a False tuple with empty data
+        return (False, 0, 0, 0, 0)
 
     # Find the shortest direction to turn
     def calc_dir_sweep(self, start_ang, end_ang):
@@ -117,3 +120,15 @@ class turn_builder:
             hdg += 360
 
         return hdg
+
+    # Calculate the GPS degrees a given amount of meters represents
+    # Quick and dirty method used described here: 
+    # https://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters
+    def meters_to_gps_dec(self, meters):
+        # 111,111 meters is about 1 degree
+        meters_to_deg_factor = 1.0 / 111111.0
+
+        #Find the answer by multiplying the meters by the factor
+        degs = meters * meters_to_deg_factor
+
+        return degs

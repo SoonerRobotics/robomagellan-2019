@@ -150,6 +150,11 @@ class kalman_filter:
         coords = np.array(self.x_estimate[0], self.x_estimate[1])
         return coords
 
+    # Get the most recent state calculated by the filter
+    def getState(self):
+        return self.x_last
+
+    # Process data piped in by another process
     def process_data(self, pipe):
         # Run the process until an exit command is sent
         while True:
@@ -158,17 +163,20 @@ class kalman_filter:
                 # Receive data from the other process
                 sensor_data = pipe.recv()
 
-                # Process the sensor data if it is not an exit command
-                if sensor_data != "exit":
+                # TODO: Add standards - like JSON instead of this sketchy implentation
+                # Exit if told to exit
+                if sensor_data == 'exit':
+                    break
+                # Return state info if a request is lodged
+                elif sensor_data == 'request':
+                    pipe.send(self.getState())
+                # Otherwise update the filter with the new data
+                else:
                     # Run the kalman filter on the sensor data
                     cur_state = self.run(sensor_data)
 
                     # Output the result
                     pipe.send(cur_state)
-
-                # Otherwise exit the process
-                else:
-                    break
 
         # Close the pipe connections
         pipe.close()
