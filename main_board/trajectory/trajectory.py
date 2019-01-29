@@ -113,9 +113,7 @@ class trajectory:
         p2 = (self.points[self.curPoint].getLat(), self.points[self.curPoint].getLon())
         p3 = (self.robotPoint.getLat(), self.robotPoint.getLon())
 
-        if np.abs(np.cross(p2-p1, p1-p3) / norm(p2-p1)) > self.PATH_DEVIATION_ALLOWED:
-            #TODO We have deviated too far, do we need to path intelligently back on, or can we just go straight to next point?
-            pass
+        #TODO: calculate distance from path for path deviation
 
     # Get next point
     def getHeading(self):
@@ -125,7 +123,7 @@ class trajectory:
     def getPower(self):
         oldVel = self.points[self.curPoint - 1].getVelocity()
         newVel = self.points[self.curPoint].getVelocity()
-        distancePercent = (self.points[self.curPoint].distanceTo(self.points[self.curPoint-1] / self.points[self.curPoint - 1].distanceTo(self.points[self.curPoint])))
+        distancePercent = (self.points[self.curPoint].getDistanceTo(self.points[self.curPoint-1]) / self.points[self.curPoint - 1].getDistanceTo(self.points[self.curPoint]))
         return ((1 - distancePercent) * oldVel + distancePercent * newVel) / (11.11) # assumes power 1 is 11.11 m/s
 
     # Export the current trajectory to KML format
@@ -171,7 +169,7 @@ class trajectory:
             self.kml.write("\t\t\t\t<coordinates>\n")
 
             # Write all current coordinates here in the file
-            for i in range(0, len(self.points)):
+            for i in range(1, len(self.points)):
                 #This MUST be lon, lat because that's what google earth expects
                 coord = "\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
                 self.kml.write(coord)
@@ -182,7 +180,7 @@ class trajectory:
             self.kml.write("\t\t</Placemark>\n")
 
             #Place markers to show info about points on path
-            for i in range(0, len(self.points)):
+            for i in range(1, len(self.points)):
                 #Place a marker at the point
                 self.kml.write("\t\t\t\t<Placemark>\n\t\t\t\t\t<Point>\n\t\t\t\t\t\t<coordinates>\n")
 
