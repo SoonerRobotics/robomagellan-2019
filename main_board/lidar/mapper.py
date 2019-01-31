@@ -1,5 +1,5 @@
 # This file will run the LiDAR scanner, collect data and generate a map
-# of the environment while the robot is running. This is the LiDAR driver 
+# of the environment while the robot is running. This is the LiDAR driver
 # and will be used for obstacle avoidance and SLAM
 
 # Import the lidar device, timing variables and other libraries
@@ -10,8 +10,9 @@ import numpy as np
 import sys
 import time
 from multiprocessing import Process, Pipe
+import sys
 from picamera import PiCamera
-from conecv import ConePipeline
+from opencv.conecv import ConePipeline
 from picamera.array import PiRGBArray
 import time
 import io
@@ -35,7 +36,7 @@ map_filename = "maps/LiDAR_mapping_log_" + str(datetime.utcnow()).replace(' ', '
 class Mapper(Process):
     def __init__(self):
         Process.__init__(self)
-        self.scanner = lidar(lidar_port, 128000)
+        self.scanner = lidar.Lidar(lidar_port, 128000)
         self.run_start_time = time.time()
         self.last_time = self.run_start_time
         self.cur_time = self.run_start_time

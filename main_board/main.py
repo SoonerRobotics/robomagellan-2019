@@ -1,7 +1,7 @@
-from main_board.com.serial_device import *
-from main_board.com.com import SerialController
+from com.serial_device import *
+from com.com import SerialController
 import time
-from main_board.lidar.mapper import Mapper
+from lidar.mapper import Mapper
 
 if __name__ == '__main__':
 	controller = SerialController()

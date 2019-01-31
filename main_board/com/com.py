@@ -1,8 +1,9 @@
 import serial
-from main_board.com.serial_device import *
+from .serial_device import *
 import time
 import multiprocessing
-import queue
+from multiprocessing import Queue
+import logging
 
 
 # Main communications class
@@ -20,8 +21,8 @@ class SerialController:
 
     def __init__(self, process_rate=50):
         self.daddy_pipe, self.child_pipe = multiprocessing.Pipe()
-        self.logging.Formatter.converter = time.gmtime
-        self.logging.basicConfig(filename="/var/log/serial_communication.log", level=self.logging.INFO,
+        logging.Formatter.converter = time.gmtime
+        logging.basicConfig(filename="/var/log/serial_communication.log", level=logging.INFO,
                                  format='%(asctime)s:%(message)s ')
         self.devices = list()
         self.birth_devices = list()
@@ -30,7 +31,7 @@ class SerialController:
         self.process = None
         self.stop = False
         self.state = 0
-        self.buffer = queue()
+        self.buffer = Queue()
 
     # Main process for looping automatically, runs at process rate defined in controller instantiation, default is 50ms
     def loop_forever(self):
