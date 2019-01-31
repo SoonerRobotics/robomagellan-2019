@@ -98,7 +98,7 @@ class Mapper(Process):
             # TODO: SLAM?
 
     def stop(self):
-        # Stop scanning if the program ends)
+        # Stop scanning if the program ends
         self.scanner.stopScan()
 
     def get_pipe(self):

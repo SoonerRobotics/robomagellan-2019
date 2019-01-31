@@ -10,19 +10,23 @@ import os
 
 class trajectory:
 
-    # Max Deviation allowed off of paths (in meters)
-    PATH_DEVIATION_ALLOWED = 2
-
-    # Accepted closeness to point to accept as "reached" (in meters)
-    # This only applies to non-cone points. Cone points must be touched
-    ACCEPTED_DISTANCE_WITHIN_GOAL = 1
-
     # Initialize the trajectory builder
-    def __init__(self):
+    def __init__(self, config):
         # TODO: make -1 an invalid point in point()
         self.robotPoint = point(0, 0, -1)
         self.curPoint = 1 #starts at 1 because we don't care about heading to start
         self.points = []
+
+        ###################
+        # Add config vars #
+        ###################
+
+        # Accepted closeness to point to accept as "reached" (in meters)
+        # This only applies to non-cone points. Cone points must be touched
+        self.ACCEPTED_DISTANCE_WITHIN_GOAL = config['trajectory']['goal_dist_thresh']
+
+        # Max Deviation allowed off of paths (in meters)
+        self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']             
 
     # Load the base waypoints from a file
     def loadWaypoints(self, filename, convert):        
@@ -127,6 +131,10 @@ class trajectory:
         # If we are touching something and we are supposed to head to a cone, we hit it!
         if touched and self.points[self.curPoint].mode in ["B", "S", "E"]:
             self.curPoint = self.curPoint + 1
+        # If we are touching something, and it is not the cone, back up and avoid this obstacle
+        elif touched:
+            # TODO: recalculate route
+            pass
 
 
     # Get next point
