@@ -137,7 +137,6 @@ class trajectory:
             # TODO: recalculate route
             pass
 
-
     # Get next point
     def getHeading(self):
         return self.robotPoint.getHeadingTo(self.points[self.curPoint])
