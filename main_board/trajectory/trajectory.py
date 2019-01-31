@@ -10,19 +10,24 @@ import os
 
 class trajectory:
 
-    # Max Deviation allowed off of paths (in meters)
-    PATH_DEVIATION_ALLOWED = 2
-
-    # Accepted closeness to point to accept as "reached" (in meters)
-    # This only applies to non-cone points. Cone points must be touched
-    ACCEPTED_DISTANCE_WITHIN_GOAL = 1
-
     # Initialize the trajectory builder
-    def __init__(self):
+    def __init__(self, config):
         # TODO: make -1 an invalid point in point()
         self.robotPoint = point(0, 0, -1)
-        self.curPoint = 1
-        self.points = [copy.deepcopy(self.robotPoint)]
+        self.curPoint = 1 #starts at 1 because we don't care about heading to start
+        self.points = []
+        self.l = 5
+
+        ###################
+        # Add config vars #
+        ###################
+
+        # Accepted closeness to point to accept as "reached" (in meters)
+        # This only applies to non-cone points. Cone points must be touched
+        self.ACCEPTED_DISTANCE_WITHIN_GOAL = config['trajectory']['goal_dist_thresh']
+
+        # Max Deviation allowed off of paths (in meters)
+        self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']             
 
     # Load the base waypoints from a file
     def loadWaypoints(self, filename, convert):        
@@ -100,24 +105,45 @@ class trajectory:
         return distance
 
     # Update position
-    def updatePosition(self, lat, lon):
+    def updatePosition(self, lat, lon, velocity, heading):
         self.robotPoint.setLat(lat)
         self.robotPoint.setLon(lon)
+        self.robotPoint.setVelocity(velocity)
+        self.robotPoint.setHeading(heading)
 
-        if self.robotPoint.getDistanceTo(self.points[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL:
+        if self.robotPoint.getDistanceTo(self.points[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL and self.points[self.curPoint].mode not in ["B", "S", "E"]:
             self.curPoint = self.curPoint + 1
             return
 
-        # Calculate the distance we are currently from the line
-        p1 = (self.points[self.curPoint-1].getLat(), self.points[self.curPoint-1].getLon())
-        p2 = (self.points[self.curPoint].getLat(), self.points[self.curPoint].getLon())
-        p3 = (self.robotPoint.getLat(), self.robotPoint.getLon())
-
         #TODO: calculate distance from path for path deviation
+
+    # Update LIDAR
+    def updateLIDAR(self, lidarpoints):
+        #TODO: If lidarpoints contains a point in front of us, we need to repath
+        pass
+    
+    # Update Sonar
+    def updateSonar(self, distance):
+        #TODO: Given sonar distance, do we need to repath?
+        pass
+
+    # Update Limit Switch
+    def updateLimitSwitch(self, touched):
+        # If we are touching something and we are supposed to head to a cone, we hit it!
+        if touched and self.points[self.curPoint].mode in ["B", "S", "E"]:
+            self.curPoint = self.curPoint + 1
+        # If we are touching something, and it is not the cone, back up and avoid this obstacle
+        elif touched:
+            # TODO: recalculate route
+            pass
 
     # Get next point
     def getHeading(self):
         return self.robotPoint.getHeadingTo(self.points[self.curPoint])
+
+    # Get steering andgle
+    def getSteeringAngle(self, heading, length, vel, time)
+        return atan2((heading - (getHeading(self)) * length)/ (vel*time))
 
     # Get desired speed
     def getPower(self):
@@ -169,7 +195,7 @@ class trajectory:
             self.kml.write("\t\t\t\t<coordinates>\n")
 
             # Write all current coordinates here in the file
-            for i in range(1, len(self.points)):
+            for i in range(0, len(self.points)):
                 #This MUST be lon, lat because that's what google earth expects
                 coord = "\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
                 self.kml.write(coord)
@@ -180,7 +206,7 @@ class trajectory:
             self.kml.write("\t\t</Placemark>\n")
 
             #Place markers to show info about points on path
-            for i in range(1, len(self.points)):
+            for i in range(0, len(self.points)):
                 #Place a marker at the point
                 self.kml.write("\t\t\t\t<Placemark>\n\t\t\t\t\t<Point>\n\t\t\t\t\t\t<coordinates>\n")
 
