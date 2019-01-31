@@ -14,9 +14,10 @@ class trajectory:
     def __init__(self, config):
         # TODO: make -1 an invalid point in point()
         self.robotPoint = point(0, 0, -1)
-        self.curPoint = 1 #starts at 1 because we don't care about heading to start
-        self.points = []
-        self.l = 5
+        self.active_wpt = 0
+        self.cur_traj_point = 0 
+        self.traj_points = list()
+        self.waypoints = list()
 
         ###################
         # Add config vars #
@@ -28,6 +29,12 @@ class trajectory:
 
         # Max Deviation allowed off of paths (in meters)
         self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']             
+
+    def build_trajectory(self):
+        pass
+
+    def update_trajectory(self):
+        pass
 
     # Load the base waypoints from a file
     def loadWaypoints(self, filename, convert):        
@@ -62,7 +69,7 @@ class trajectory:
 
                     # Add a waypoint to the trajectory
                     newPoint = point(lat, lon, mode)
-                    self.points.append(newPoint)
+                    self.waypoints.append(newPoint)
 
             # Close the file
             self.file.close()
@@ -111,7 +118,7 @@ class trajectory:
         self.robotPoint.setVelocity(velocity)
         self.robotPoint.setHeading(heading)
 
-        if self.robotPoint.getDistanceTo(self.points[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL and self.points[self.curPoint].mode not in ["B", "S", "E"]:
+        if self.robotPoint.getDistanceTo(self.traj_points[self.cur_traj_point]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL and self.traj_points[self.cur_traj_point].mode not in ["B", "S", "E"]:
             self.curPoint = self.curPoint + 1
             return
 
@@ -130,7 +137,7 @@ class trajectory:
     # Update Limit Switch
     def updateLimitSwitch(self, touched):
         # If we are touching something and we are supposed to head to a cone, we hit it!
-        if touched and self.points[self.curPoint].mode in ["B", "S", "E"]:
+        if touched and self.waypoints[self.curPoint].mode in ["B", "S", "E"]:
             self.curPoint = self.curPoint + 1
         # If we are touching something, and it is not the cone, back up and avoid this obstacle
         elif touched:
@@ -140,17 +147,17 @@ class trajectory:
 
     # Get next point
     def getHeading(self):
-        return self.robotPoint.getHeadingTo(self.points[self.curPoint])
+        return self.robotPoint.getHeadingTo(self.traj_points[self.cur_traj_point])
 
     # Get steering andgle
-    def getSteeringAngle(self, heading, length, vel, time)
-        return atan2((heading - (getHeading(self)) * length)/ (vel*time))
+    def getSteeringAngle(self, heading, length, vel, time):
+        return atan2((heading - (self.getHeading()) * length)/ (vel*time))
 
     # Get desired speed
     def getPower(self):
-        oldVel = self.points[self.curPoint - 1].getVelocity()
-        newVel = self.points[self.curPoint].getVelocity()
-        distancePercent = (self.points[self.curPoint].getDistanceTo(self.points[self.curPoint-1]) / self.points[self.curPoint - 1].getDistanceTo(self.points[self.curPoint]))
+        oldVel = self.traj_points[self.curPoint - 1].getVelocity()
+        newVel = self.traj_points[self.curPoint].getVelocity()
+        distancePercent = (self.traj_points[self.curPoint].getDistanceTo(self.traj_points[self.cur_traj_point-1]) / self.traj_points[self.cur_traj_point - 1].getDistanceTo(self.traj_points[self.cur_traj_point]))
         return ((1 - distancePercent) * oldVel + distancePercent * newVel) / (11.11) # assumes power 1 is 11.11 m/s
 
     # Export the current trajectory to KML format
@@ -179,7 +186,7 @@ class trajectory:
             self.kml.write("\t\t<LookAt>\n")
 
             # Write the first point to the look-at property
-            coord = "\t\t\t<latitude>" + str(self.points[0].getLat()) + "</latitude>\n\t\t\t<longitude>" + str(self.points[0].getLon()) + "</longitude>\n"
+            coord = "\t\t\t<latitude>" + str(self.traj_points[0].getLat()) + "</latitude>\n\t\t\t<longitude>" + str(self.traj_points[0].getLon()) + "</longitude>\n"
             self.kml.write(coord)
 
             # Continue writing setup markup
@@ -196,9 +203,9 @@ class trajectory:
             self.kml.write("\t\t\t\t<coordinates>\n")
 
             # Write all current coordinates here in the file
-            for i in range(0, len(self.points)):
+            for i in range(0, len(self.traj_points)):
                 #This MUST be lon, lat because that's what google earth expects
-                coord = "\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
+                coord = "\t\t\t\t" + str(self.traj_points[i].getLon()) + "," + str(self.traj_points[i].getLat()) + ",20\n"
                 self.kml.write(coord)
 
             # Finish writing to the file
@@ -207,12 +214,12 @@ class trajectory:
             self.kml.write("\t\t</Placemark>\n")
 
             #Place markers to show info about points on path
-            for i in range(0, len(self.points)):
+            for i in range(0, len(self.traj_points)):
                 #Place a marker at the point
                 self.kml.write("\t\t\t\t<Placemark>\n\t\t\t\t\t<Point>\n\t\t\t\t\t\t<coordinates>\n")
 
                 #This MUST be lon, lat because that's what google earth expects
-                coord = "\t\t\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
+                coord = "\t\t\t\t\t\t" + str(self.traj_points[i].getLon()) + "," + str(self.traj_points[i].getLat()) + ",20\n"
                 self.kml.write(coord)
 
                 self.kml.write("\t\t\t\t\t\t</coordinates>\n\t\t\t\t\t</Point>\n\t\t\t\t</Placemark>\n")
