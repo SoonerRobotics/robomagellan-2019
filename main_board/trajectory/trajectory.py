@@ -23,6 +23,7 @@ class trajectory:
         self.robotPoint = point(0, 0, -1)
         self.curPoint = 1 #starts at 1 because we don't care about heading to start
         self.points = []
+        self.l = 5
 
     # Load the base waypoints from a file
     def loadWaypoints(self, filename, convert):        
@@ -132,6 +133,10 @@ class trajectory:
     # Get next point
     def getHeading(self):
         return self.robotPoint.getHeadingTo(self.points[self.curPoint])
+
+    # Get steering andgle
+    def getSteeringAngle(self, heading, length, vel, time)
+        return atan2((heading - (getHeading(self)) * length)/ (vel*time))
 
     # Get desired speed
     def getPower(self):
