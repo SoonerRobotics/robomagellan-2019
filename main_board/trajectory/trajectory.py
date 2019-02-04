@@ -27,9 +27,13 @@ class trajectory:
         # This only applies to non-cone points. Cone points must be touched
         self.ACCEPTED_DISTANCE_WITHIN_GOAL = config['trajectory']['goal_dist_thresh']
 
+        # Max Deviation allowed off of heading while heading to goal (in degrees)
+        self.ACCEPTED_HEADING_DEVIATION = config['trajectory']['goal_heading_thresh']      
+
         # Max Deviation allowed off of paths (in meters)
         self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']             
 
+    # There must be a point behind the robot (or on it) for calculations that require a previous trajectory point
     def build_trajectory(self):
         pass
 
@@ -111,6 +115,11 @@ class trajectory:
         distance = R * c
         return distance
 
+    # Get the distance from point (x0,y0) to a line described by points (x1,y1) and (x2,y2)
+    # Possible improvements with dot products, etc.
+    def distanceFromPointToLine(self,x1,y1,x2,y2,x0,y0):
+        return abs((y2-y1)*x0-(x2-x1)*y0+x2*y1-y2*y1)/(sqrt((y2-y1)**2 + (x2-x1)**2))
+
     # Update position
     def updatePosition(self, lat, lon, velocity, heading):
         self.robotPoint.setLat(lat)
@@ -118,11 +127,19 @@ class trajectory:
         self.robotPoint.setVelocity(velocity)
         self.robotPoint.setHeading(heading)
 
-        if self.robotPoint.getDistanceTo(self.traj_points[self.cur_traj_point]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL and self.traj_points[self.cur_traj_point].mode not in ["B", "S", "E"]:
+        if (self.robotPoint.getDistanceTo(self.traj_points[self.cur_traj_point]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL and
+                self.traj_points[self.cur_traj_point].mode not in ["B", "S", "E"] and 
+                abs(self.robotPoint.getHeadingTo(self.traj_points[self.cur_traj_point]) - heading) < self.ACCEPTED_HEADING_DEVIATION):
+            #all conditions are met to accept a goal
             self.curPoint = self.curPoint + 1
             return
 
-        #TODO: calculate distance from path for path deviation
+        #calculate distance from path for path deviation
+        last_point = self.traj_points[self.cur_traj_point-1]
+        cur_point = self.traj_points[self.cur_traj_point]
+        if self.distanceFromPointToLine(last_point.getLat(), last_point.getLon(), cur_point.getLat(), cur_point.getLon(), lat, lon) < self.PATH_DEVIATION_ALLOWED:
+            #TODO: Decide how to recalculate trajectory if we are off the course too significantly
+            pass
 
     # Update LIDAR
     def updateLIDAR(self, lidarpoints):
