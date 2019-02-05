@@ -10,19 +10,35 @@ import os
 
 class trajectory:
 
-    # Max Deviation allowed off of paths (in meters)
-    PATH_DEVIATION_ALLOWED = 2
-
-    # Accepted closeness to point to accept as "reached" (in meters)
-    # This only applies to non-cone points. Cone points must be touched
-    ACCEPTED_DISTANCE_WITHIN_GOAL = 1
-
     # Initialize the trajectory builder
-    def __init__(self):
+    def __init__(self, config):
         # TODO: make -1 an invalid point in point()
         self.robotPoint = point(0, 0, -1)
-        self.curPoint = 1
-        self.points = [copy.deepcopy(self.robotPoint)]
+        self.active_wpt = 0
+        self.cur_traj_point = 0 
+        self.traj_points = list()
+        self.waypoints = list()
+
+        ###################
+        # Add config vars #
+        ###################
+
+        # Accepted closeness to point to accept as "reached" (in meters)
+        # This only applies to non-cone points. Cone points must be touched
+        self.ACCEPTED_DISTANCE_WITHIN_GOAL = config['trajectory']['goal_dist_thresh']
+
+        # Max Deviation allowed off of heading while heading to goal (in degrees)
+        self.ACCEPTED_HEADING_DEVIATION = config['trajectory']['goal_heading_thresh']      
+
+        # Max Deviation allowed off of paths (in meters)
+        self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']             
+
+    # There must be a point behind the robot (or on it) for calculations that require a previous trajectory point
+    def build_trajectory(self):
+        pass
+
+    def update_trajectory(self):
+        pass
 
     # Load the base waypoints from a file
     def loadWaypoints(self, filename, convert):        
@@ -57,7 +73,7 @@ class trajectory:
 
                     # Add a waypoint to the trajectory
                     newPoint = point(lat, lon, mode)
-                    self.points.append(newPoint)
+                    self.waypoints.append(newPoint)
 
             # Close the file
             self.file.close()
@@ -99,33 +115,65 @@ class trajectory:
         distance = R * c
         return distance
 
+    # Get the distance from point (x0,y0) to a line described by points (x1,y1) and (x2,y2)
+    # Possible improvements with dot products, etc.
+    def distanceFromPointToLine(self,x1,y1,x2,y2,x0,y0):
+        return abs((y2-y1)*x0-(x2-x1)*y0+x2*y1-y2*y1)/(sqrt((y2-y1)**2 + (x2-x1)**2))
+
     # Update position
-    def updatePosition(self, lat, lon):
+    def updatePosition(self, lat, lon, velocity, heading):
         self.robotPoint.setLat(lat)
         self.robotPoint.setLon(lon)
+        self.robotPoint.setVelocity(velocity)
+        self.robotPoint.setHeading(heading)
 
-        if self.robotPoint.getDistanceTo(self.points[self.curPoint]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL:
+        if (self.robotPoint.getDistanceTo(self.traj_points[self.cur_traj_point]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL and
+                self.traj_points[self.cur_traj_point].mode not in ["B", "S", "E"] and 
+                abs(self.robotPoint.getHeadingTo(self.traj_points[self.cur_traj_point]) - heading) < self.ACCEPTED_HEADING_DEVIATION):
+            #all conditions are met to accept a goal
             self.curPoint = self.curPoint + 1
             return
 
-        # Calculate the distance we are currently from the line
-        p1 = (self.points[self.curPoint-1].getLat(), self.points[self.curPoint-1].getLon())
-        p2 = (self.points[self.curPoint].getLat(), self.points[self.curPoint].getLon())
-        p3 = (self.robotPoint.getLat(), self.robotPoint.getLon())
+        #calculate distance from path for path deviation
+        last_point = self.traj_points[self.cur_traj_point-1]
+        cur_point = self.traj_points[self.cur_traj_point]
+        if self.distanceFromPointToLine(last_point.getLat(), last_point.getLon(), cur_point.getLat(), cur_point.getLon(), lat, lon) < self.PATH_DEVIATION_ALLOWED:
+            #TODO: Decide how to recalculate trajectory if we are off the course too significantly
+            pass
 
-        if np.abs(np.cross(p2-p1, p1-p3) / norm(p2-p1)) > self.PATH_DEVIATION_ALLOWED:
-            #TODO We have deviated too far, do we need to path intelligently back on, or can we just go straight to next point?
+    # Update LIDAR
+    def updateLIDAR(self, lidarpoints):
+        #TODO: If lidarpoints contains a point in front of us, we need to repath
+        pass
+    
+    # Update Sonar
+    def updateSonar(self, distance):
+        #TODO: Given sonar distance, do we need to repath?
+        pass
+
+    # Update Limit Switch
+    def updateLimitSwitch(self, touched):
+        # If we are touching something and we are supposed to head to a cone, we hit it!
+        if touched and self.waypoints[self.curPoint].mode in ["B", "S", "E"]:
+            self.curPoint = self.curPoint + 1
+        # If we are touching something, and it is not the cone, back up and avoid this obstacle
+        elif touched:
+            # TODO: recalculate route
             pass
 
     # Get next point
     def getHeading(self):
-        return self.robotPoint.getHeadingTo(self.points[self.curPoint])
+        return self.robotPoint.getHeadingTo(self.traj_points[self.cur_traj_point])
+
+    # Get steering andgle
+    def getSteeringAngle(self, heading, length, vel, time):
+        return atan2((heading - (self.getHeading()) * length)/ (vel*time))
 
     # Get desired speed
     def getPower(self):
-        oldVel = self.points[self.curPoint - 1].getVelocity()
-        newVel = self.points[self.curPoint].getVelocity()
-        distancePercent = (self.points[self.curPoint].distanceTo(self.points[self.curPoint-1] / self.points[self.curPoint - 1].distanceTo(self.points[self.curPoint])))
+        oldVel = self.traj_points[self.curPoint - 1].getVelocity()
+        newVel = self.traj_points[self.curPoint].getVelocity()
+        distancePercent = (self.traj_points[self.curPoint].getDistanceTo(self.traj_points[self.cur_traj_point-1]) / self.traj_points[self.cur_traj_point - 1].getDistanceTo(self.traj_points[self.cur_traj_point]))
         return ((1 - distancePercent) * oldVel + distancePercent * newVel) / (11.11) # assumes power 1 is 11.11 m/s
 
     # Export the current trajectory to KML format
@@ -154,7 +202,7 @@ class trajectory:
             self.kml.write("\t\t<LookAt>\n")
 
             # Write the first point to the look-at property
-            coord = "\t\t\t<latitude>" + str(self.points[0].getLat()) + "</latitude>\n\t\t\t<longitude>" + str(self.points[0].getLon()) + "</longitude>\n"
+            coord = "\t\t\t<latitude>" + str(self.traj_points[0].getLat()) + "</latitude>\n\t\t\t<longitude>" + str(self.traj_points[0].getLon()) + "</longitude>\n"
             self.kml.write(coord)
 
             # Continue writing setup markup
@@ -171,9 +219,9 @@ class trajectory:
             self.kml.write("\t\t\t\t<coordinates>\n")
 
             # Write all current coordinates here in the file
-            for i in range(0, len(self.points)):
+            for i in range(0, len(self.traj_points)):
                 #This MUST be lon, lat because that's what google earth expects
-                coord = "\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
+                coord = "\t\t\t\t" + str(self.traj_points[i].getLon()) + "," + str(self.traj_points[i].getLat()) + ",20\n"
                 self.kml.write(coord)
 
             # Finish writing to the file
@@ -182,12 +230,12 @@ class trajectory:
             self.kml.write("\t\t</Placemark>\n")
 
             #Place markers to show info about points on path
-            for i in range(0, len(self.points)):
+            for i in range(0, len(self.traj_points)):
                 #Place a marker at the point
                 self.kml.write("\t\t\t\t<Placemark>\n\t\t\t\t\t<Point>\n\t\t\t\t\t\t<coordinates>\n")
 
                 #This MUST be lon, lat because that's what google earth expects
-                coord = "\t\t\t\t\t\t" + str(self.points[i].getLon()) + "," + str(self.points[i].getLat()) + ",20\n"
+                coord = "\t\t\t\t\t\t" + str(self.traj_points[i].getLon()) + "," + str(self.traj_points[i].getLat()) + ",20\n"
                 self.kml.write(coord)
 
                 self.kml.write("\t\t\t\t\t\t</coordinates>\n\t\t\t\t\t</Point>\n\t\t\t\t</Placemark>\n")

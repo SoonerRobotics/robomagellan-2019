@@ -1,7 +1,6 @@
 import serial
 import json
-import queue
-
+from multiprocessing import Queue
 # Serial Device and Passthrough Classes
 # Author: Colton Sandvik
 
@@ -41,7 +40,7 @@ class SerialDevice:
 		try:
 			self.ser.open()
 			self.status = "Opened"
-			self.tx(self.birth_packet)
+			self.tx(bytes(self.birth_packet))
 			return True
 		except Exception as e:
 			raise e
@@ -83,7 +82,7 @@ class SerialDevice:
 	# Receives data and returns if queue is to be skipped
 	def rx(self, remove_from_queue=False):
 		try:
-			l = self.ser.readline()
+			l = self.ser.readline().decode()
 			if not remove_from_queue:
 				self.read_queue.append(l)
 			else:
@@ -164,13 +163,13 @@ class SerialBirther:
 				timeout=1,
 				write_timeout=10
 			)
-			self.ser.write(self.birth_packet)
+			self.ser.write(self.birth_packet.encode("ascii"))
 		except Exception as e:
 			raise e
 			self.ser = None
 
 	def check_response(self):
-		line = self.ser.readline()
+		line = self.ser.readline().decode()
 		if line != "":
 			self.birthed = True
 			payload = json.loads(line)

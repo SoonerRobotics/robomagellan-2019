@@ -22,13 +22,12 @@ class kalman_filter:
 
     # Class constants
     NUM_STATE_VARS = 6
-    TOP_SPEED = 11.111
-    MAX_VOLTAGE = 13
 
     # Initialize the filter
-    def __init__(self, xo, Po, L):
+    def __init__(self, xo, Po, config):
         # Robot Parameters
-        self.L = L
+        self.L = config['Robot']['wheelbase_length']
+        self.TOP_SPEED = config['Robot']['top_speed']
 
         # Initialize the jacobians
         # Fk = Jacobian of the motion function
@@ -94,18 +93,13 @@ class kalman_filter:
         # Process sensor data
         zk[0] = sensor_data['GPS_lat']
         zk[1] = sensor_data['GPS_lon']
-        zk[2] = (sensor_data['encoder_vel'] / 2) + (self.power_fn(sensor_data['motor_power']) / 2)  # consider adding GPS velocity
+        zk[2] = sensor_data['encoder_vel'] # consider adding/using GPS velocity
         zk[3] = sensor_data['accel_x']
         zk[4] = sensor_data['compass']
-        zk[5] = sensor_data['potentiometer']
+        zk[5] = sensor_data['steer_ang']
 
         # Subtract x_estimate from zk and return this vector (vk)
         return (zk - self.x_estimate)
-
-    # Convert motor power readings into a velocity estimate
-    # Note: this might be best to do on the arduino nanos. If it is implemented there, it will be removed here
-    def power_fn(self, motor_power):
-        return (self.TOP_SPEED * motor_power / self.MAX_VOLTAGE)
 
     # First we must predict the state of the robot based on the Ackermann steering model and prior state
     # We can also consider the input signal in this stage, but we currently are not doing so
@@ -150,6 +144,11 @@ class kalman_filter:
         coords = np.array(self.x_estimate[0], self.x_estimate[1])
         return coords
 
+    # Get the most recent state calculated by the filter
+    def getState(self):
+        return self.x_last
+
+    # Process data piped in by another process
     def process_data(self, pipe):
         # Run the process until an exit command is sent
         while True:
@@ -158,17 +157,20 @@ class kalman_filter:
                 # Receive data from the other process
                 sensor_data = pipe.recv()
 
-                # Process the sensor data if it is not an exit command
-                if sensor_data != "exit":
+                # TODO: Add standards - like JSON instead of this sketchy implentation
+                # Exit if told to exit
+                if sensor_data == 'exit':
+                    break
+                # Return state info if a request is lodged
+                elif sensor_data == 'request':
+                    pipe.send(self.getState())
+                # Otherwise update the filter with the new data
+                else:
                     # Run the kalman filter on the sensor data
                     cur_state = self.run(sensor_data)
 
                     # Output the result
                     pipe.send(cur_state)
-
-                # Otherwise exit the process
-                else:
-                    break
 
         # Close the pipe connections
         pipe.close()

@@ -11,8 +11,7 @@ typedef struct DataPacket_u
 {
     //GPS Location Stuff
     bool nearCone;          //true if near cone, false if not
-    float curHeading;       //current robot heading
-    float destHeading;      //target robot heading
+    float steeringAngle     //Steering angle
 
     //OpenCV Stuff
     float opencv_error;     //error between center screen and percieved cone

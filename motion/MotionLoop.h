@@ -68,24 +68,7 @@ void motionLoop()
         /* DRIVETRAIN UPADTE */
         drivetrainLoop(DEFAULT_POWER);
 
-        float diff = curData.curHeading - curData.destHeading;
-
-        float LHT = (diff) < 0 ? diff + 360 : diff; //Degrees required to move to heading turning left
-
-
-        /* SERVO UPDATE */
-        if (LHT < (-LHT + 360) - DEGREES_OFF_ALLOWED)        // Faster to head left
-        {
-            servoLoop(-10);
-        }
-        else if (LHT > (-LHT + 360) - DEGREES_OFF_ALLOWED)   // Faster to head right
-        {
-            servoLoop(10);
-        }
-        else                                        // On target
-        {
-            servoLoop(0);
-        }
+        servoLoop(steeringAngle)
     }
 }
 
