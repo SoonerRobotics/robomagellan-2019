@@ -6,12 +6,20 @@ import numpy as np
 import time
 from lidar.mapper import Mapper
 import multiprocessing
+import logging
+
+LOGGING_LEVEL = logging.INFO
 
 # EKF
 from kalman.kalman_filter import kalman_filter
 
 if __name__ == '__main__':
-    # Open the pipes for the main process
+
+	logging.Formatter.converter = time.gmtime
+	logging.basicConfig(filename="/var/log/magellan.log", level=LOGGING_LEVEL,
+						format='%(asctime)s:%(message)s ')
+
+	# Open the pipes for the main process
 	daddy_pipe, com_pipe = multiprocessing.Pipe()
 	controller = SerialController(daddy_pipe)
     
@@ -23,7 +31,8 @@ if __name__ == '__main__':
 	addresses = ["/dev/ttyUSB1", "/dev/ttyUSB2"]
 	controller.start(addresses)
 
-	lying_camera = Mapper()
+	daddy_pipe, map_pipe = multiprocessing.Pipe()
+	lying_camera = Mapper(daddy_pipe)
 	lying_camera.start()
 
 	# Make an initial state
@@ -45,7 +54,7 @@ if __name__ == '__main__':
 	com_pipe.send(EKF_dict)
 
 	# Set the pipe for the mapper to the main process
-	# MAP_dict = {'event':'mapping_init', 'data': lying_camera.getPipe()}
+	MAP_dict = {'event':'mapping_init', 'data': map_pipe}
 
 	# Run the separate process as long as the first element in the queue is not 'exit'
 	while True:

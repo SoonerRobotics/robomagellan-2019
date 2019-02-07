@@ -10,6 +10,7 @@ import sys
 import serial
 import struct
 import time
+import logging
 
 
 class Lidar:
@@ -19,38 +20,50 @@ class Lidar:
 
     # TODO Figure out the usb port this is on dynamically
 
-    def __init__(self, port = None, baudRate = 128000):
+    def __init__(self, port=None, baudRate=128000):
         # Initialize a list of the 360 cells we want to look at
         self.cells = np.zeros(360)
 
         # Open the serial port at the baud rate specified
         self.serialComms = serial.Serial(port, baudRate, timeout=2)
+        logging.info("Lidar Serial Opened")
 
         # Initialize the data interpolation variables
         self.lastData = -1
         self.lastCell = -1
+        self.scanning = False
 
     # Run this command to start the scanning process
     def startScan(self):
         # The system command is 0xA5. Send this byte first
-        self.serialComms.write(0xA5)
+        logging.info("Starting LiDAR Scan")
+        try:
+            self.serialComms.write(0xA5)
 
-        # Now send the Scan Start command (0x60)
-        self.serialComms.write(0x60)
+            # Now send the Scan Start command (0x60)
+            self.serialComms.write(0x60)
 
-        # Set the device mode to scanning
-        self.scanning = True
+            # Set the device mode to scanning
+            self.scanning = True
+        except Exception as e:
+            logging.info(e)
+            logging.info("Scan failed to start")
 
     # Run this command to stop the scanning process
     def stopScan(self):
         # The system command is 0xA5. Send this byte first
-        self.serialComms.write(0xA5)
+        logging.info("Stopping LiDAR Scan")
+        try:
+            self.serialComms.write(0xA5)
 
-        # Send the stop command (0x65)
-        self.serialComms.write(0x65)
+            # Send the stop command (0x65)
+            self.serialComms.write(0x65)
 
-        # Set the device mode to not scanning
-        self.scanning = False
+            # Set the device mode to not scanning
+            self.scanning = False
+        except Exception as e:
+            logging.info(e)
+            logging.info("Scan failed to stop")
 
     # Read the latest data into an array of distances corresponding to angles
     def readData(self):

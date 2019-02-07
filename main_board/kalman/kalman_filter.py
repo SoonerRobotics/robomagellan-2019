@@ -6,6 +6,7 @@ from multiprocessing import Process, Pipe
 import numpy as np
 from numpy.linalg import inv
 import time
+import logging
 
 # The kalman filter class that will be used to find the robot's location
 
@@ -48,6 +49,7 @@ class kalman_filter:
         # Set up the covariance matrices
         self.R = np.identity(self.NUM_STATE_VARS) * 0.5
         self.Q = np.identity(self.NUM_STATE_VARS) * 0.6
+        logging.info("Kalman Filter Initialized")
 
     # This is the motion function, normally represented by the function f(xk-1, uk, w) in our non-linear case
     # This function is called in the predict stage
