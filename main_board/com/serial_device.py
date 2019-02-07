@@ -7,11 +7,11 @@ from multiprocessing import Queue
 
 class SerialDevice:
 
-	def __init__(self, address, baud):
+	def __init__(self, address, baud, s=None):
 		self.address = address
 		self.baud = baud
 		self.read_queue = list()
-		self.command_queue = queue()
+		self.command_queue = Queue()
 		self.status = "Closed"
 		self.id = 0
 		self.birth_packet = """
@@ -23,15 +23,18 @@ class SerialDevice:
 		}
 		"""
 		try:
-			self.ser = serial.Serial(
-				port=self.address,
-				baudrate=baud,
-				parity=serial.PARITY_NONE,
-				stopbits=serial.STOPBITS_ONE,
-				bytesize=serial.EIGHTBITS,
-				timeout=1,
-				write_timeout=10
-			)
+			if s is not None:
+				self.ser = s
+			else:
+				self.ser = serial.Serial(
+					port=self.address,
+					baudrate=baud,
+					parity=serial.PARITY_NONE,
+					stopbits=serial.STOPBITS_ONE,
+					bytesize=serial.EIGHTBITS,
+					timeout=1,
+					write_timeout=10
+				)
 		except Exception as e:
 			raise e
 			self.ser = None
@@ -82,7 +85,7 @@ class SerialDevice:
 	# Receives data and returns if queue is to be skipped
 	def rx(self, remove_from_queue=False):
 		try:
-			l = self.ser.readline().decode()
+			l = self.ser.readline().decode('ascii')
 			if not remove_from_queue:
 				self.read_queue.append(l)
 			else:
@@ -100,7 +103,7 @@ class SerialDevice:
 		elif isinstance(writtable, str):
 			try:
 				self.ser.write(writtable.encode('ascii'))
-				print("Transmitting to %s: %s" % (self.address, writtable))
+			# print("Transmitting to %s: %s" % (self.address, writtable))
 			except serial.SerialException as e:
 				raise e
 		else:
@@ -169,11 +172,12 @@ class SerialBirther:
 			self.ser = None
 
 	def check_response(self):
-		line = self.ser.readline().decode()
-		if line != "":
-			self.birthed = True
-			payload = json.loads(line)
-			self.new_id = payload['id']
+		if self.ser.inWaiting():
+			line = self.ser.readline().decode('ascii')
+			if line != "":
+				self.birthed = True
+				payload = json.loads(line)
+				self.new_id = payload['id']
 		return self.birthed
 
 	def close(self):
@@ -198,8 +202,8 @@ class SerialBirther:
 
 class MotionSerial(SerialDevice):
 
-	def __init__(self, address, baud):
-		SerialDevice.__init__(self, address, baud)
+	def __init__(self, address, baud, s=None):
+		SerialDevice.__init__(self, address, baud, s)
 		self.id = 1
 
 	def parse_rx(self, msg):
@@ -212,8 +216,8 @@ class MotionSerial(SerialDevice):
 
 class LocalizationSerial(SerialDevice):
 
-	def __init__(self, address, baud):
-		SerialDevice.__init__(self, address, baud)
+	def __init__(self, address, baud, s=None):
+		SerialDevice.__init__(self, address, baud, s)
 		self.id = 2
 
 	def parse_rx(self, msg):

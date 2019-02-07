@@ -19,8 +19,8 @@ import logging
 
 class SerialController:
 
-    def __init__(self, process_rate=50):
-        self.daddy_pipe, self.child_pipe = multiprocessing.Pipe()
+    def __init__(self, daddy_pipe, process_rate=50):
+        self.daddy_pipe = daddy_pipe
         logging.Formatter.converter = time.gmtime
         logging.basicConfig(filename="/var/log/serial_communication.log", level=logging.INFO,
                                  format='%(asctime)s:%(message)s ')
@@ -43,10 +43,9 @@ class SerialController:
             if self.state == 0 or len(self.birth_devices) == 0:
                 for device in self.birth_devices:
                     if device.check_response():
-                        device.close()
                         new_device = self.fetch_device(device, device.new_id)
                         self.birth_devices.remove(device)
-                        self.daddy_pipe.send(new_device)
+                        # self.daddy_pipe.send(new_device)
 
             elif self.state == 1:
                 self.handle_serial(remove_from_queue=True)
@@ -55,9 +54,9 @@ class SerialController:
     # Determine device to create based off id
     def fetch_device(self, d, did):
         if did == 1:
-            new_d = MotionSerial(d.address, d.baud)
+            new_d = MotionSerial(d.address, d.baud, s=d.ser)
         elif did == 2:
-            new_d = LocalizationSerial(d.address, d.baud)
+            new_d = LocalizationSerial(d.address, d.baud, s=d.ser)
         self.devices.append(new_d)
         return new_d
 

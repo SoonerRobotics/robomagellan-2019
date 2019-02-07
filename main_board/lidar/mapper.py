@@ -20,7 +20,7 @@ import io
 
 # Program constants
 UPDATE_PERIOD = 2   # seconds to wait before saving another log to the file
-lidar_port = "COM7" # default port for the scanner module
+lidar_port = "/dev/ttyUSB0"  # default port for the scanner module
 
 # If there's a port passed as a command line argument, update the port info
 if len(sys.argv) > 1:
