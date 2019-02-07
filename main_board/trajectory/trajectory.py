@@ -141,18 +141,18 @@ class trajectory:
             #TODO: Decide how to recalculate trajectory if we are off the course too significantly
             pass
 
-    # Update LIDAR
-    def updateLIDAR(self, lidarpoints):
+    # Check LIDAR for obstacles
+    def checkLIDAR(self, lidarpoints):
         #TODO: If lidarpoints contains a point in front of us, we need to repath
         pass
     
-    # Update Sonar
-    def updateSonar(self, distance):
+    # Check Sonar for close obstacles
+    def checkSonar(self, distance):
         #TODO: Given sonar distance, do we need to repath?
         pass
 
-    # Update Limit Switch
-    def updateLimitSwitch(self, touched):
+    # Check Limit Switch for collisions
+    def checkLimitSwitch(self, touched):
         # If we are touching something and we are supposed to head to a cone, we hit it!
         if touched and self.waypoints[self.curPoint].mode in ["B", "S", "E"]:
             self.curPoint = self.curPoint + 1

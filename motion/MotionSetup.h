@@ -11,7 +11,8 @@ typedef struct DataPacket_u
 {
     //GPS Location Stuff
     bool nearCone;          //true if near cone, false if not
-    float steeringAngle     //Steering angle
+    float power;            //power to the drive motor
+    float steeringAngle;    //steering angle
 
     //OpenCV Stuff
     float opencv_error;     //error between center screen and percieved cone
@@ -65,7 +66,7 @@ void motionSetup()
     { 
         //Send messsages into the void
         sendMotionSerialData(true);
-        delay(100); 
+        delay(500); 
     }
 
     //Send first acknowledgement
@@ -81,7 +82,7 @@ void serialEvent()
 {
     //Declare local variabls
     String rawInput;
-    DyynamicJsonBuffer jsonBuffer(json_str_size_in);
+    DynamicJsonBuffer jsonBuffer(json_str_size_in);
     
     //Initialize Local variables
     rawInput = "";
@@ -104,12 +105,11 @@ void serialEvent()
     JsonObject& root = jsonBuffer.parseObject(rawInput);
 
     //If the parse was successful, add the data to the struct
-    if(jsonObject.success())
+    if(root.success())
     {
         curData.nearCone        = root["data"]["gps_near_cone"].as<bool>();
-        curData.curHeading      = root["data"]["gps_heading"].as<float>();
-        curData.destHeading     = root["data"]["traj_heading"].as<float>();
         curData.power           = root["data"]["traj_power"].as<float>();
+        curData.steeringAngle   = root["data"]["steer_ang"].as<float>();
         curData.opencv_error    = root["data"]["opencv_error"].as<int>();
         curData.canSeeCone      = root["data"]["opencv_cone_visible"].as<bool>();
     }
@@ -125,7 +125,7 @@ void serialEvent()
 void sendMotionSerialData(bool birth_packet)
 {
     //Open a JSON buffer and create a root object for the data transfer
-    DyynamicJsonBuffer jsonBuffer(json_str_size_out);
+    DynamicJsonBuffer jsonBuffer(json_str_size_out);
     JsonObject& root = jsonBuffer.createObject();
 
     //Set the device ID
@@ -138,8 +138,8 @@ void sendMotionSerialData(bool birth_packet)
         root["event"] = "feedback";
 
         //Make the data array
-        JsonArray& dataArray = root.createNestedArray("data");
-        dataArray["steer_ang"] = drivetrain.getAngle();
+        JsonObject& dataArray = root.createNestedObject("data");
+        dataArray["steer_ang"] = drivetrain.getTurnAngle();
     }
     else
     {
@@ -147,12 +147,13 @@ void sendMotionSerialData(bool birth_packet)
         root["event"] = "birth";
 
         //Make the data array
-        JsonArray& dataArray = root.createNestedArray("data");
-        dataArray["steer_ang"] = drivetrain.getAngle();
+        JsonObject& dataArray = root.createNestedObject("data");
+        dataArray["steer_ang"] = drivetrain.getTurnAngle();
     }
 
     //Send data to the main board
     root.printTo(Serial);
+    Serial.write("\n");
 }
 
 /**********************
