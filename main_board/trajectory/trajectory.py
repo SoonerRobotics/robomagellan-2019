@@ -35,7 +35,11 @@ class trajectory:
 
     # There must be a point behind the robot (or on it) for calculations that require a previous trajectory point
     def build_trajectory(self):
-        pass
+        #TODO: This is just rudimentary point-to-point. This needs to use the intelligent curved pathing stuff 
+        for wp in self.waypoints:
+            tp = wp
+            tp.setMode("T")
+            self.traj_points.append(tp)
 
     def update_trajectory(self):
         pass
