@@ -1,6 +1,7 @@
 import serial
 import json
 from multiprocessing import Queue
+import logging
 # Serial Device and Passthrough Classes
 # Author: Colton Sandvik
 
@@ -43,6 +44,7 @@ class SerialDevice:
 		try:
 			self.ser.open()
 			self.status = "Opened"
+			logging.debug("Opened serial port at %s" % self.address)
 			self.tx(bytes(self.birth_packet))
 			return True
 		except Exception as e:
@@ -53,6 +55,7 @@ class SerialDevice:
 		try:
 			self.ser.close()
 			self.status = "Closed"
+			logging.debug("Closed serial port at %s" % self.address)
 			return True
 		except Exception as e:
 			raise e
@@ -86,6 +89,7 @@ class SerialDevice:
 	def rx(self, remove_from_queue=False):
 		try:
 			l = self.ser.readline().decode('ascii')
+			logging.debug("Rx %s: %s" % (self.id, l))
 			if not remove_from_queue:
 				self.read_queue.append(l)
 			else:
@@ -97,17 +101,20 @@ class SerialDevice:
 	def tx(self, writtable):
 		if isinstance(writtable, dict):
 			try:
+				logging.debug("Tx %s: %s" % (self.id, str(writtable)))
 				self.ser.write(json.dumps(writtable) + '\n')
 			except serial.SerialException as e:
 				raise e
 		elif isinstance(writtable, str):
 			try:
+				logging.debug("Tx %s: %s" % (self.id, writtable))
 				self.ser.write(writtable.encode('ascii'))
 			# print("Transmitting to %s: %s" % (self.address, writtable))
 			except serial.SerialException as e:
 				raise e
 		else:
 			try:
+				logging.debug("Tx %s: %s" % (self.id, str(writtable)))
 				self.ser.write(bytes(str(writtable) + '\n', 'ascii'))
 			except serial.SerialException as e:
 				raise e
@@ -174,6 +181,7 @@ class SerialBirther:
 	def check_response(self):
 		if self.ser.inWaiting():
 			line = self.ser.readline().decode('ascii')
+			logging.info("Birth response received for %s: %s" % (self.address, line))
 			if line != "":
 				self.birthed = True
 				payload = json.loads(line)
@@ -211,6 +219,7 @@ class MotionSerial(SerialDevice):
 
 	def execute_commands(self):
 		c = self.command_queue.get()
+		logging.debug("Command received for Motion Serial : %s" % c)
 		event = c['event']
 
 
@@ -225,4 +234,5 @@ class LocalizationSerial(SerialDevice):
 
 	def execute_commands(self):
 		c = self.command_queue.get()
+		logging.debug("Command received for Motion Serial : %s" % c)
 		event = c['event']

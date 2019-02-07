@@ -15,6 +15,7 @@ from picamera import PiCamera
 from opencv.conecv import ConePipeline
 from picamera.array import PiRGBArray
 import time
+import logging
 import io
 
 
@@ -29,12 +30,12 @@ if len(sys.argv) > 1:
 # Set up the scanner on a given port, and at the required baud rate of 128000
 
 # Create a log file name based on the start time of the run
-map_filename = "maps/LiDAR_mapping_log_" + str(datetime.utcnow()).replace(' ', '_').replace(':', '_') + ".csv"
+map_filename = "LiDAR_mapping_log_" + str(datetime.utcnow()).replace(' ', '_').replace(':', '_') + ".csv"
 
 
 # Scan the environment while the robot is running
 class Mapper(Process):
-    def __init__(self):
+    def __init__(self, daddy_pipe):
         Process.__init__(self)
         self.scanner = lidar.Lidar(lidar_port, 128000)
         self.run_start_time = time.time()
@@ -44,18 +45,21 @@ class Mapper(Process):
         self.obstacle = False
         self.scanner.startScan()
         self.camera = PiCamera()
+        logging.info("PiCamera initialized")
         self.camera.resolution = (640, 480)
         self.camera.framerate = 5
         self.camera_enabled = False
         self.stream = PiRGBArray(self.camera, size=(640, 480))
         # This is the proper python syntax and terminology pls don't change
-        self.daddy_pipe, self.child_pipe = Pipe()
+        self.daddy_pipe = daddy_pipe
 
     def run(self):
+        logging.info("Mapper is starting")
         while True:
             # Get the current time
             if self.daddy_pipe.poll():
                 event = self.daddy_pipe.recv()
+                logging.debug(str(event))
                 data = event['data']
                 if event['event'] == 'camera':
                     start = data['start']
@@ -100,7 +104,5 @@ class Mapper(Process):
 
     def stop(self):
         # Stop scanning if the program ends
+        logging.info("Stopping LiDAR Scan")
         self.scanner.stopScan()
-
-    def get_pipe(self):
-        return self.child_pipe

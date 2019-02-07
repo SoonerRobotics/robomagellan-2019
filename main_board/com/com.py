@@ -21,9 +21,6 @@ class SerialController:
 
     def __init__(self, daddy_pipe, process_rate=50):
         self.daddy_pipe = daddy_pipe
-        logging.Formatter.converter = time.gmtime
-        logging.basicConfig(filename="/var/log/serial_communication.log", level=logging.INFO,
-                                 format='%(asctime)s:%(message)s ')
         self.devices = list()
         self.birth_devices = list()
         self.passthrough = list()
@@ -40,9 +37,12 @@ class SerialController:
                 event = self.daddy_pipe.recv()
                 if event['event'] == 'state':
                     self.state = event['data']['state']
+                    logging.info("State manually changed to %s for SerialController" % (self.state))
             if self.state == 0 or len(self.birth_devices) == 0:
                 for device in self.birth_devices:
                     if device.check_response():
+                        logging.info(
+                            "Device %s detected at address %s, creating now..." % (device.address, device.new_id))
                         new_device = self.fetch_device(device, device.new_id)
                         self.birth_devices.remove(device)
                         # self.daddy_pipe.send(new_device)
@@ -55,29 +55,29 @@ class SerialController:
     def fetch_device(self, d, did):
         if did == 1:
             new_d = MotionSerial(d.address, d.baud, s=d.ser)
+            logging.info("Motion Serial created")
         elif did == 2:
             new_d = LocalizationSerial(d.address, d.baud, s=d.ser)
+            logging.info("Localization Serial created")
         self.devices.append(new_d)
         return new_d
 
     # Starts loop
     def start(self, addresses):
         self.stop = False
+        logging.info("Starting Serial Controller")
         for a in addresses:
             self.birth_devices.append(SerialBirther(a, 115200))
+        logging.info("Birth Devices initialized")
         self.process = multiprocessing.Process(target=self.loop_forever)
         self.process.start()
-
-    # Stops loop
-    def stop(self):
-        self.stop = True
 
     # Loops just once in cases of manual looping elsewhere
     def loop(self):
         try:
             self.handle_serial()
         except Exception as e:
-            self.logging.info(e)
+            logging.info(e)
 
     # Receives data for all devices and pass through any setup passthroughs
     def handle_serial(self, remove_from_queue=False):
@@ -87,20 +87,20 @@ class SerialController:
                 msg = d.rx(remove_from_queue=remove_from_queue)
                 d.parse_rx(msg)
             except Exception as e:
-                self.logging.info(e)
+                logging.info(e)
 
         for p in self.passthrough:
             try:
                 p.passthrough()
             except Exception as e:
-                self.logging.info(e)
+                logging.info(e)
 
     # Transmit data for device; can also be done on the device itself
     def tx(self, device, writtable):
         try:
             device.tx(writtable)
         except Exception as e:
-            self.logging.info(e)
+            logging.info(e)
 
     # Adds device to serial controller and returns device
     def add_device(self, d):
@@ -134,10 +134,8 @@ class SerialController:
     def setup_passthrough(self, from_device, to_device, condition=None):
         try:
             p = SerialPassthrough(from_device, to_device, condition)
+            logging.info("Passthrough established from %s to %s" % (from_device.address, to_device.address))
         except Exception as e:
             self.logging.info(e)
         self.passthrough.append(p)
         return p
-
-    def get_pipe(self):
-        return self.child_pipe
