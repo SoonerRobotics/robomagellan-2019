@@ -2,11 +2,7 @@
 
 1. gps-and-imu schematic finished.
 2. kill-switch schmematic finished.
-3. motor-servo schematic finished.
-
-# TODO:
-
-1. make kill-switch-reciever schematic. (will we even have a kill-switch-reciever?)
+3. motor-servo schematic finished. (also acts as kill-switch-receiver)
 
 # NOTES:
 

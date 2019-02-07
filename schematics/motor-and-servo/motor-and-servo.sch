@@ -77,7 +77,6 @@ Wire Wire Line
 	5350 5600 5350 4100
 Wire Wire Line
 	5350 4100 6000 4100
-NoConn ~ 5150 5700
 Wire Wire Line
 	5150 5400 5400 5400
 Wire Wire Line
@@ -105,17 +104,6 @@ F 3 "" H 4650 6100 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	4650 6100 4650 6000
-$Comp
-L roboamgellan:ThreePinCon U3
-U 1 1 5C50FB3E
-P 7850 3550
-F 0 "U3" H 8077 3351 50  0000 L CNN
-F 1 "ThreePinCon" H 8077 3260 50  0000 L CNN
-F 2 "" H 7850 3550 50  0001 C CNN
-F 3 "" H 7850 3550 50  0001 C CNN
-	1    7850 3550
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	7000 3800 7700 3800
 $Comp
@@ -316,4 +304,21 @@ Wire Wire Line
 	2250 2500 1950 2500
 Text GLabel 4000 3700 2    50   Input ~ 0
 MotorBattery
+$Comp
+L robomagellan:three-pin-connector U?
+U 1 1 5C5B9FA2
+P 7850 3550
+F 0 "U?" H 8077 3346 50  0000 L CNN
+F 1 "three-pin-connector" H 8077 3255 50  0000 L CNN
+F 2 "" H 7850 3550 50  0001 C CNN
+F 3 "" H 7850 3550 50  0001 C CNN
+	1    7850 3550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5150 5700 5300 5700
+Wire Wire Line
+	5300 5700 5300 3400
+Wire Wire Line
+	5300 3400 6000 3400
 $EndSCHEMATC

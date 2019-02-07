@@ -18,6 +18,7 @@ unsigned long currentTime;
 
 //Drivetrain timing variables
 unsigned long lastDrivetrainUpdate;
+unsigned long lastSerialUpdate;
 
 //Servo timing variables
 unsigned long servoTime = 0;
@@ -26,6 +27,7 @@ unsigned long lastServoUpdate = 0;
 //Declare system loops
 void drivetrainLoop(float power);
 void servoLoop(float servoAngle);
+void serialLoop();
 
 void motionLoop()
 {
@@ -68,8 +70,11 @@ void motionLoop()
         /* DRIVETRAIN UPADTE */
         drivetrainLoop(DEFAULT_POWER);
 
-        servoLoop(steeringAngle)
+        servoLoop(curData.steeringAngle);
     }
+
+    //Send steering angle feedback data
+    serialLoop();
 }
 
 /**********************
@@ -77,13 +82,6 @@ void motionLoop()
 **********************/
 void drivetrainLoop(float power)
 {
-    if (curData.curHeading == 0 && curData.destHeading == 0)
-    {
-        drivetrain.setPower(0);
-        drivetrain.setTurn(0);
-        return;
-    }
-
     drivetrain.setPower(power);
 }
 
@@ -130,5 +128,15 @@ void servoLoop(float servoAngle)
     }
 }
 
+/**
+ * Serial update loop for steering angle feedback. Runs at a timed rate
+ */
+void serialLoop()
+{
+    if((currentTime - lastSerialUpdate) > (1000 / SERIAL_UPDATE_RATE))
+    {
+        sendMotionSerialData(false);
+    }
+}
 
 #endif
