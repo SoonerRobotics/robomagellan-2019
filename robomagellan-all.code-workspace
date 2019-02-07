@@ -20,6 +20,8 @@
 		"files.associations": {
 			"cmath": "cpp",
 			"cstdlib": "cpp"
-		}
+        },
+		"editor.insertSpaces": false,
+		"editor.detectIndentation": false
 	}
 }
