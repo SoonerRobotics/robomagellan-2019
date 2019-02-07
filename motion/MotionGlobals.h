@@ -1,7 +1,7 @@
 #ifndef MOTION_GLOBALS_H
 #define MOTION_GLOBALS_H
 
-#define "ArduinoJson.h"
+#include "ArduinoJson.h"
 
 //Decision Configuration
 #define DEGREES_OFF_ALLOWED 20
@@ -51,5 +51,8 @@
 #define NUM_JSON_VALUES_OUT JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(2 + 2)    //Number of JSON values in a data packet sent
 #define MOTION_DEVICE_ID    1                                               //Device ID for initial serial packets
 #define STD_BAUD_RATE       115200                                          //Baud rate of all devices
+
+//Serial update
+#define SERIAL_UPDATE_RATE 100  //100 Hz update rate
 
 #endif
