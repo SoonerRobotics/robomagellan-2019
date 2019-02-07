@@ -68,6 +68,8 @@ class SerialController:
 					pass
 
 				# Get most recent mapping data
+				if self.mapping_pipe:
+					pass
 
 				# The decision (https://www.youtube.com/watch?v=2_LUnTQHV4c)
 				# Three possibilities
