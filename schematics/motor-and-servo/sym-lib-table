@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name robomagellan)(type Legacy)(uri C:/Users/james/Desktop/robomagellan-2019/schematics/robomagellan-kicad-library/robomagellan.lib)(options "")(descr ""))
+)

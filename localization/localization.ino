@@ -4,18 +4,17 @@
 #include "LocalizationSetup.h"
 #include <ArduinoJson.h>
 
-const int capacity = JSON_OBJECT_SIZE(7);
+const int capacity = JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(7);
 StaticJsonBuffer<capacity> jb;
 JsonObject& root = jb.createObject();
-
-//Set device ID and default event name
-root["id"] = 2;
-root["event"] = "full_update";
-
-//Create a data array
-JsonArray& dataArray = root.createNestedArray("data");
+JsonObject& dataArray = root.createNestedObject("data");
  
 void setup() {
+
+    //Set device ID and default event name
+    root["id"] = 2;
+    root["event"] = "full_update";
+  
     localizationSetup();
 
     intellectualWait(1000);
@@ -33,6 +32,7 @@ void intellectualWait(unsigned long ms) {
 
 void loop() 
 {
+  
     //TODO: Add more functionality than full update (i.e. add variable update times based on sensor frequency)
     dataArray["gps_lat"] = gps.getLat();
     dataArray["gps_lon"] = gps.getLong();
@@ -41,6 +41,7 @@ void loop()
     dataArray["imu_accel_y"] = imu0.getAccelY();
     dataArray["encoder_dx"] = 0;
     dataArray["encoder_dt"] = 0;
+
 
     root.printTo(Serial);
     Serial.write("\n");

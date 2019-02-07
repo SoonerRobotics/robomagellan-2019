@@ -1,11 +1,14 @@
 #include "IMU.h"
 
 void IMU::begin() {
+  bno.begin(bno.OPERATION_MODE_CONFIG);
+	/*
 	if (!bno.begin(bno.OPERATION_MODE_CONFIG))
 	{
-		/* There was a problem detecting the BNO055 ... check your connections */
+		// There was a problem detecting the BNO055 ... check your connections
 		Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
 	}
+	*/
 	calibrate();
 
 	bno.setMode(bno.OPERATION_MODE_NDOF);
