@@ -98,7 +98,8 @@ class SerialController:
 				# Otherwise do normal operation
 				else:
 					# Get the steering angle and power
-					self.steer_ang = self.traj.getSteeringAngle()
+					# TODO: configure robot length globally
+					self.steer_ang = self.traj.getSteeringAngle(self.state_data[4], 0.333, self.state_data[2])
 					self.power = self.traj.getPower()
 					
 					# Form the motion data packet

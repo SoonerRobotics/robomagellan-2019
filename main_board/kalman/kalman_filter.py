@@ -142,9 +142,8 @@ class kalman_filter:
         self.Pk_last = self.Pk
         self.last_time = cur_time
 
-        # Return the current coordinates according to the filter
-        coords = np.array(self.x_estimate[0], self.x_estimate[1])
-        return coords
+        # Return the current state
+        return self.x_last
 
     # Get the most recent state calculated by the filter
     def getState(self):

@@ -31,7 +31,9 @@ class trajectory:
         self.ACCEPTED_HEADING_DEVIATION = config['trajectory']['goal_heading_thresh']      
 
         # Max Deviation allowed off of paths (in meters)
-        self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']             
+        self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']
+
+		self.MAX_STEER_ANG = config['Robot']['max_steer_ang']          
 
     # There must be a point behind the robot (or on it) for calculations that require a previous trajectory point
     def build_trajectory(self):
@@ -171,8 +173,8 @@ class trajectory:
         return self.robotPoint.getHeadingTo(self.traj_points[self.cur_traj_point])
 
     # Get steering andgle
-    def getSteeringAngle(self, heading, length, vel, time):
-        return atan2((heading - (self.getHeading()) * length)/ (vel*time))
+    def getSteeringAngle(self, heading, length, vel):
+        return min(self.MAX_STEER_ANG, atan2((heading - (self.getHeading()) * length) / (vel)))
 
     # Get desired speed
     def getPower(self):
