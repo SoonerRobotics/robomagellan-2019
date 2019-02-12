@@ -4,6 +4,7 @@ import time
 import multiprocessing
 from multiprocessing import Queue
 import logging
+import json
 
 
 # Main communications class
@@ -19,7 +20,7 @@ import logging
 
 class SerialController:
 
-	def __init__(self, daddy_pipe, process_rate=50):
+	def __init__(self, daddy_pipe, trajectory, process_rate=50):
 		self.daddy_pipe = daddy_pipe
 		logging.Formatter.converter = time.gmtime
 		logging.basicConfig(filename="/var/log/serial_communication.log", level=logging.INFO,
@@ -29,9 +30,12 @@ class SerialController:
 		self.passthrough = list()
 		self.process_rate = process_rate
 		self.process = None
+		self.sensor_data = dict()
 		self.stop = False
 		self.state = 0
+		self.traj = trajectory
 		self.buffer = Queue()
+
 
 	# Main process for looping automatically, runs at process rate defined in controller instantiation, default is 50ms
 	def loop_forever(self):
@@ -62,21 +66,46 @@ class SerialController:
 				self.handle_serial(remove_from_queue=True)
 
 				# TODO: Parse data
+				new_sensor_data = False
 
 				# Only send data to the EKF if there is a pipe set up for it
 				if self.ekf_pipe:
-					pass
+					# Check for the most recent update on this end of the pipe
+					while self.ekf_pipe.poll():
+						self.state_data = self.ekf_pipe.recv()
+
+					# If there's new measurement data, send in that data
+					if new_sensor_data:
+						self.ekf_pipe.send(self.sensor_data)
 
 				# Get most recent mapping data
 				if self.mapping_pipe:
-					pass
+					self.map_data = self.mapping_pipe.recv()
 
 				# The decision (https://www.youtube.com/watch?v=2_LUnTQHV4c)
 				# Three possibilities
 				# 1. Everything is normal, just read the trajectory data to make the robot move
 				# 2. The robot is near a cone, so turn on the camera and make it hit the cone
 				# 3. The robot is going to hit an obstacle, so don't let that happen
-
+				
+				# Obstacle avoid
+				# TODO: Actually implement obstacle avoidance (using json?)
+				if self.map_data[0] < 1000:
+					pass
+				# Check to see if the robot is near a cone
+				elif self.traj.getDistance(self.state_data[0], self.state_data[1], self.traj.robotPoint):
+					pass
+				# Otherwise do normal operation
+				else:
+					# Get the steering angle and power
+					self.steer_ang = self.traj.getSteeringAngle()
+					self.power = self.traj.getPower()
+					
+					# Form the motion data packet
+					motion_pkt = self.make_motion_packet(False, self.steer_ang, self.power, 0, 0)
+					
+					# Send commands to motion device
+					self.tx(self.get_device(1), motion_pkt)
 
 				time.sleep(self.process_rate / 1000)
 
@@ -169,3 +198,23 @@ class SerialController:
 		self.passthrough.append(p)
 		return p
 
+	# Make a packet to send to the motion board
+	def make_motion_packet(self, near_cone, steer_ang, power, opencv_err, cone_vis):
+		# Populate the data packet
+		data = dict()
+		data["gps_near_cone"] = near_cone
+		data["steer_ang"] = steer_ang
+		data["traj_power"] = power
+		data["opencv_error"] = opencv_err
+		data["opencv_cone_visible"] = cone_vis
+
+		# Construct the packet
+		packet = dict()
+		packet["id"] = 2
+		packet["event"] = "full_update"
+		packet["data"] = data
+
+		# Get the json string, remove newlines
+		json_str = json.dumps(packet)
+
+		return json_str

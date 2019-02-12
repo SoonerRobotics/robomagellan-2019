@@ -1,5 +1,6 @@
 from com.serial_device import *
 from com.com import SerialController
+from trajectory.trajectory import trajectory
 
 import configparser
 import numpy as np
@@ -19,13 +20,18 @@ if __name__ == '__main__':
 	logging.basicConfig(filename="/var/log/magellan.log", level=LOGGING_LEVEL,
 						format='%(asctime)s:%(message)s ')
 
-	# Open the pipes for the main process
-	daddy_pipe, com_pipe = multiprocessing.Pipe()
-	controller = SerialController(daddy_pipe)
-    
-    # Get the robot configuration data
+	# Get the robot configuration data
 	config = configparser.ConfigParser()
 	config.read('config.ini')
+
+	# Build the trajectory
+	traj = trajectory(config)
+	traj.loadWaypoints('./waypoints_quad.txt', True)
+	traj.exportToKML('./most_recent_course.kml')
+
+	# Open the pipes for the main process
+	daddy_pipe, com_pipe = multiprocessing.Pipe()
+	controller = SerialController(daddy_pipe, traj)
 
 	# Addresses to check, will probably automate this list at some point
 	addresses = ["/dev/ttyUSB1", "/dev/ttyUSB2"]

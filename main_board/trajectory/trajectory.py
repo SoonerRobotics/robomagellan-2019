@@ -144,6 +144,7 @@ class trajectory:
         if self.distanceFromPointToLine(last_point.getLat(), last_point.getLon(), cur_point.getLat(), cur_point.getLon(), lat, lon) < self.PATH_DEVIATION_ALLOWED:
             #TODO: Decide how to recalculate trajectory if we are off the course too significantly
             pass
+		
 
     # Check LIDAR for obstacles
     def checkLIDAR(self, lidarpoints):
