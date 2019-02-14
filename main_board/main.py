@@ -1,13 +1,14 @@
 from com.serial_device import *
 from com.com import SerialController
-from trajectory import Trajectory
-
+import trajectory.trajectory as trajectory
+import trajectory.point as point
+import configparser
 import numpy as np
 import time
 from lidar.mapper import Mapper
 import multiprocessing
 import logging
-from config import Config
+from config import config
 
 LOGGING_LEVEL = logging.INFO
 
@@ -21,9 +22,10 @@ if __name__ == '__main__':
 						format='%(asctime)s:%(message)s ')
 
 	# Build the trajectory
-	traj = Trajectory()
-	traj.loadWaypoints('./waypoints_quad.txt', True)
-	traj.exportToKML('./most_recent_course.kml')
+	traj = trajectory.Trajectory()
+	traj.loadWaypoints('trajectory/waypoints_quad.txt', True)
+	traj.build_trajectory()
+	traj.exportToKML('trajectory/most_recent_course.kml')
 
 	# Open the pipes for the main process
 	daddy_pipe, com_pipe = multiprocessing.Pipe()
@@ -38,7 +40,7 @@ if __name__ == '__main__':
 	lying_camera.start()
 
 	# Make an initial state
-	cfg = Config()
+	cfg = config.Config()
 	xo = np.array(cfg['EKF']['start_lat'], cfg['EKF']['start_lon'], 0, 0, 0, 0)
 	Po = np.eye(6) * 0.2    # TODO: choose an actual initial uncertainty
 

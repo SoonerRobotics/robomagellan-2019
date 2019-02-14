@@ -7,7 +7,7 @@ import numpy as np
 from numpy.linalg import inv
 import time
 import logging
-from config import Config
+from config import config
 
 # The kalman filter class that will be used to find the robot's location
 
@@ -28,7 +28,7 @@ class kalman_filter:
 	# Initialize the filter
 	def __init__(self, xo, Po):
 		# Get config data
-		cfg = Config()
+		cfg = config.Config()
 
 		# Robot Parameters
 		self.L = cfg['Robot']['wheelbase_length']
