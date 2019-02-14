@@ -7,6 +7,7 @@ import numpy as np
 from numpy.linalg import inv
 import time
 import logging
+from config import Config
 
 # The kalman filter class that will be used to find the robot's location
 
@@ -25,10 +26,13 @@ class kalman_filter:
 	NUM_STATE_VARS = 6
 
 	# Initialize the filter
-	def __init__(self, xo, Po, config):
+	def __init__(self, xo, Po):
+		# Get config data
+		cfg = Config()
+
 		# Robot Parameters
-		self.L = config['Robot']['wheelbase_length']
-		self.TOP_SPEED = config['Robot']['top_speed']
+		self.L = cfg['Robot']['wheelbase_length']
+		self.TOP_SPEED = cfg['Robot']['top_speed']
 
 		# Initialize the jacobians
 		# Fk = Jacobian of the motion function

@@ -1,13 +1,13 @@
 from com.serial_device import *
 from com.com import SerialController
-from trajectory.trajectory import trajectory
+from trajectory import Trajectory
 
-import configparser
 import numpy as np
 import time
 from lidar.mapper import Mapper
 import multiprocessing
 import logging
+from config import Config
 
 LOGGING_LEVEL = logging.INFO
 
@@ -20,12 +20,8 @@ if __name__ == '__main__':
 	logging.basicConfig(filename="/var/log/magellan.log", level=LOGGING_LEVEL,
 						format='%(asctime)s:%(message)s ')
 
-	# Get the robot configuration data
-	config = configparser.ConfigParser()
-	config.read('config.ini')
-
 	# Build the trajectory
-	traj = trajectory(config)
+	traj = Trajectory()
 	traj.loadWaypoints('./waypoints_quad.txt', True)
 	traj.exportToKML('./most_recent_course.kml')
 
@@ -42,11 +38,12 @@ if __name__ == '__main__':
 	lying_camera.start()
 
 	# Make an initial state
-	xo = np.array(config['EKF']['start_lat'], config['EKF']['start_lon'], 0, 0, 0, 0)
+	cfg = Config()
+	xo = np.array(cfg['EKF']['start_lat'], cfg['EKF']['start_lon'], 0, 0, 0, 0)
 	Po = np.eye(6) * 0.2    # TODO: choose an actual initial uncertainty
 
 	# Set up the kalman filter
-	EKF = kalman_filter(xo, Po, config)
+	EKF = kalman_filter(xo, Po)
 
 	# Set up EKF piping system
 	main_pipe, ekf_pipe = multiprocessing.Pipe(True)
@@ -64,8 +61,8 @@ if __name__ == '__main__':
 
 	# Run the separate process as long as the first element in the queue is not 'exit'
 	while True:
-	    # Send data to the EKF process
-	    # NOTE: data should be a dict of sensor data
-	    pass
+		# Send data to the EKF process
+		# NOTE: data should be a dict of sensor data
+		pass
 
 	proc.join()

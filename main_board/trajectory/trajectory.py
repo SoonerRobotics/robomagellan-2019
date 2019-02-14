@@ -2,18 +2,19 @@
 
 # Import the point class
 import copy
-from trajectory.trajectory import point
+from config import Config
+from trajectory import Point
 from math import sin, cos, sqrt, atan2, radians
 import numpy as np
 from numpy.linalg import norm
 import os
 
-class trajectory:
+class Trajectory:
 
 	# Initialize the trajectory builder
-	def __init__(self, config):
+	def __init__(self):
 		# TODO: make -1 an invalid point in point()
-		self.robotPoint = point(0, 0, -1)
+		self.robotPoint = Point(0, 0, -1)
 		self.active_wpt = 0
 		self.cur_traj_point = 0 
 		self.traj_points = list()
@@ -22,18 +23,19 @@ class trajectory:
 		###################
 		# Add config vars #
 		###################
+		cfg = Config()
 
 		# Accepted closeness to point to accept as "reached" (in meters)
 		# This only applies to non-cone points. Cone points must be touched
-		self.ACCEPTED_DISTANCE_WITHIN_GOAL = config['trajectory']['goal_dist_thresh']
+		self.ACCEPTED_DISTANCE_WITHIN_GOAL = cfg['trajectory']['goal_dist_thresh']
 
 		# Max Deviation allowed off of heading while heading to goal (in degrees)
-		self.ACCEPTED_HEADING_DEVIATION = config['trajectory']['goal_heading_thresh']      
+		self.ACCEPTED_HEADING_DEVIATION = cfg['trajectory']['goal_heading_thresh']      
 
 		# Max Deviation allowed off of paths (in meters)
-		self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']
+		self.PATH_DEVIATION_ALLOWED = cfg['trajectory']['max_deviation']
 
-		self.MAX_STEER_ANG = config['Robot']['max_steer_ang']          
+		self.MAX_STEER_ANG = cfg['Robot']['max_steer_ang']          
 
 	# There must be a point behind the robot (or on it) for calculations that require a previous trajectory point
 	def build_trajectory(self):
@@ -78,7 +80,7 @@ class trajectory:
 						mode = float(data[2])
 
 					# Add a waypoint to the trajectory
-					newPoint = point(lat, lon, mode)
+					newPoint = Point(lat, lon, mode)
 					self.waypoints.append(newPoint)
 
 			# Close the file

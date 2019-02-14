@@ -5,6 +5,7 @@ import multiprocessing
 from multiprocessing import Queue
 import logging
 import json
+from trajectory import Trajectory
 
 
 # Main communications class
