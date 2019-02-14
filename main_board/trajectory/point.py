@@ -2,7 +2,7 @@
 
 from math import cos, sin, radians, degrees, sqrt, atan2
 
-class point:
+class Point:
 
     # Initialize the point as a location on the map
     def __init__(self, lat, lon, mode):
@@ -31,7 +31,7 @@ class point:
         initial_bearing = degrees(initial_bearing)
         compass_bearing = (initial_bearing + 360) % 360
         return compass_bearing
-    
+
     def getDistanceTo(self, otherPoint):
         # approximate radius of earth in km
         R = 6373.0
@@ -57,7 +57,7 @@ class point:
     # Get latitude
     def getLat(self):
         return self.lat
-    
+
     # Get longitude
     def getLon(self):
         return self.lon
@@ -74,16 +74,16 @@ class point:
     # Get the velocity at this point
     def getVelocity(self):
         return self.velocity
-    
+
     # Get the status (enroute or not?)
     def getStatus(self):
         return self.velocity
 
-    
+
     #################
     #    Setters    #
     #################
-    
+
     # Set a new latitude
     def setLat(self, newLat):
         self.lat = newLat

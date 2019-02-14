@@ -1,7 +1,7 @@
 from com.serial_device import *
 from com.com import SerialController
-from trajectory.trajectory import trajectory
-
+import trajectory.trajectory as trajectory
+import trajectory.point as point
 import configparser
 import numpy as np
 import time
@@ -25,9 +25,10 @@ if __name__ == '__main__':
 	config.read('config.ini')
 
 	# Build the trajectory
-	traj = trajectory(config)
-	traj.loadWaypoints('./waypoints_quad.txt', True)
-	traj.exportToKML('./most_recent_course.kml')
+	traj = trajectory.Trajectory(config)
+	traj.loadWaypoints('trajectory/waypoints_quad.txt', True)
+	traj.build_trajectory()
+	traj.exportToKML('trajectory/most_recent_course.kml')
 
 	# Open the pipes for the main process
 	daddy_pipe, com_pipe = multiprocessing.Pipe()

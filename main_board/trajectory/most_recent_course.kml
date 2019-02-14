@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+	<Document>
+	<Style id="SCR">
+		<LineStyle>
+			<color>ff0000ff</color>
+			<width>1</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>ff0000ff</color>
+		</PolyStyle>
+	</Style>
+		<Placemark>
+			<name>Robot Path</name>
+			<visibility>1</visibility>
+		<LookAt>
+			<latitude>35.2104695</latitude>
+			<longitude>-97.44208333333333</longitude>
+			<altitude>0</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<range>200</range>
+		</LookAt>
+		<styleUrl>#SCR</styleUrl>
+			<LineString>
+				<extrude>1</extrude>
+				<tessellate>1</tessellate>
+				<altitudeMode> relativeToGround </altitudeMode>
+				<coordinates>
+				-97.44208333333333,35.2104695,20
+				-97.442078,35.210597,20
+				-97.441577,35.210592,20
+				-97.441575,35.210471,20
+				</coordinates>
+			</LineString>
+		</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-97.44208333333333,35.2104695,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-97.442078,35.210597,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-97.441577,35.210592,20
+						</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<Point>
+						<coordinates>
+						-97.441575,35.210471,20
+						</coordinates>
+					</Point>
+				</Placemark>
+	</Document>
+</kml>

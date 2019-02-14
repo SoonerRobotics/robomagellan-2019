@@ -2,20 +2,20 @@
 
 # Import the point class
 import copy
-from trajectory.trajectory import point
+import trajectory.point as point
 from math import sin, cos, sqrt, atan2, radians
 import numpy as np
 from numpy.linalg import norm
 import os
 
-class trajectory:
+class Trajectory:
 
 	# Initialize the trajectory builder
 	def __init__(self, config):
 		# TODO: make -1 an invalid point in point()
-		self.robotPoint = point(0, 0, -1)
+		self.robotPoint = point.Point(0, 0, -1)
 		self.active_wpt = 0
-		self.cur_traj_point = 0 
+		self.cur_traj_point = 0
 		self.traj_points = list()
 		self.waypoints = list()
 
@@ -25,19 +25,19 @@ class trajectory:
 
 		# Accepted closeness to point to accept as "reached" (in meters)
 		# This only applies to non-cone points. Cone points must be touched
-		self.ACCEPTED_DISTANCE_WITHIN_GOAL = config['trajectory']['goal_dist_thresh']
+		self.ACCEPTED_DISTANCE_WITHIN_GOAL = config['Trajectory']['goal_dist_thresh']
 
 		# Max Deviation allowed off of heading while heading to goal (in degrees)
-		self.ACCEPTED_HEADING_DEVIATION = config['trajectory']['goal_heading_thresh']      
+		self.ACCEPTED_HEADING_DEVIATION = config['Trajectory']['goal_heading_thresh']
 
 		# Max Deviation allowed off of paths (in meters)
-		self.PATH_DEVIATION_ALLOWED = config['trajectory']['max_deviation']
+		self.PATH_DEVIATION_ALLOWED = config['Trajectory']['max_deviation']
 
-		self.MAX_STEER_ANG = config['Robot']['max_steer_ang']          
+		self.MAX_STEER_ANG = config['Robot']['max_steer_ang']
 
 	# There must be a point behind the robot (or on it) for calculations that require a previous trajectory point
 	def build_trajectory(self):
-		#TODO: This is just rudimentary point-to-point. This needs to use the intelligent curved pathing stuff 
+		#TODO: This is just rudimentary point-to-point. This needs to use the intelligent curved pathing stuff
 		for wp in self.waypoints:
 			tp = wp
 			tp.setMode("T")
@@ -47,7 +47,7 @@ class trajectory:
 		pass
 
 	# Load the base waypoints from a file
-	def loadWaypoints(self, filename, convert):        
+	def loadWaypoints(self, filename, convert):
 		# Open the file
 		self.file = open(filename, 'r')
 
@@ -65,7 +65,7 @@ class trajectory:
 				else:
 					# Get the position data for the path
 					data = line.split(' ')
-					
+
 					# Convert the position data to decimal coords if needed
 					if convert == True:
 						lat = self.convertCoordinate(data[0], float(data[1]), float(data[2]))
@@ -78,7 +78,7 @@ class trajectory:
 						mode = float(data[2])
 
 					# Add a waypoint to the trajectory
-					newPoint = point(lat, lon, mode)
+					newPoint = point.Point(lat, lon, mode)
 					self.waypoints.append(newPoint)
 
 			# Close the file
@@ -134,7 +134,7 @@ class trajectory:
 		self.robotPoint.setHeading(heading)
 
 		if (self.robotPoint.getDistanceTo(self.traj_points[self.cur_traj_point]) < self.ACCEPTED_DISTANCE_WITHIN_GOAL and
-				self.traj_points[self.cur_traj_point].mode not in ["B", "S", "E"] and 
+				self.traj_points[self.cur_traj_point].mode not in ["B", "S", "E"] and
 				abs(self.robotPoint.getHeadingTo(self.traj_points[self.cur_traj_point]) - heading) < self.ACCEPTED_HEADING_DEVIATION):
 			#all conditions are met to accept a goal
 			self.curPoint = self.curPoint + 1
@@ -146,13 +146,13 @@ class trajectory:
 		if self.distanceFromPointToLine(last_point.getLat(), last_point.getLon(), cur_point.getLat(), cur_point.getLon(), lat, lon) < self.PATH_DEVIATION_ALLOWED:
 			#TODO: Decide how to recalculate trajectory if we are off the course too significantly
 			pass
-		
+
 
 	# Check LIDAR for obstacles
 	def checkLIDAR(self, lidarpoints):
 		#TODO: If lidarpoints contains a point in front of us, we need to repath
 		pass
-	
+
 	# Check Sonar for close obstacles
 	def checkSonar(self, distance):
 		#TODO: Given sonar distance, do we need to repath?
