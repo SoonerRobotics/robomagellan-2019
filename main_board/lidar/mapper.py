@@ -23,12 +23,6 @@ import io
 UPDATE_PERIOD = 2   # seconds to wait before saving another log to the file
 lidar_port = "/dev/ttyUSB0"  # default port for the scanner module
 
-# If there's a port passed as a command line argument, update the port info
-if len(sys.argv) > 1:
-    lidar_port = sys.argv[1]
-
-# Set up the scanner on a given port, and at the required baud rate of 128000
-
 # Create a log file name based on the start time of the run
 map_filename = "LiDAR_mapping_log_" + str(datetime.utcnow()).replace(' ', '_').replace(':', '_') + ".csv"
 
@@ -37,7 +31,10 @@ map_filename = "LiDAR_mapping_log_" + str(datetime.utcnow()).replace(' ', '_').r
 class Mapper(Process):
     def __init__(self, daddy_pipe):
         Process.__init__(self)
+
+		# Set up the scanner on a given port, and at the required baud rate of 128000
         self.scanner = lidar.Lidar(lidar_port, 128000)
+		
         self.run_start_time = time.time()
         self.last_time = self.run_start_time
         self.cur_time = self.run_start_time

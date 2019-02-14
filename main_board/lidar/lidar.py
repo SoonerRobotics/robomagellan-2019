@@ -78,12 +78,12 @@ class Lidar:
             
             # Print control data to debug output
             if self.DEBUG:
-                print(ctrl_data)
+                logging.debug(ctrl_data)
 
             # If there is an error, give up
             if len(ctrl_data) != 10:
                 if self.DEBUG:
-                    print("Read error")
+                    logging.debug("Read error")
                 return
 
             #### Get important constants ###
