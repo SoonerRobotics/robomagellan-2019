@@ -135,6 +135,7 @@ void serialLoop()
 {
     if((currentTime - lastSerialUpdate) > (1000 / SERIAL_UPDATE_RATE))
     {
+		lastSerialUpdate = currentTime;
         sendMotionSerialData(false);
     }
 }

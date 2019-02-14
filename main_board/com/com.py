@@ -90,10 +90,10 @@ class SerialController:
 				
 				# Obstacle avoid
 				# TODO: Actually implement obstacle avoidance (using json?)
-				if self.map_data[0] < 1000:
+				if self.map_data[0] < -1000:
 					pass
 				# Check to see if the robot is near a cone
-				elif self.traj.getDistance(self.state_data[0], self.state_data[1], self.traj.robotPoint):
+				elif False: #self.traj.getDistance(self.state_data[0], self.state_data[1], self.traj.robotPoint):
 					pass
 				# Otherwise do normal operation
 				else:
