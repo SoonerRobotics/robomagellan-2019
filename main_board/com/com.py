@@ -5,7 +5,8 @@ import multiprocessing
 from multiprocessing import Queue
 import logging
 import json
-from trajectory import Trajectory
+import trajectory.trajectory as trajectory
+from config import config
 
 
 # Main communications class
@@ -36,6 +37,7 @@ class SerialController:
 		self.state = 0
 		self.traj = trajectory
 		self.buffer = Queue()
+		self.cfg = config.Config()
 
 
 	# Main process for looping automatically, runs at process rate defined in controller instantiation, default is 50ms
