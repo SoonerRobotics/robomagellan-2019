@@ -8,9 +8,8 @@ import time
 from lidar.mapper import Mapper
 import multiprocessing
 import logging
-from config import config
 
-LOGGING_LEVEL = logging.INFO
+LOGGING_LEVEL = logging.DEBUG
 
 # EKF
 from kalman.kalman_filter import kalman_filter
@@ -20,6 +19,10 @@ if __name__ == '__main__':
 	logging.Formatter.converter = time.gmtime
 	logging.basicConfig(filename="/var/log/magellan.log", level=LOGGING_LEVEL,
 						format='%(asctime)s:%(message)s ')
+
+	# Get the robot configuration data
+	config = configparser.ConfigParser()
+	config.read('config.ini')
 
 	# Build the trajectory
 	traj = trajectory.Trajectory()
@@ -40,8 +43,7 @@ if __name__ == '__main__':
 	lying_camera.start()
 
 	# Make an initial state
-	cfg = config.Config()
-	xo = np.array(cfg['EKF']['start_lat'], cfg['EKF']['start_lon'], 0, 0, 0, 0)
+	xo = np.array([config['EKF']['start_lat'], config['EKF']['start_lon'], 0, 0, 0, 0])
 	Po = np.eye(6) * 0.2    # TODO: choose an actual initial uncertainty
 
 	# Set up the kalman filter
@@ -63,8 +65,8 @@ if __name__ == '__main__':
 
 	# Run the separate process as long as the first element in the queue is not 'exit'
 	while True:
-		# Send data to the EKF process
-		# NOTE: data should be a dict of sensor data
-		pass
+	    # Send data to the EKF process
+	    # NOTE: data should be a dict of sensor data
+	    pass
 
 	proc.join()

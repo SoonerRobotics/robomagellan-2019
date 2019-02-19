@@ -27,13 +27,13 @@ class Trajectory:
 
 		# Accepted closeness to point to accept as "reached" (in meters)
 		# This only applies to non-cone points. Cone points must be touched
-		self.ACCEPTED_DISTANCE_WITHIN_GOAL = cfg['trajectory']['goal_dist_thresh']
+		self.ACCEPTED_DISTANCE_WITHIN_GOAL = cfg['Trajectory']['goal_dist_thresh']
 
 		# Max Deviation allowed off of heading while heading to goal (in degrees)
-		self.ACCEPTED_HEADING_DEVIATION = cfg['trajectory']['goal_heading_thresh']      
+		self.ACCEPTED_HEADING_DEVIATION = cfg['Trajectory']['goal_heading_thresh']      
 
 		# Max Deviation allowed off of paths (in meters)
-		self.PATH_DEVIATION_ALLOWED = cfg['trajectory']['max_deviation']
+		self.PATH_DEVIATION_ALLOWED = cfg['Trajectory']['max_deviation']
 
 		self.MAX_STEER_ANG = cfg['Robot']['max_steer_ang']          
 

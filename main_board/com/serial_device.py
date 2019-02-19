@@ -88,14 +88,15 @@ class SerialDevice:
 	# Receives data and returns if queue is to be skipped
 	def rx(self, remove_from_queue=False):
 		try:
-			l = self.ser.readline().decode('ascii')
+			l = self.ser.readline()
+			l = l.decode('ascii')
 			logging.debug("Rx %s: %s" % (self.id, l))
 			if not remove_from_queue:
 				self.read_queue.append(l)
 			else:
 				return l
 		except serial.SerialException as e:
-			raise e
+			logging.info(e)
 
 	# Transmits data down device pipeline can take any object, no conversions necessary
 	def tx(self, writtable):
@@ -104,14 +105,14 @@ class SerialDevice:
 				logging.debug("Tx %s: %s" % (self.id, str(writtable)))
 				self.ser.write(json.dumps(writtable) + '\n')
 			except serial.SerialException as e:
-				raise e
+				logging.info(e)
 		elif isinstance(writtable, str):
 			try:
 				logging.debug("Tx %s: %s" % (self.id, writtable))
 				self.ser.write(writtable.encode('ascii'))
 			# print("Transmitting to %s: %s" % (self.address, writtable))
 			except serial.SerialException as e:
-				raise e
+				logging.info(e)
 		else:
 			try:
 				logging.debug("Tx %s: %s" % (self.id, str(writtable)))
@@ -180,7 +181,7 @@ class SerialBirther:
 
 	def check_response(self):
 		if self.ser.inWaiting():
-			line = self.ser.readline().decode('ascii')
+			line = self.ser.readline().decode("ascii")
 			logging.info("Birth response received for %s: %s" % (self.address, line))
 			if line != "":
 				self.birthed = True
