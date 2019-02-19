@@ -97,6 +97,7 @@ class SerialDevice:
 				return l
 		except serial.SerialException as e:
 			logging.info(e)
+			return None
 
 	# Transmits data down device pipeline can take any object, no conversions necessary
 	def tx(self, writtable):

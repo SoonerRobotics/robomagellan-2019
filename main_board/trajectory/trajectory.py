@@ -9,6 +9,7 @@ from numpy.linalg import norm
 import os
 from config import config
 
+#TODO: it is assumed that the 0th traj point is the start point. THis code won't work if there is only one traj point
 class Trajectory:
 
 	# Initialize the trajectory builder
@@ -176,14 +177,15 @@ class Trajectory:
 
 	# Get steering andgle
 	def getSteeringAngle(self, heading, length, vel):
-		return min(self.MAX_STEER_ANG, atan2((heading - (self.getHeading()) * length) / (vel)))
+		# TODO: this is another hack. Do actual divide by 0 check
+		return min(self.MAX_STEER_ANG, atan2((heading - (self.getHeading()) * length) / (abs(vel) + 1)))
 
 	# Get desired speed
 	def getPower(self):
 		oldVel = self.traj_points[self.curPoint - 1].getVelocity()
 		newVel = self.traj_points[self.curPoint].getVelocity()
 		distancePercent = (self.traj_points[self.curPoint].getDistanceTo(self.traj_points[self.cur_traj_point-1]) / self.traj_points[self.cur_traj_point - 1].getDistanceTo(self.traj_points[self.cur_traj_point]))
-		return ((1 - distancePercent) * oldVel + distancePercent * newVel) / (11.11) # assumes power 1 is 11.11 m/s
+		return ((1 - distancePercent) * oldVel + distancePercent * newVel) / (11.11) # TODO: use config. Assumes power 1 is 11.11 m/s
 
 	# Export the current trajectory to KML format
 	def exportToKML(self, kml):

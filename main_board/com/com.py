@@ -38,6 +38,11 @@ class SerialController:
 		self.traj = trajectory
 		self.buffer = Queue()
 		self.cfg = config.Config()
+		self.WHEELBASE_LENGTH = self.cfg['Robot']['wheelbase_length']
+		self.new_motion_data = False
+		self.new_localization_data = False
+		self.power = 0
+		self.steer_ang = 0
 
 
 	# Main process for looping automatically, runs at process rate defined in controller instantiation, default is 50ms
@@ -66,13 +71,40 @@ class SerialController:
 			# Regular operations
 			elif self.state == 1:
 				# Read serial data
-				self.handle_serial(remove_from_queue=True)
+				# self.handle_serial(remove_from_queue=True)
+				
+				# Read serial data from localization
+				msg = self.get_device(2).rx(True)
+				if msg is not None:
+					localization_data = json.loads(msg)
 
-				# TODO: Parse data
+					# Update the sensor data dict
+					self.sensor_data['GPS_lat'] = localization_data['gps_lat']
+					self.sensor_data['GPS_lon'] = localization_data['gps_lon']
+					self.sensor_data['compass'] = localization_data['imu_heading']
+					self.sensor_data['accel_x'] = localization_data['imu_accel_x']
+					# TODO: implement on the localization device and prevent divide by 0
+					self.sensor_data['encoder_vel'] = 0 #localization_data['encoder_dx'] / localization_data['encoder_dt']
+					self.new_localization_data = True
+				
+				# Read data from the motion board
+				msg = self.get_device(1).rx(True)
+				if msg is not None:
+					motion_data = json.loads(msg)
+
+					# Update sensor dict
+					self.sensor_data['steer_ang'] = motion_data['steer_ang']
+					self.new_motion_data = True
+
+				# Decide if the EKF can be updated
 				new_sensor_data = False
+				if self.new_localization_data and self.new_motion_data:
+					new_sensor_data = True
+					self.new_localization_data = False
+					self.new_motion_data = False
 
 				# Only send data to the EKF if there is a pipe set up for it
-				if self.ekf_pipe:
+				if self.ekf_pipe and new_sensor_data:
 					# Check for the most recent update on this end of the pipe
 					while self.ekf_pipe.poll():
 						self.state_data = self.ekf_pipe.recv()
@@ -100,16 +132,22 @@ class SerialController:
 					pass
 				# Otherwise do normal operation
 				else:
-					# Get the steering angle and power
-					# TODO: configure robot length globally
-					self.steer_ang = self.traj.getSteeringAngle(self.state_data[4], 0.333, self.state_data[2])
-					self.power = self.traj.getPower()
-					
-					# Form the motion data packet
-					motion_pkt = self.make_motion_packet(False, self.steer_ang, self.power, 0, 0)
-					
-					# Send commands to motion device
-					self.tx(self.get_device(1), motion_pkt)
+					if new_sensor_data:
+						# Get the steering angle and power
+						# self.steer_ang = self.traj.getSteeringAngle(self.state_data[4], self.WHEELBASE_LENGTH, self.state_data[2])
+						# TODO: this is a hack, because velocity is not being measured. Eventually fix this by making an encoder.
+						# TODO: add this back
+						#self.steer_ang = self.traj.getSteeringAngle(self.sensor_data['compass'], self.WHEELBASE_LENGTH, self.power * self.cfg['Robot']['top_speed'])
+						#self.power = self.traj.getPower()
+
+						self.steer_ang = 10
+						self.power = 0.3
+
+						# Form the motion data packet
+						motion_pkt = self.make_motion_packet(False, self.steer_ang, self.power, 0, 0)
+
+						# Send commands to motion device
+						self.tx(self.get_device(1), motion_pkt)
 
 				time.sleep(self.process_rate / 1000)
 
