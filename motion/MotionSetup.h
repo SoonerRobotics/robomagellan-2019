@@ -2,6 +2,8 @@
 #define MOTION_SETUP_H
 
 #include <Wire.h>
+#include <SPI.h>
+#include "RF24.h"
 #include "MotionGlobals.h"
 #include "Drivetrain.h"
 #include "ArduinoJson.h"
@@ -25,6 +27,12 @@ Drivetrain drivetrain;
 //Most recent data from the raspberry pi
 DataPacket curData;
 
+//Radio control cutoff switch
+RF24 radio(9, 10);
+
+//Robot operation state
+int robot_state;
+
 //Size of the data strings
 const int json_str_size_in = NUM_JSON_VALUES_IN;
 const int json_str_size_out = NUM_JSON_VALUES_OUT;
@@ -44,8 +52,18 @@ void motionSetup()
     //Note: this baud rate must be standard across devices
     Serial.begin(STD_BAUD_RATE);
 
-    //Initialize i2c as slave
-    Wire.begin(MOTION_ADDR);
+	//Setup the radio
+	radio.begin();
+
+	//Configure the radio
+	radio.setPALevel(RF24_PA_LOW);
+	radio.maskIRQ(1,1,0);
+	radio.openWritingPipe(RADIO_WRITE_ADDR);
+	radio.openReadingPipe(0, RADIO_READ_ADDR);
+	radio.startListening();
+
+	//Attach the interrupt for radio receive
+	attachInterrupt(0, receive, FALLING);
 
     //Initialize individual motors
     motor.begin(DRIVE_MOTOR_A, DRIVE_MOTOR_B, DRIVE_MOTOR_ENB);
@@ -60,6 +78,10 @@ void motionSetup()
 
     //Attach an inturrupt to the limit switch to reverse when pressed
     attachInterrupt(LIMIT_PIN, reverseRoutine, RISING);
+
+	//Disable the drivetrain and set the operation to paused
+	drivetrain.disable();
+	robot_state = PAUSE_STATE;
 
     //Wait until the raspberry pi has booted up
     while(Serial.peek() == -1)
@@ -173,6 +195,61 @@ void reverseRoutine()
 
     //Stop the reverse to avoid anything silly
     drivetrain.setPower(0);
+}
+
+
+/**
+ * 
+ */
+void receive()
+{
+	//Message to read over the air
+	unsigned long message;
+
+	//If the radio has info for us...
+	if(radio.available()) 
+	{
+		//Read the message
+		while(radio.available()) 
+		{
+			radio.read(&message, sizeof(unsigned long));
+		}
+
+		//Send confirmation of message
+		radio.stopListening();
+		radio.write(&message, sizeof(unsigned long));
+		radio.startListening();
+
+		//If a kill message is sent, disable movement and end the program
+		if(message == MSG_KILL) 
+		{
+			//Disable the drivetrain
+			drivetrain.disable();
+
+			//Run an infinite loop
+			while(true){}
+		}
+		//If a start message is sent, start the robot
+		else if(message == MSG_START) 
+		{
+			drivetrain.enable();
+			robot_state = RUN_STATE;
+		}
+		//If the message is a pause message, toggle run state
+		else if(message == MSG_PAUSE) 
+		{
+			if(robot_state == RUN_STATE) 
+			{
+				drivetrain.disable();
+				robot_state = PAUSE_STATE;
+			}
+			else if(robot_state == PAUSE_STATE) 
+			{
+				drivetrain.enable();
+				robot_state = RUN_STATE;
+			}
+		}
+	}
 }
 
 #endif

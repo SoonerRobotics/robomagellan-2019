@@ -140,8 +140,11 @@ class SerialController:
 						#self.steer_ang = self.traj.getSteeringAngle(self.sensor_data['compass'], self.WHEELBASE_LENGTH, self.power * self.cfg['Robot']['top_speed'])
 						#self.power = self.traj.getPower()
 
-						self.steer_ang = 10
+						self.steer_ang = -10
 						self.power = 0.3
+
+						# TODO: Is this the right place to update our position?
+						self.traj.updatePosition(self.state_data[0], self.state_data[1], self.state_data[2], self.state_data[4])
 
 						# Form the motion data packet
 						motion_pkt = self.make_motion_packet(False, self.steer_ang, self.power, 0, 0)
