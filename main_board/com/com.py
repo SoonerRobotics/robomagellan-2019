@@ -140,7 +140,7 @@ class SerialController:
 						#self.steer_ang = self.traj.getSteeringAngle(self.sensor_data['compass'], self.WHEELBASE_LENGTH, self.power * self.cfg['Robot']['top_speed'])
 						#self.power = self.traj.getPower()
 
-						self.steer_ang = 10
+						self.steer_ang = -10
 						self.power = 0.3
 
 						# Form the motion data packet
