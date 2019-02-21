@@ -31,6 +31,18 @@ void Drivetrain::holdTurnPosition()
     this->turnServo.holdPosition();
 }
 
+void Drivetrain::disable()
+{
+	this->driveMotor.disableOutput();
+	this->turnServo.disableOutput();
+}
+
+void Drivetrain::enable()
+{
+	this->driveMotor.enableOutput();
+	this->turnServo.enableOutput();
+}
+
 float Drivetrain::getTurnAngle()
 {
     return this->turnServo.getAngle();

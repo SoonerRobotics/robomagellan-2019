@@ -52,6 +52,16 @@ void RomaServo::writeToAngle(float angle)
     this->servoMotor.output(this->motorOutput);
 }
 
+void RomaServo::disableOutput()
+{
+	this->servoMotor.disableOutput();
+}
+
+void RomaServo::enableOutput()
+{
+	this->servoMotor.enableOutput();
+}
+
 float RomaServo::getAngle()
 {
     processPot();

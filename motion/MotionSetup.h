@@ -40,6 +40,11 @@ const int json_str_size_out = NUM_JSON_VALUES_OUT;
 //Forward Declare Functions as needed
 void sendMotionSerialData(bool birth_packet);
 void reverseRoutine();
+void receive();
+
+
+//Radio configuration
+byte addressesi[][6] = {"1Node","2Node"};
 
 void motionSetup()
 {
@@ -58,8 +63,8 @@ void motionSetup()
 	//Configure the radio
 	radio.setPALevel(RF24_PA_LOW);
 	radio.maskIRQ(1,1,0);
-	radio.openWritingPipe(RADIO_WRITE_ADDR);
-	radio.openReadingPipe(0, RADIO_READ_ADDR);
+	radio.openWritingPipe(addressesi[0]);
+	radio.openReadingPipe(0,addressesi[1]);
 	radio.startListening();
 
 	//Attach the interrupt for radio receive

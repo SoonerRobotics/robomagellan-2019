@@ -55,10 +55,6 @@
 //Serial update
 #define SERIAL_UPDATE_RATE 100  //100 Hz update rate
 
-//Radio configuration
-#define RADIO_WRITE_ADDR "NODE1"
-#define RADIO_READ_ADDR "NODE2"
-
 //Radio message types
 #define MSG_KILL 1
 #define MSG_START 2
