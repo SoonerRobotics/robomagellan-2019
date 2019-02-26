@@ -1,11 +1,11 @@
 import time
 from os.path import getmtime
 import subprocess
-from gpio_zero import Button
+from gpiozero import Button
 
 start_cmd = "sudo service robot start"
 stop_cmd = "sudo service robot stop"
-stop_cmd = "sudo service robot status"
+status_cmd = "sudo service robot status"
 
 
 def conf_watchdog():
@@ -36,6 +36,7 @@ def get_status():
 		process = subprocess.Popen(status_cmd.split(), stdout=subprocess.PIPE)
 		output, error = process.communicate()
 	except Exception as e:
+		print(e)
 		print("Error getching status")
 		return "Error"
 	return ""
