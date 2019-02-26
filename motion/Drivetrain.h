@@ -16,6 +16,8 @@ class Drivetrain
         void setPower(float power);
         void setTurn(float angle);
         void holdTurnPosition();
+		void disable();
+		void enable();
         
         float getTurnAngle();
         int   getRawTurnValue();

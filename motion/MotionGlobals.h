@@ -55,4 +55,13 @@
 //Serial update
 #define SERIAL_UPDATE_RATE 100  //100 Hz update rate
 
+//Radio message types
+#define MSG_KILL 1
+#define MSG_START 2
+#define MSG_PAUSE 3
+
+//Robot operation states
+#define RUN_STATE 1
+#define PAUSE_STATE 2
+
 #endif

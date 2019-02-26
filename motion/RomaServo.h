@@ -24,6 +24,8 @@ class RomaServo
 
         void writeToAngle(float angle);
         void holdPosition();
+		void disableOutput();
+		void enableOutput();
 
         float getAngle();
         int getRawAngle();
