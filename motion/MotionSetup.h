@@ -129,7 +129,7 @@ void sendMotionSerialData(bool birth_packet)
     JsonObject& root = jsonBuffer.createObject();
 
     //Set the device ID
-    root["id"] = 1;
+    root["id"] = MOTION_DEVICE_ID;
 
     //For regular operation, send the robot's status
     if(!birth_packet)
