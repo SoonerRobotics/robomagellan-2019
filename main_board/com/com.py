@@ -144,6 +144,7 @@ class SerialController:
 						self.power = 0.3
 
 						# TODO: Is this the right place to update our position?
+						# TODO: Currently is fine, but needs to move to EKF pipe output when that is operational
 						self.traj.updatePosition(self.state_data[0], self.state_data[1], self.state_data[2], self.state_data[4])
 
 						# Form the motion data packet
