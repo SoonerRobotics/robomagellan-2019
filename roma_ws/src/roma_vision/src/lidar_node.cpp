@@ -5,7 +5,7 @@
  * @brief 
  * 
  */
-void lidarCallback(const ) //TODO: Find topic name
+void lidarCallback(const sensor_msgs::LaserScan::ConstPtr& obstacle_event) //TODO: Find topic name
 
 /**
  * @brief Main method
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
     //Subscribe to the topic published by the lidar node
     //TODO: confirm resolveName is correct
-    ros::Subscriber lidar_sub = lidar_node.subscribe(lidar_node.resolveName("/base_link_to_laser4"), 10, &lidarCallback);
+    ros::Subscriber lidar_sub = lidar_node.subscribe(lidar_node.resolveName("/scan"), 10, &lidarCallback);
 
     //TODO: Create lidar msg
     lidar_pub = lidar_node.advertise<roma_vision::lidar>(lidar_node.resolveName("/roma_vision/lidar"), 10);
