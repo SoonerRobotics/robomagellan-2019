@@ -1,2 +1,4 @@
 *.ini
 /.vscode
+
+/roma_ws/build/
