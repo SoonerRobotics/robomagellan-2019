@@ -6,11 +6,24 @@
 
 void setup() 
 {    
-  motionSetup();
+  	motionSetup();
 }
 
 void loop() 
 {
-  motionLoop();
+	//If the robot done got kilt, reset it if the raspberry pi says to
+	if(robot_state == KILLED_STATE)
+	{
+		//Reset
+		if(digitalRead(A1) == LOW)
+		{
+			reset_board();
+		}
+	}
+	//Normal operation
+	else
+	{
+		motionLoop();
+	}
 }
 

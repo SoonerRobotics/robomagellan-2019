@@ -63,5 +63,6 @@
 //Robot operation states
 #define RUN_STATE 1
 #define PAUSE_STATE 2
+#define KILLED_STATE 3
 
 #endif

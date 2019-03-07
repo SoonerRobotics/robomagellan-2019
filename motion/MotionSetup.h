@@ -46,8 +46,17 @@ void receive();
 //Radio configuration
 byte addressesi[][6] = {"1Node","2Node"};
 
+//Reset function pointer
+void(* reset_board)(void) = 0;
+
 void motionSetup()
 {
+	//Start in the killed state
+	digitalWrite(A0, HIGH);
+
+	//Read from A1 to see if this board should restart
+	pinMode(A1, INPUT_PULLUP);
+
     //Declare local variables
     Motor motor;
     Motor servo;
@@ -231,14 +240,20 @@ void receive()
 			//Disable the drivetrain
 			drivetrain.disable();
 
-			//Run an infinite loop
-			while(true){}
+			//Set the kill state
+			robot_state = KILLED_STATE;
+
+			//Notify the raspberry pi
+			digitalWrite(A0, HIGH);
 		}
 		//If a start message is sent, start the robot
 		else if(message == MSG_START) 
 		{
 			drivetrain.enable();
 			robot_state = RUN_STATE;
+
+			//Unkill the robot if needed
+			digitalWrite(A0, LOW);
 		}
 		//If the message is a pause message, toggle run state
 		else if(message == MSG_PAUSE) 
