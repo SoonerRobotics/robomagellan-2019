@@ -5,7 +5,7 @@
  * @brief 
  * 
  */
-void lidarCallback() //TODO: Find topic name
+void lidarCallback(const ) //TODO: Find topic name
 
 /**
  * @brief Main method
@@ -22,11 +22,12 @@ int main(int argc, char **argv)
     //Set up the node handle for obstacle detection
     ros::NodeHandle lidar_node;
 
-    //TODO: Find name to subscribe to LiDAR
-    //ros::Subscriber lidar_sub = lidar_node.subscribe(lidar_node.resolveName("/lidar_topic_here"), 10, &lidarCallback);
+    //Subscribe to the topic published by the lidar node
+    //TODO: confirm resolveName is correct
+    ros::Subscriber lidar_sub = lidar_node.subscribe(lidar_node.resolveName("/base_link_to_laser4"), 10, &lidarCallback);
 
     //TODO: Create lidar msg
-    //lidar_pub = lidar_node.advertise<roma_vision::lidar>(lidar_node.resolveName("/roma_vision/lidar"), 10);
+    lidar_pub = lidar_node.advertise<roma_vision::lidar>(lidar_node.resolveName("/roma_vision/lidar"), 10);
 
     //Handle the callbacks
     ros::spin();
