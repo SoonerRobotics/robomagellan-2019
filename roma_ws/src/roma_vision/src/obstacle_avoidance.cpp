@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include "roma_ws/Obstacle.h"
+#include "roma_ws/obstacles.h"
 
 ros::Subscriber lidar;
 
@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle node;
 
-    ros::Publisher obstacles = node.advertise<>("roma_vision/obstacles", 1000);
+    ros::Publisher obstacles = node.advertise<roma_vision::obstacles>("roma_vision/obstacles", 1000);
 
     lidar = node.subscribe(node.resolveName("roma_vision/lidar"), 1000, onLidarCallback);
 

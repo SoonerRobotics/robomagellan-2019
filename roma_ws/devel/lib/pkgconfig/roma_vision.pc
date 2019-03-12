@@ -1,8 +1,8 @@
-prefix=/home/preston/robomagellan-2019/roma_ws/devel
+prefix=/home/jkleiber/robomagellan-2019/roma_ws/devel
 
 Name: roma_vision
 Description: Description of roma_vision
 Version: 0.0.0
 Cflags: 
-Libs: -L/home/preston/robomagellan-2019/roma_ws/devel/lib 
+Libs: -L/home/jkleiber/robomagellan-2019/roma_ws/devel/lib 
 Requires: 

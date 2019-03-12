@@ -12,7 +12,7 @@
     <param name="range_min"    type="double" value="0.08" />
     <param name="range_max"    type="double" value="16.0" />
     <param name="ignore_array" type="string" value="" />
-    <param name="samp_rate"    type="int"    value="9"/>
+    <param name="samp_rate"    type="int"    value="18"/>
     <param name="frequency"    type="double" value="7"/>
   </node>
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4"

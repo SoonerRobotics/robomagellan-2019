@@ -1,21 +1,24 @@
 {
 	"folders": [
-        {
-            "path": "motion"
-        },
-        {
-            "path": "localization"
-        },
-        {
-            "path": "main_board"
-        },
-        {
-            "path": "remote"
-        },
-        {
-            "path": "utilities"
-        }
-    ],
+		{
+			"path": "motion"
+		},
+		{
+			"path": "localization"
+		},
+		{
+			"path": "main_board"
+		},
+		{
+			"path": "remote"
+		},
+		{
+			"path": "utilities"
+		},
+		{
+			"path": "roma_ws"
+		}
+	],
 	"settings": {
 		"files.associations": {
 			"cmath": "cpp",
