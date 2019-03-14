@@ -1,3 +1,3 @@
-uint8 numObstacles
-float64[] angle
-float64[] distance
+uint8 num_obstacles
+float32[] angle
+float32[] distance

@@ -1,56 +1,55 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include "roma_ws/obstacles.h"
+#include "roma_vision/obstacles.h"
 
 ros::Publisher obstacle_topic;
-
-//TODO: What is the max distance we reasonably read at? Units?
-#define MAX_DISTANCE = 8;
+//CONSTANTS
+#define MAX_DISTANCE = 8; //Max distance of 8 meters
 
 struct {
     float angle,
     float distance
 } Obstacle
 
-// TODO: Change to correct LIDAR message type
-void onLidarCallback(const std_msgs::String::ConstPtr& msg) {
-    //TODO: On LIDAR read, do things and then send obstacles on obstacle topic
 
-    //TODO: Assumes array of 360 distances for each degree, change to what it actually be
-    float[] distances;
+void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
+    //TODO: On LIDAR read, do things and then send obstacles on obstacle topic
+    //Instantiate message to publish to
+    roma_vision::obstacle ob_msg;
 
     //TODO: This literally just creates an obstacle for every distance < MAX_DISTANCE. Create better algorithm.
-    std::vector<Obtsacle> obs;
+    std::vector<Obstacle> obs;
     for (int i=0; i<360; i++) {
-        if (distances[i] < MAX_DISTANCE) {
+        if (msg->ranges[i] < MAX_DISTANCE) {
             ob = Obstacle();
             ob.angle = i;
-            ob.distance = distances[i]
+            ob.distance = msg->ranges[i]
             obs.push_back(ob)
         }
     }
 
     
-    uint8_t numObstacles = obs.size();
-    float angles[numObstacles];
-    float distances[numObstacles];
+    ob_msg.num_obstacles = obs.size();
+    
 
     for (int i=0; i<numObstacles; i++) {
-        angles[i] = obs.get(i).angle;
-        distances[i] = obs.get(i).angle;
+        ob_msg.angles[i] = obs.get(i).angle;
+        ob_msg.distances[i] = obs.get(i).angle;
     }
 
-    //TODO: Put data into message and send it.
+    //Publish data to the message
+    obstacle_pub.publish(ob_msg);
 }
 
 int main(int argc, char** argv) {
+    //Initialize the node
     ros::init(argc, argv, "obstacle_avoidance");
-
-    ros::NodeHandle node;
-
-    obstacle_topic = node.advertise<roma_vision::obstacles>("roma_vision/obstacles", 10);
-
+    //Set up node
+    ros::NodeHandle obstacle_node;
+    //Create the publisher for the obstacle message
+    obstacle_pub = node.advertise<roma_vision::obstacles>("roma_vision/obstacles", 10);
+    //Create the subscriber to the Lidar (topic is /scan)
     ros::Subscriber lidar = node.subscribe(node.resolveName("/scan"), 10, onLidarCallback);
-
+    //Automatically handles callbacks
     ros::spin();
 }
