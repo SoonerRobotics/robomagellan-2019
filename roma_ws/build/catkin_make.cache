@@ -1,0 +1,2 @@
+roma:roma_kalman:roma_serial:roma_trajectory:roma_vision:ydlidar
+-DCATKIN_DEVEL_PREFIX=/home/jkleiber/robomagellan-2019/roma_ws/devel -DCMAKE_INSTALL_PREFIX=/home/jkleiber/robomagellan-2019/roma_ws/install -G Unix Makefiles
