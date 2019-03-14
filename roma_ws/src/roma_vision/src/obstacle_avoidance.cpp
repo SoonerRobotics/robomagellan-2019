@@ -48,9 +48,9 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle node;
 
-    obstacle_topic = node.advertise<roma_vision::obstacles>("roma_vision/obstacles", 1000);
+    obstacle_topic = node.advertise<roma_vision::obstacles>("roma_vision/obstacles", 10);
 
-    ros::Subscriber lidar = node.subscribe(node.resolveName("roma_vision/lidar"), 1000, onLidarCallback);
+    ros::Subscriber lidar = node.subscribe(node.resolveName("/scan"), 10, onLidarCallback);
 
     ros::spin();
 }
