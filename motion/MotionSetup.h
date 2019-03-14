@@ -188,7 +188,7 @@ void sendMotionSerialData(bool birth_packet)
  **********************/
 
 /**
- * Routine to run when the robot needs to revese away from an obstacle
+ * Routine to run when the robot needs to reverse away from an obstacle
  */
 void reverseRoutine()
 {
@@ -230,19 +230,21 @@ void receive()
 		{
 			//Disable the drivetrain
 			drivetrain.disable();
-
+Serial.println("killed");
 			//Run an infinite loop
 			while(true){}
 		}
 		//If a start message is sent, start the robot
 		else if(message == MSG_START) 
 		{
+    Serial.println("started");
 			drivetrain.enable();
 			robot_state = RUN_STATE;
 		}
 		//If the message is a pause message, toggle run state
 		else if(message == MSG_PAUSE) 
 		{
+    Serial.println("pause toggle");
 			if(robot_state == RUN_STATE) 
 			{
 				drivetrain.disable();
