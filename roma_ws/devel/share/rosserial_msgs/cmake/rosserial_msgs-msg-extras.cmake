@@ -1,0 +1,2 @@
+set(rosserial_msgs_MESSAGE_FILES "/home/trey/scr/robomagellan-2019/roma_ws/src/rosserial-jade-devel/rosserial_msgs/msg/Log.msg;/home/trey/scr/robomagellan-2019/roma_ws/src/rosserial-jade-devel/rosserial_msgs/msg/TopicInfo.msg")
+set(rosserial_msgs_SERVICE_FILES "/home/trey/scr/robomagellan-2019/roma_ws/src/rosserial-jade-devel/rosserial_msgs/srv/RequestMessageInfo.srv;/home/trey/scr/robomagellan-2019/roma_ws/src/rosserial-jade-devel/rosserial_msgs/srv/RequestParam.srv;/home/trey/scr/robomagellan-2019/roma_ws/src/rosserial-jade-devel/rosserial_msgs/srv/RequestServiceInfo.srv")

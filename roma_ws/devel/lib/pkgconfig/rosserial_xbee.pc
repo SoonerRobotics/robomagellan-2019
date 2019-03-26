@@ -1,0 +1,8 @@
+prefix=/home/trey/scr/robomagellan-2019/roma_ws/devel
+
+Name: rosserial_xbee
+Description: Description of rosserial_xbee
+Version: 0.7.7
+Cflags: 
+Libs: -L/home/trey/scr/robomagellan-2019/roma_ws/devel/lib 
+Requires: 
