@@ -189,7 +189,7 @@ foreach(depend ${depends})
   list(APPEND roma_vision_EXPORTED_TARGETS ${${roma_vision_dep}_EXPORTED_TARGETS})
 endforeach()
 
-set(pkg_cfg_extras "")
+set(pkg_cfg_extras "roma_vision-msg-extras.cmake")
 foreach(extra ${pkg_cfg_extras})
   if(NOT IS_ABSOLUTE ${extra})
     set(extra ${roma_vision_DIR}/${extra})

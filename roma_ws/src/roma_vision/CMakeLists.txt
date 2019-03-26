@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  message_generation
   roma_msgs
 )
 
@@ -47,8 +46,6 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
-
-add_message_files(DIRECTORY msg FILES obstacles.msg)
 
 ## Generate messages in the 'msg' folder
 # add_message_files(

@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
 #include "sensor_msgs/LaserScan.h"
-#include "roma_vision/obstacles.h"
+#include "roma_msgs/obstacles.h"
 
 ros::Publisher obstacle_pub;
 //CONSTANTS
@@ -16,7 +16,7 @@ struct Obstacle{
 void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     //TODO: On LIDAR read, do things and then send obstacles on obstacle topic
     //Instantiate message to publish to
-    roma_vision::obstacles ob_msg;
+    roma_msgs::obstacles ob_msg;
 
 
     //TODO: This literally just creates an obstacle for every distance < MAX_DISTANCE. Create better algorithm.
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     //Set up node
     ros::NodeHandle obstacle_node;
     //Create the publisher for the obstacle message
-    obstacle_pub = obstacle_node.advertise<roma_vision::obstacles>("roma_vision/obstacles", 10);
+    obstacle_pub = obstacle_node.advertise<roma_msgs::obstacles>("roma_vision/obstacles", 10);
     //Create the subscriber to the Lidar (topic is /scan)
     ros::Subscriber lidar = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, onLidarCallback);
     //Automatically handles callbacks
