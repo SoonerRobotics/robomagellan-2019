@@ -3,9 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-				"${workspaceFolder}/**",
-				"/opt/ros/kinetic/include/**",
-                "${workspaceFolder}/devel/include/**"
+                "${workspaceFolder}/**",
+                "/opt/ros/kinetic/include/**",
+                "${workspaceFolder}/devel/include/**",
+                "/opt/ros/kinetic/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
