@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(roma_vision_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/home/trey/scr/robomagellan-2019/roma_ws/devel/include " STREQUAL " ")
+if(NOT " " STREQUAL " ")
   set(roma_vision_INCLUDE_DIRS "")
-  set(_include_dirs "/home/trey/scr/robomagellan-2019/roma_ws/devel/include")
+  set(_include_dirs "")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -152,7 +152,7 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
-set(roma_vision_EXPORTED_TARGETS "roma_vision_generate_messages_cpp;roma_vision_generate_messages_eus;roma_vision_generate_messages_lisp;roma_vision_generate_messages_nodejs;roma_vision_generate_messages_py")
+set(roma_vision_EXPORTED_TARGETS "")
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${roma_vision_EXPORTED_TARGETS})
   if(NOT TARGET ${t})
@@ -160,7 +160,7 @@ foreach(t ${roma_vision_EXPORTED_TARGETS})
   endif()
 endforeach()
 
-set(depends "roscpp;rospy;std_msgs;message_runtime")
+set(depends "")
 foreach(depend ${depends})
   string(REPLACE " " ";" depend_list ${depend})
   # the package name of the dependency must be kept in a unique variable so that it is not overwritten in recursive calls

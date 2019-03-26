@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(roma_msgs_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT " " STREQUAL " ")
+if(NOT "/home/trey/scr/robomagellan-2019/roma_ws/devel/include " STREQUAL " ")
   set(roma_msgs_INCLUDE_DIRS "")
-  set(_include_dirs "")
+  set(_include_dirs "/home/trey/scr/robomagellan-2019/roma_ws/devel/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -152,7 +152,7 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
-set(roma_msgs_EXPORTED_TARGETS "")
+set(roma_msgs_EXPORTED_TARGETS "roma_msgs_generate_messages_cpp;roma_msgs_generate_messages_eus;roma_msgs_generate_messages_lisp;roma_msgs_generate_messages_nodejs;roma_msgs_generate_messages_py")
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${roma_msgs_EXPORTED_TARGETS})
   if(NOT TARGET ${t})

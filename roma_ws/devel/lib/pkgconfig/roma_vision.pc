@@ -3,6 +3,6 @@ prefix=/home/trey/scr/robomagellan-2019/roma_ws/devel
 Name: roma_vision
 Description: Description of roma_vision
 Version: 0.0.0
-Cflags: -I/home/trey/scr/robomagellan-2019/roma_ws/devel/include
+Cflags: 
 Libs: -L/home/trey/scr/robomagellan-2019/roma_ws/devel/lib 
-Requires: roscpp rospy std_msgs message_runtime
+Requires: 
