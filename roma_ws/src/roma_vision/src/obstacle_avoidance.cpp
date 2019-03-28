@@ -21,6 +21,7 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     std::vector<float> ranges = msg->ranges;
     bool obstacle_detected = false;
     Obstacle ob;
+	
     /************************************************************************************************\
      * Currently this for loop goes through the vector of ranges and checks for obstacles. When an
      * obstacle is detected the closest distance of the object is updated and the angle is updated to
@@ -39,6 +40,7 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
         //If an object is detected and has been iniitalized
         else if(ranges.at(i) > 0 && ranges.at(i) <= MAX_DISTANCE && obstacle_detected)
         {
+			//TODO: make the 0.25 into a constant (maybe OBS_DST_DELTA)
             //Check that the distance is still within +/- 0.25 meters, otherwise create a new object
             if(ranges.at(i) >= ob.distance + 0.25 && ranges.at(i) <= ob.distance - 0.25)
             {
