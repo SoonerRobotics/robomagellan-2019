@@ -1,6 +1,11 @@
 #ifndef LOCALIZATION_SETUP_H
 #define LOCALIZATION_SETUP_H
 
+#include <Arduino.h>
+#include "GPSModule.h"
+#include "GPSQueue.h"
+#include "IMU.h"
+
 GPSModule gps(3, 4);
 GPSQueue queue(&gps);
 
@@ -8,7 +13,8 @@ IMU imu0; //apparently imu already exists
 
 void localizationSetup()
 {
-    Serial.begin(9600);
+	//TODO: do we need this?
+    //Serial.begin(9600);
 
     imu0.begin();
 

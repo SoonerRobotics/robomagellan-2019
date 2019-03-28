@@ -1,8 +1,6 @@
 #ifndef MOTION_GLOBALS_H
 #define MOTION_GLOBALS_H
 
-#include "ArduinoJson.h"
-
 //Decision Configuration
 #define DEGREES_OFF_ALLOWED 20
 #define OPENCV_ALLOWED_ERROR 25
@@ -33,12 +31,6 @@
 //Default power
 #define DEFAULT_POWER 0.22
 
-//I2C addresses
-#define MOTION_ADDR 0x18
-
-//I2C constants
-#define I2C_MAX  (float)(255)
-
 //Debug flags
 #define IS_DEBUG 1
 
@@ -47,8 +39,6 @@
 #define DT_UPDATE_EPS       20
 
 //JSON constants
-#define NUM_JSON_VALUES_IN  JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(2 + 6)    //Number of JSON values in a data packet received
-#define NUM_JSON_VALUES_OUT JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(2 + 2)    //Number of JSON values in a data packet sent
 #define MOTION_DEVICE_ID    1                                               //Device ID for initial serial packets
 #define STD_BAUD_RATE       115200                                          //Baud rate of all devices
 

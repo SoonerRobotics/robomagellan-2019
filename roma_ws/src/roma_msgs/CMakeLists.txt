@@ -51,6 +51,11 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   obstacles.msg
+  kalman_state.msg
+  motion_cmds.msg
+  motion_feedback.msg
+  localization_data.msg
+  sensor_data.msg
 )
 
 ## Generate services in the 'srv' folder
