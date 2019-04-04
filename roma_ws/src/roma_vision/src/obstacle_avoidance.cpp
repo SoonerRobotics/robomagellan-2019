@@ -6,6 +6,7 @@
 ros::Publisher obstacle_pub;
 //CONSTANTS
 #define MAX_DISTANCE 8 //Max distance of 8 meters
+#define OBS_DST_DELTA 0.25
 
 struct Obstacle{
     float angle;
@@ -40,9 +41,8 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
         //If an object is detected and has been iniitalized
         else if(ranges.at(i) > 0 && ranges.at(i) <= MAX_DISTANCE && obstacle_detected)
         {
-			//TODO: make the 0.25 into a constant (maybe OBS_DST_DELTA)
             //Check that the distance is still within +/- 0.25 meters, otherwise create a new object
-            if(ranges.at(i) >= ob.distance + 0.25 && ranges.at(i) <= ob.distance - 0.25)
+            if(ranges.at(i) >= ob.distance + OBS_DST_DELTA && ranges.at(i) <= ob.distance - OBS_DST_DELTA)
             {
                 //Update distance to closest distance
                 ob.distance = (ob.distance < ranges.at(i)) ? ob.distance : ranges.at(i);
@@ -77,13 +77,14 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     obstacle_pub.publish(ob_msg);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) 
+{
     //Initialize the node
     ros::init(argc, argv, "obstacle_avoidance");
     //Set up node
     ros::NodeHandle obstacle_node;
     //Create the publisher for the obstacle message
-    obstacle_pub = obstacle_node.advertise<roma_msgs::obstacles>(obstacle_node.resolveName("/roma_msgs/obstacles"), 10);
+    obstacle_pub = obstacle_node.advertise<roma_msgs::obstacles>(obstacle_node.resolveName("/roma_vision/obstacles"), 10);
     //Create the subscriber to the Lidar (topic is /scan)
     ros::Subscriber lidar = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, onLidarCallback);
     //Automatically handles callbacks
