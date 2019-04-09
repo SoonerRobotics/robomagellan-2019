@@ -7,7 +7,7 @@
 #include "LocalizationSetup.h"
 
 //Set up ROS node
-ros::NodeHandle localization_node;
+ros::NodeHandle_<ArduinoHardware, 2, 2, 32, 105> localization_node;
 
 //Set up ROS publisher
 roma_msgs::localization_data local_data;
@@ -47,11 +47,11 @@ void loop()
 	*/
 
     //Form localization msg
-	local_data.gps_lat = gps.getLat();
-	local_data.gps_lon = gps.getLong();
+	//local_data.gps_lat = gps.getLat();
+	//local_data.gps_lon = gps.getLong();
 	local_data.vel = 0;
-	local_data.accel_x = imu0.getAccelX();
-	local_data.heading = imu0.getOrientX();
+	//local_data.accel_x = imu0.getAccelX();
+	//local_data.heading = imu0.getOrientX();
 
 	//Publish message to topic
 	data_pub.publish(&local_data);

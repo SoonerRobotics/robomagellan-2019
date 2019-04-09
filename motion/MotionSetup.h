@@ -12,7 +12,7 @@
 #include "Drivetrain.h"
 
 //Set up the ROS node for this code
-ros::NodeHandle motion_node;
+ros::NodeHandle_<ArduinoHardware, 2, 2, 80, 105> motion_node;
 
 //Full serial data packet
 typedef struct DataPacket_u
