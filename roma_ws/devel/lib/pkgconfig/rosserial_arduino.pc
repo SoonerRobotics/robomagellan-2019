@@ -1,8 +1,8 @@
-prefix=/home/jkleiber/robomagellan-2019/roma_ws/devel
+prefix=/home/preston/robomagellan-2019/roma_ws/devel
 
 Name: rosserial_arduino
 Description: Description of rosserial_arduino
 Version: 0.7.7
-Cflags: -I/home/jkleiber/robomagellan-2019/roma_ws/devel/include
-Libs: -L/home/jkleiber/robomagellan-2019/roma_ws/devel/lib 
+Cflags: -I/home/preston/robomagellan-2019/roma_ws/devel/include
+Libs: -L/home/preston/robomagellan-2019/roma_ws/devel/lib 
 Requires: message_runtime

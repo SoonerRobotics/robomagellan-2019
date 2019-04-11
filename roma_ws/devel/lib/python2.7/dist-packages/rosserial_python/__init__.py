@@ -7,7 +7,7 @@ from sys import path as sys_path
 
 from pkgutil import extend_path
 
-__extended_path = "/home/jkleiber/robomagellan-2019/roma_ws/src/rosserial-jade-devel/rosserial_python/src".split(";")
+__extended_path = "/home/preston/robomagellan-2019/roma_ws/src/rosserial-jade-devel/rosserial_python/src".split(";")
 for p in reversed(__extended_path):
     sys_path.insert(0, p)
     del p
