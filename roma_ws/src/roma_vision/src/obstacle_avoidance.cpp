@@ -5,8 +5,8 @@
 
 ros::Publisher obstacle_pub;
 //CONSTANTS
-#define MAX_DISTANCE 8 //Max distance of 8 meters
-#define OBS_DST_DELTA 0.25
+#define MAX_DISTANCE 5 //Max distance of 8 meters
+#define OBS_DST_DELTA 0.5
 
 struct Obstacle{
     float angle;
@@ -26,40 +26,40 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     /************************************************************************************************\
      * Currently this for loop goes through the vector of ranges and checks for obstacles. When an
      * obstacle is detected the closest distance of the object is updated and the angle is updated to
-     * the corresponding indice of this closest distance. This could probably be changed to give an 
-     * actual angle rather than an indice. If the object varies by more than +/- 0.25 meters, then we 
+     * the corresponding indice of this closest distance divided by two. The angles increment upwards 
+     * counterclockwise. If the object varies by more than +/- 0.5 meters, then we 
      * treat this as a new obstacle.
     \************************************************************************************************/
     for (int i=0; i < ranges.size(); i++) 
     {
         //If an object is detected and hasn't already been initialized
-        if (ranges.at(i) > 0 && ranges.at(i) <= MAX_DISTANCE && !obstacle_detected) {
+        if (ranges[i] > 0 && ranges[i] <= MAX_DISTANCE && !obstacle_detected) {
             obstacle_detected = true;
-            ob.angle = i;
-            ob.distance = ranges.at(i);
+            ob.angle = i/2.0;
+            ob.distance = ranges[i];
         }
         //If an object is detected and has been iniitalized
-        else if(ranges.at(i) > 0 && ranges.at(i) <= MAX_DISTANCE && obstacle_detected)
+        else if(ranges[i] > 0 && ranges[i] <= MAX_DISTANCE && obstacle_detected)
         {
             //Check that the distance is still within +/- 0.25 meters, otherwise create a new object
-            if(ranges.at(i) >= ob.distance + OBS_DST_DELTA && ranges.at(i) <= ob.distance - OBS_DST_DELTA)
+            if(abs(ranges[i] - ob.distance) < OBS_DST_DELTA)
             {
                 //Update distance to closest distance
-                ob.distance = (ob.distance < ranges.at(i)) ? ob.distance : ranges.at(i);
+                ob.distance = (ob.distance < ranges[i]) ? ob.distance : ranges[i];
                 //Update angle to closest distance angle
-                ob.angle = (ob.distance < ranges.at(i)) ? ob.angle : i;
+                ob.angle = (ob.distance < ranges[i]) ? ob.angle : i/2.0;
             }
             else
             {
                 //Push the previous object
                 obs.push_back(ob);
                 //Begin the new object
-                ob.angle = i;
-                ob.distance = ranges.at(i);
+                ob.angle = i/2.0;
+                ob.distance = ranges[i];
             } 
         }
         //If an object that was initialized is no longer detected 
-        else if((ranges.at(i) == 0 || ranges.at(i) > MAX_DISTANCE) && obstacle_detected)
+        else if((ranges[i] == 0 || ranges[i] > MAX_DISTANCE) && obstacle_detected)
         {
             //Update boolean and push the object to the vector
             obstacle_detected = false;
@@ -70,7 +70,7 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     //Update the obstacle message with all obstacles found
     for (int i=0; i < obs.size(); i++) {
         ob_msg.angles.push_back(obs.at(i).angle);
-        ob_msg.distances.push_back(obs.at(i).angle);
+        ob_msg.distances.push_back(obs.at(i).distance);
     }
 
     //Publish message data to the topic
@@ -80,7 +80,7 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
 int main(int argc, char** argv) 
 {
     //Initialize the node
-    ros::init(argc, argv, "obstacle_avoidance");
+    ros::init(argc, argv, "obstacle_avoidance_node");
     //Set up node
     ros::NodeHandle obstacle_node;
     //Create the publisher for the obstacle message

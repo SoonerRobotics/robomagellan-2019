@@ -49,19 +49,13 @@ void loop()
 	local_data.gps_lon = 0; //gps.getLong();
 	local_data.vel = 0;
 	local_data.accel_x = 0; //imu0.getAccelX();
-	local_data.heading = 0; //imu0.getOrientX();
 
-	//Publish message to topic
+	//Publish the message
 	data_pub.publish(&local_data);
 
-	//Spin for callbacks
 	localization_node.spinOnce();
 
 	Serial.println("yeet");
 
-	delay(100);
-	//delay(1000 / SERIAL_SEND_RATE);
-
-	//FIXME: When the GPS and IMU are not working, this needs to fail safely
-    //intellectualWait(1000 / SERIAL_SEND_RATE);
+	delay(100);	
 }
