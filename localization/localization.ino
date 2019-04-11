@@ -7,7 +7,7 @@
 #include "LocalizationSetup.h"
 
 //Set up ROS node
-ros::NodeHandle localization_node;
+ros::NodeHandle_<ArduinoHardware, 2, 2, 32, 105> localization_node;
 
 //Set up ROS publisher
 roma_msgs::localization_data local_data;
@@ -19,11 +19,11 @@ void setup()
 	localization_node.initNode();
 	localization_node.advertise(data_pub);
 
-    localizationSetup();
+    //localizationSetup();
 
-    intellectualWait(1000);
+    //intellectualWait(1000);
 
-    imu0.zero();
+    //imu0.zero();
 }
 
 void intellectualWait(unsigned long ms) {
@@ -47,11 +47,11 @@ void loop()
 	*/
 
     //Form localization msg
-	local_data.gps_lat = gps.getLat();
-	local_data.gps_lon = gps.getLong();
+	local_data.gps_lat = 0;
+	local_data.gps_lon = 0;
 	local_data.vel = 0;
-	local_data.accel_x = imu0.getAccelX();
-	local_data.heading = imu0.getOrientX();
+	local_data.accel_x = 0;
+	local_data.heading = 0;
 
 	//Publish message to topic
 	data_pub.publish(&local_data);
@@ -59,5 +59,6 @@ void loop()
 	//Spin for callbacks
 	localization_node.spinOnce();
 
-    intellectualWait(1000 / SERIAL_SEND_RATE);
+  //intellectualWait(1000 / SERIAL_SEND_RATE);
+  delay(1000 / SERIAL_SEND_RATE);
 }
