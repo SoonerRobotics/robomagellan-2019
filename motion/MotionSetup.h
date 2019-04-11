@@ -18,13 +18,13 @@ ros::NodeHandle_<ArduinoHardware, 2, 2, 80, 105> motion_node;
 typedef struct DataPacket_u
 {
     //GPS Location Stuff
-    bool nearCone;          //true if near cone, false if not
-    float power;            //power to the drive motor
-    float steeringAngle;    //steering angle
+    bool nearCone = 0;          //true if near cone, false if not
+    float power = 0;            //power to the drive motor
+    float steeringAngle = 0;    //steering angle
 
     //OpenCV Stuff
-    float opencv_error;     //error between center screen and percieved cone
-    bool canSeeCone;        //tells if the cone is in the viewport of the camera
+    float opencv_error = 0;     //error between center screen and percieved cone
+    bool canSeeCone = 0;        //tells if the cone is in the viewport of the camera
 } DataPacket;
 
 //Declare systems
@@ -48,7 +48,7 @@ void receive();
 
 //ROS subscribers
 //TODO: choose official topic (this should be good though)
-ros::Subscriber<roma_msgs::motion_cmds> cmd_sub("/roma_motion/cmd", command_update);
+ros::Subscriber<roma_msgs::motion_cmds> cmd_sub("/roma_motion/cmd", &command_update);
 
 //ROS publishers
 roma_msgs::motion_feedback feedback_msg;
@@ -102,8 +102,8 @@ void motionSetup()
     attachInterrupt(LIMIT_PIN, reverseRoutine, RISING);
 
 	//Disable the drivetrain and set the operation to paused
-	drivetrain.disable();
-	robot_state = PAUSE_STATE;
+	//drivetrain.disable();
+	//robot_state = PAUSE_STATE;
 }
 
 /******************************************
@@ -118,6 +118,14 @@ void command_update(const roma_msgs::motion_cmds& command)
     curData.steeringAngle   = command.steer_ang;
     curData.opencv_error    = command.opencv_error;
     curData.canSeeCone      = command.cone_visible;
+	
+	digitalWrite(13, HIGH);
+	delay(100);
+	digitalWrite(13, LOW);
+	delay(100);
+	digitalWrite(13, HIGH);
+	delay(100);
+	digitalWrite(13, LOW);
 }
 
 /**

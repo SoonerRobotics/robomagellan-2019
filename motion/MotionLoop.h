@@ -68,9 +68,9 @@ void motionLoop()
     else
     {
         /* DRIVETRAIN UPADTE */
-        drivetrainLoop(DEFAULT_POWER);
+        drivetrainLoop(curData.power);
 
-        servoLoop(curData.steeringAngle);
+        //servoLoop(curData.steeringAngle);
     }
 
     //Send steering angle feedback data
