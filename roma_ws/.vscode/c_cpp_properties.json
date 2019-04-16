@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "/opt/ros/kinetic/include/**",
                 "${workspaceFolder}/devel/include/**",
-                "/opt/ros/kinetic/include"
+                "/opt/ros/kinetic/include",
+                "${workspaceFolder}/devel/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

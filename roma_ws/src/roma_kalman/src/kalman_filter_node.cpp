@@ -1,14 +1,36 @@
 #include <ros/ros.h>
 
 #include "roma_msgs/sensor_data.h"
+#include "roma_msgs/kalman_state.h"
 #include "roma_kalman/include/EKF.h"
 
 //Extended Kalman Filter class
 EKF kalman_filter;
 
+//Sensor data input
+vector<double> measurements(6);	//Make a vector of the 6 relevant state measurements
+
+//State data from the kalman filter
+roma_msgs::kalman_state filtered_state;
+
 void update_filter(const roma_msgs::sensor_data::ConstPtr& sensor_data)
 {
-	//kalman_filter.run_filter()
+	//Collect the measurement data
+	measurements[0] = sensor_data->gps_lat;
+	measurements[1] = sensor_data->gps_lon;
+	measurements[2] = sensor_data->vel;
+	measurements[3] = sensor_data->accel_x;
+	measurements[4] = sensor_data->heading;
+	measurements[5] = sensor_data->steer_ang;
+
+	//Run the filter on the measurements
+	kalman_filter.run_filter(measurements);
+
+	//Get the current filter state
+	filtered_state = kalman_filter.get_state();
+
+	//Publish the new state estimate
+	state_pub.publish()
 }
 
 
