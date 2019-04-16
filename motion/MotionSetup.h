@@ -18,13 +18,9 @@ ros::NodeHandle_<ArduinoHardware, 2, 2, 80, 105> motion_node;
 typedef struct DataPacket_u
 {
     //GPS Location Stuff
-    bool nearCone = 0;          //true if near cone, false if not
     float power = 0;            //power to the drive motor
     float steeringAngle = 0;    //steering angle
 
-    //OpenCV Stuff
-    float opencv_error = 0;     //error between center screen and percieved cone
-    bool canSeeCone = 0;        //tells if the cone is in the viewport of the camera
 } DataPacket;
 
 //Declare systems
@@ -113,11 +109,8 @@ void motionSetup()
 //Callback for received data
 void command_update(const roma_msgs::motion_cmds& command)
 {
-    curData.nearCone        = command.near_cone;
     curData.power           = command.power;
     curData.steeringAngle   = command.steer_ang;
-    curData.opencv_error    = command.opencv_error;
-    curData.canSeeCone      = command.cone_visible;
 	
 	digitalWrite(13, HIGH);
 	delay(100);

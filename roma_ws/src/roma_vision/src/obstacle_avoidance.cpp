@@ -13,7 +13,11 @@ struct Obstacle{
     float distance;
 };
 
-
+/**
+ * @brief 
+ * 
+ * @param msg 
+ */
 void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     //Instantiate message to publish to
     roma_msgs::obstacles ob_msg;
@@ -26,9 +30,9 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     /************************************************************************************************\
      * Currently this for loop goes through the vector of ranges and checks for obstacles. When an
      * obstacle is detected the closest distance of the object is updated and the angle is updated to
-     * the corresponding indice of this closest distance divided by two. The angles increment upwards 
-     * counterclockwise. If the object varies by more than +/- 0.5 meters, then we 
-     * treat this as a new obstacle.
+     * the corresponding indice of this closest distance divided by two, which corresponds to the 
+     * correct angle. The angles increment upwards counterclockwise. If the object varies by more than 
+     * +/- 0.5 meters, then we treat this as a new obstacle.
     \************************************************************************************************/
     for (int i=0; i < ranges.size(); i++) 
     {
@@ -77,6 +81,22 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     obstacle_pub.publish(ob_msg);
 }
 
+/**
+ * @brief - Handles OpenCV callbacks for cone detection
+ * 
+ */
+void opencvCallback(/*TODO*/)
+{
+
+}
+
+/**
+ * @brief 
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char** argv) 
 {
     //Initialize the node
@@ -85,8 +105,9 @@ int main(int argc, char** argv)
     ros::NodeHandle obstacle_node;
     //Create the publisher for the obstacle message
     obstacle_pub = obstacle_node.advertise<roma_msgs::obstacles>(obstacle_node.resolveName("/roma_vision/obstacles"), 10);
-    //Create the subscriber to the Lidar (topic is /scan)
+    //Create the subscribers
     ros::Subscriber lidar = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, onLidarCallback);
+    ross:subscriber openCV = obstacle_node.subscribe(obstacle_node.resolveName(/*TODO*/), 10, &opencvCallback);
     //Automatically handles callbacks
     ros::spin();
 }
