@@ -24,23 +24,21 @@ void setup()
 	localization_node.initNode();
 	localization_node.advertise(data_pub);
 
-    //localizationSetup();
+    localizationSetup();
 
-	//FIXME: broken when GPS and IMU are bad
-    //intellectualWait(1000);
+    intellectualWait(1000);
 
-	//FIXME: Unbreak the IMU
-    //imu0.zero();
+    imu0.zero();
 }
 
-/*
+
 void intellectualWait(unsigned long ms) {
     unsigned long startTime = millis();
     while (millis() - startTime < ms) {
         gps.update();
         imu0.update();
     }
-}*/
+}
 
 void loop() 
 {
@@ -57,5 +55,5 @@ void loop()
 
 	Serial.println("yeet");
 
-	delay(100);	
+	intellectualWait(100);	
 }
