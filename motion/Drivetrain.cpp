@@ -1,4 +1,8 @@
 #include "Drivetrain.h"
+#define minservoangle = 0
+#define maxservoangle = 180
+#define minsteeringangle = -35
+#define maxsteeringangle = 35
 
 Drivetrain::Drivetrain()
 {
@@ -22,14 +26,19 @@ void Drivetrain::setPower(float power)
 }
 
 void Drivetrain::setTurn(float angle)
-{
-    this->turnServo.writeToAngle(angle);
+{    
+	num = angle + minsteeringangle;
+	den = maxsteeringangle - minsteeringangle;
+	servorange = maxservoangle - minservoangle;
+	
+	rat = num / den;
+
+	desired = rat * servorange + minservoangle;
+	
+	this->turnServo.write(desired);
 }
 
-void Drivetrain::holdTurnPosition()
-{
-    this->turnServo.holdPosition();
-}
+
 
 void Drivetrain::disable()
 {

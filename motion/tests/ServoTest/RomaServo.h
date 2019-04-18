@@ -30,7 +30,6 @@ class RomaServo
 
     private:
         Motor servoMotor;
-        AnalogDevice potentiometer;
         PIDController pidControl;
 
         float motorOutput;

@@ -10,7 +10,7 @@ RomaServo::RomaServo()
 RomaServo::RomaServo(Motor m, int potPin, float maxPower)
 {
     this->servoMotor = m;
-    this->potentiometer.update(potPin, INPUT);
+    pinMode(potPin, INPUT);
     this->maxMotorPower = maxPower;
     this->rawAngle = 0;
     this->potAngle = 0;
@@ -20,7 +20,7 @@ RomaServo::RomaServo(Motor m, int potPin, float maxPower)
 void RomaServo::operator=(const RomaServo& servo)
 {
     this->servoMotor = servo.servoMotor;
-    this->potentiometer = servo.potentiometer;
+	pinMode(TURN_POT_PIN, INPUT);
     this->maxMotorPower = servo.maxMotorPower;
     this->potAngle = servo.potAngle;
     this->pidControl = servo.pidControl;
@@ -29,7 +29,7 @@ void RomaServo::operator=(const RomaServo& servo)
 void RomaServo::begin(Motor m, int potPin, float maxPower)
 {
     this->servoMotor = m;
-    this->potentiometer.update(potPin, INPUT);
+    pinMode(potPin, INPUT);
     this->maxMotorPower = maxPower;
 }
 
@@ -48,7 +48,7 @@ void RomaServo::holdPosition()
 void RomaServo::writeToAngle(float angle)
 {
     processPot();
-    this->motorOutput = -pidControl.getOutput(angle, this->potAngle);
+    this->motorOutput = pidControl.getOutput(angle, this->potAngle);
     this->servoMotor.output(this->motorOutput);
 }
 
@@ -69,6 +69,6 @@ int RomaServo::getRawAngle()
 *************************/
 void RomaServo::processPot()
 {
-    this->rawAngle = this->potentiometer.read();
+    this->rawAngle = analogRead(TURN_POT_PIN);//this->potentiometer.read();
     this->potAngle = (((float)(this->rawAngle) - POT_MIDPOINT) / (POT_MAX - POT_MIDPOINT)) * MAX_TURN_ANGLE;
 }

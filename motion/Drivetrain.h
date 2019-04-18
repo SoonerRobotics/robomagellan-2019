@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <RobotLib.h>
 #include "RomaServo.h"
+#include <Servo.h>
 
 class Drivetrain
 {
@@ -24,8 +25,13 @@ class Drivetrain
 
     private:
         Motor driveMotor;
+		Servo turnServo;
+		int pos;
+	
 
-        RomaServo turnServo;
+     
+
+		
 };
 
 #endif
