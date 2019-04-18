@@ -135,6 +135,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(obstacle_avoidance_node src/obstacle_avoidance.cpp)
+add_executable(opencv_node src/opencv_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -145,9 +146,11 @@ add_executable(obstacle_avoidance_node src/obstacle_avoidance.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(obstacle_avoidance_node ${catkin_EXPORTED_TARGETS})
+add_dependencies(opencv_node ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(obstacle_avoidance_node ${catkin_LIBRARIES})
+target_link_libraries(opencv_node ${catkin_LIBRARIES})
 
 #############
 ## Install ##

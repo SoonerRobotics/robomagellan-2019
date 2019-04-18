@@ -5,11 +5,11 @@
 #include "roma_msgs/motion_cmds.h"
 
 //Publishers
-ros::Publ
+ros::Publisher cmd_pub;
 
-void traj_callback(roma_msgs::motion_cmds::ConstPtr& cmd)
+void traj_callback(const roma_msgs::motion_cmds::ConstPtr& cmd)
 {
-
+	cmd_pub.publish(*cmd);
 }
 
 int main(int argc, char **argv)
@@ -28,5 +28,8 @@ int main(int argc, char **argv)
 	//TODO: Interface with the camera
 
 	//Publish the (un)modified motion command to the obstacle avoidance node
-	ros::S_Co
+	cmd_pub = opencv_node.advertise<roma_msgs::motion_cmds>(opencv_node.resolveName("/roma_vision/opencv_cmd"), 10);
+
+	//Pump callbacks
+	ros::spin();
 }
