@@ -67,7 +67,7 @@ void motionLoop()
 	}
     else
     {
-        /* DRIVETRAIN UPADTE */
+        /* DRIVETRAIN UPDATE */
         drivetrainLoop(DEFAULT_POWER);
 
         servoLoop(curData.steeringAngle);

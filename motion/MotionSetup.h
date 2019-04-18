@@ -6,7 +6,6 @@
 #include "RF24.h"
 #include "MotionGlobals.h"
 #include "Drivetrain.h"
-#include "ArduinoJson.h"
 
 //Full serial data packet
 typedef struct DataPacket_u
@@ -32,10 +31,6 @@ RF24 radio(9, 10);
 
 //Robot operation state
 int robot_state;
-
-//Size of the data strings
-const int json_str_size_in = NUM_JSON_VALUES_IN;
-const int json_str_size_out = NUM_JSON_VALUES_OUT;
 
 //Forward Declare Functions as needed
 void sendMotionSerialData(bool birth_packet);
@@ -109,7 +104,6 @@ void serialEvent()
 {
     //Declare local variabls
     String rawInput;
-    DynamicJsonBuffer jsonBuffer(json_str_size_in);
     
     //Initialize Local variables
     rawInput = "";
@@ -128,8 +122,6 @@ void serialEvent()
         }
     } 
 
-    //Parse the input string
-    JsonObject& root = jsonBuffer.parseObject(rawInput);
 
     //If the parse was successful, add the data to the struct
     if(root.success())
@@ -151,9 +143,6 @@ void serialEvent()
  */
 void sendMotionSerialData(bool birth_packet)
 {
-    //Open a JSON buffer and create a root object for the data transfer
-    DynamicJsonBuffer jsonBuffer(json_str_size_out);
-    JsonObject& root = jsonBuffer.createObject();
 
     //Set the device ID
     root["id"] = MOTION_DEVICE_ID;
@@ -165,7 +154,7 @@ void sendMotionSerialData(bool birth_packet)
         root["event"] = "feedback";
 
         //Make the data array
-        JsonObject& dataArray = root.createNestedObject("data");
+        
         dataArray["steer_ang"] = drivetrain.getTurnAngle();
     }
     else
@@ -174,7 +163,7 @@ void sendMotionSerialData(bool birth_packet)
         root["event"] = "birth";
 
         //Make the data array
-        JsonObject& dataArray = root.createNestedObject("data");
+        
         dataArray["steer_ang"] = drivetrain.getTurnAngle();
     }
 
