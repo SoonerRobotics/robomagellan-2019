@@ -7,16 +7,13 @@ import struct
 
 
 class motion_cmds(genpy.Message):
-  _md5sum = "b8d7592f04e59bfb9ef4b6b5b23f809d"
+  _md5sum = "4f545a067a10b78db31f8ffc31ecfca8"
   _type = "roma_msgs/motion_cmds"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """float32 power
-float32 steer_ang
-bool near_cone
-bool cone_visible
-float32 opencv_error"""
-  __slots__ = ['power','steer_ang','near_cone','cone_visible','opencv_error']
-  _slot_types = ['float32','float32','bool','bool','float32']
+float32 steer_ang"""
+  __slots__ = ['power','steer_ang']
+  _slot_types = ['float32','float32']
 
   def __init__(self, *args, **kwds):
     """
@@ -26,7 +23,7 @@ float32 opencv_error"""
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       power,steer_ang,near_cone,cone_visible,opencv_error
+       power,steer_ang
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -39,18 +36,9 @@ float32 opencv_error"""
         self.power = 0.
       if self.steer_ang is None:
         self.steer_ang = 0.
-      if self.near_cone is None:
-        self.near_cone = False
-      if self.cone_visible is None:
-        self.cone_visible = False
-      if self.opencv_error is None:
-        self.opencv_error = 0.
     else:
       self.power = 0.
       self.steer_ang = 0.
-      self.near_cone = False
-      self.cone_visible = False
-      self.opencv_error = 0.
 
   def _get_types(self):
     """
@@ -65,7 +53,7 @@ float32 opencv_error"""
     """
     try:
       _x = self
-      buff.write(_get_struct_2f2Bf().pack(_x.power, _x.steer_ang, _x.near_cone, _x.cone_visible, _x.opencv_error))
+      buff.write(_get_struct_2f().pack(_x.power, _x.steer_ang))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -78,10 +66,8 @@ float32 opencv_error"""
       end = 0
       _x = self
       start = end
-      end += 14
-      (_x.power, _x.steer_ang, _x.near_cone, _x.cone_visible, _x.opencv_error,) = _get_struct_2f2Bf().unpack(str[start:end])
-      self.near_cone = bool(self.near_cone)
-      self.cone_visible = bool(self.cone_visible)
+      end += 8
+      (_x.power, _x.steer_ang,) = _get_struct_2f().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -95,7 +81,7 @@ float32 opencv_error"""
     """
     try:
       _x = self
-      buff.write(_get_struct_2f2Bf().pack(_x.power, _x.steer_ang, _x.near_cone, _x.cone_visible, _x.opencv_error))
+      buff.write(_get_struct_2f().pack(_x.power, _x.steer_ang))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(locals().get('_x', self)))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(locals().get('_x', self)))))
 
@@ -109,10 +95,8 @@ float32 opencv_error"""
       end = 0
       _x = self
       start = end
-      end += 14
-      (_x.power, _x.steer_ang, _x.near_cone, _x.cone_visible, _x.opencv_error,) = _get_struct_2f2Bf().unpack(str[start:end])
-      self.near_cone = bool(self.near_cone)
-      self.cone_visible = bool(self.cone_visible)
+      end += 8
+      (_x.power, _x.steer_ang,) = _get_struct_2f().unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -121,9 +105,9 @@ _struct_I = genpy.struct_I
 def _get_struct_I():
     global _struct_I
     return _struct_I
-_struct_2f2Bf = None
-def _get_struct_2f2Bf():
-    global _struct_2f2Bf
-    if _struct_2f2Bf is None:
-        _struct_2f2Bf = struct.Struct("<2f2Bf")
-    return _struct_2f2Bf
+_struct_2f = None
+def _get_struct_2f():
+    global _struct_2f
+    if _struct_2f is None:
+        _struct_2f = struct.Struct("<2f")
+    return _struct_2f

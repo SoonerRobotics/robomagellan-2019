@@ -5,4 +5,4 @@ Description: Description of roma_kalman
 Version: 0.0.0
 Cflags: 
 Libs: -L/home/jkleiber/robomagellan-2019/roma_ws/devel/lib 
-Requires: 
+Requires: roscpp rospy std_msgs roma_msgs

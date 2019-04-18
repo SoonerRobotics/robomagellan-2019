@@ -20,9 +20,6 @@ class motion_cmds {
       // initObj === null is a special case for deserialization where we don't initialize fields
       this.power = null;
       this.steer_ang = null;
-      this.near_cone = null;
-      this.cone_visible = null;
-      this.opencv_error = null;
     }
     else {
       if (initObj.hasOwnProperty('power')) {
@@ -37,24 +34,6 @@ class motion_cmds {
       else {
         this.steer_ang = 0.0;
       }
-      if (initObj.hasOwnProperty('near_cone')) {
-        this.near_cone = initObj.near_cone
-      }
-      else {
-        this.near_cone = false;
-      }
-      if (initObj.hasOwnProperty('cone_visible')) {
-        this.cone_visible = initObj.cone_visible
-      }
-      else {
-        this.cone_visible = false;
-      }
-      if (initObj.hasOwnProperty('opencv_error')) {
-        this.opencv_error = initObj.opencv_error
-      }
-      else {
-        this.opencv_error = 0.0;
-      }
     }
   }
 
@@ -64,12 +43,6 @@ class motion_cmds {
     bufferOffset = _serializer.float32(obj.power, buffer, bufferOffset);
     // Serialize message field [steer_ang]
     bufferOffset = _serializer.float32(obj.steer_ang, buffer, bufferOffset);
-    // Serialize message field [near_cone]
-    bufferOffset = _serializer.bool(obj.near_cone, buffer, bufferOffset);
-    // Serialize message field [cone_visible]
-    bufferOffset = _serializer.bool(obj.cone_visible, buffer, bufferOffset);
-    // Serialize message field [opencv_error]
-    bufferOffset = _serializer.float32(obj.opencv_error, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -81,17 +54,11 @@ class motion_cmds {
     data.power = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [steer_ang]
     data.steer_ang = _deserializer.float32(buffer, bufferOffset);
-    // Deserialize message field [near_cone]
-    data.near_cone = _deserializer.bool(buffer, bufferOffset);
-    // Deserialize message field [cone_visible]
-    data.cone_visible = _deserializer.bool(buffer, bufferOffset);
-    // Deserialize message field [opencv_error]
-    data.opencv_error = _deserializer.float32(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 14;
+    return 8;
   }
 
   static datatype() {
@@ -101,7 +68,7 @@ class motion_cmds {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'b8d7592f04e59bfb9ef4b6b5b23f809d';
+    return '4f545a067a10b78db31f8ffc31ecfca8';
   }
 
   static messageDefinition() {
@@ -109,9 +76,6 @@ class motion_cmds {
     return `
     float32 power
     float32 steer_ang
-    bool near_cone
-    bool cone_visible
-    float32 opencv_error
     `;
   }
 
@@ -133,27 +97,6 @@ class motion_cmds {
     }
     else {
       resolved.steer_ang = 0.0
-    }
-
-    if (msg.near_cone !== undefined) {
-      resolved.near_cone = msg.near_cone;
-    }
-    else {
-      resolved.near_cone = false
-    }
-
-    if (msg.cone_visible !== undefined) {
-      resolved.cone_visible = msg.cone_visible;
-    }
-    else {
-      resolved.cone_visible = false
-    }
-
-    if (msg.opencv_error !== undefined) {
-      resolved.opencv_error = msg.opencv_error;
-    }
-    else {
-      resolved.opencv_error = 0.0
     }
 
     return resolved;

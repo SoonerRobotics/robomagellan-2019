@@ -2,16 +2,20 @@
 #include "std_msgs/String.h"
 #include "sensor_msgs/LaserScan.h"
 #include "roma_msgs/obstacles.h"
+#include "roma_msgs/motion_cmds.h"
 
 ros::Publisher obstacle_pub;
+
 //CONSTANTS
 #define MAX_DISTANCE 5 //Max distance of 8 meters
 #define OBS_DST_DELTA 0.5
 
-struct Obstacle{
+struct Obstacle
+{
     float angle;
     float distance;
 };
+
 
 /**
  * @brief 
@@ -81,14 +85,16 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
     obstacle_pub.publish(ob_msg);
 }
 
+
 /**
  * @brief - Handles OpenCV callbacks for cone detection
  * 
  */
-void opencvCallback(/*TODO*/)
+void opencvCallback(const roma_msgs::motion_cmds::ConstPtr& cmd)
 {
 
 }
+
 
 /**
  * @brief 
@@ -101,13 +107,17 @@ int main(int argc, char** argv)
 {
     //Initialize the node
     ros::init(argc, argv, "obstacle_avoidance_node");
-    //Set up node
+    
+	//Set up node
     ros::NodeHandle obstacle_node;
-    //Create the publisher for the obstacle message
+    
+	//Create the publisher for the obstacle message
     obstacle_pub = obstacle_node.advertise<roma_msgs::obstacles>(obstacle_node.resolveName("/roma_vision/obstacles"), 10);
-    //Create the subscribers
-    ros::Subscriber lidar = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, onLidarCallback);
-    ross:subscriber openCV = obstacle_node.subscribe(obstacle_node.resolveName(/*TODO*/), 10, &opencvCallback);
-    //Automatically handles callbacks
+    
+	//Create the subscribers
+    ros::Subscriber lidar_sub = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, onLidarCallback);
+    ros::Subscriber opencv_sub = obstacle_node.subscribe(obstacle_node.resolveName("/roma_vision/opencv_cmd"), 10, &opencvCallback);
+    
+	//Automatically handle callbacks
     ros::spin();
 }

@@ -25,17 +25,11 @@ struct motion_cmds_
 
   motion_cmds_()
     : power(0.0)
-    , steer_ang(0.0)
-    , near_cone(false)
-    , cone_visible(false)
-    , opencv_error(0.0)  {
+    , steer_ang(0.0)  {
     }
   motion_cmds_(const ContainerAllocator& _alloc)
     : power(0.0)
-    , steer_ang(0.0)
-    , near_cone(false)
-    , cone_visible(false)
-    , opencv_error(0.0)  {
+    , steer_ang(0.0)  {
   (void)_alloc;
     }
 
@@ -46,15 +40,6 @@ struct motion_cmds_
 
    typedef float _steer_ang_type;
   _steer_ang_type steer_ang;
-
-   typedef uint8_t _near_cone_type;
-  _near_cone_type near_cone;
-
-   typedef uint8_t _cone_visible_type;
-  _cone_visible_type cone_visible;
-
-   typedef float _opencv_error_type;
-  _opencv_error_type opencv_error;
 
 
 
@@ -91,11 +76,7 @@ namespace message_traits
 
 
 // BOOLTRAITS {'IsFixedSize': True, 'IsMessage': True, 'HasHeader': False}
-<<<<<<< HEAD
-// {'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg'], 'roma_msgs': ['/home/preston/robomagellan-2019/roma_ws/src/roma_msgs/msg']}
-=======
-// {'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg'], 'roma_msgs': ['/home/trey/scr/robomagellan-2019/roma_ws/src/roma_msgs/msg']}
->>>>>>> 5febfeaba79da239f9f9a67581a6aff969502c0c
+// {'std_msgs': ['/opt/ros/kinetic/share/std_msgs/cmake/../msg'], 'roma_msgs': ['/home/jkleiber/robomagellan-2019/roma_ws/src/roma_msgs/msg']}
 
 // !!!!!!!!!!! ['__class__', '__delattr__', '__dict__', '__doc__', '__eq__', '__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parsed_fields', 'constants', 'fields', 'full_name', 'has_header', 'header_present', 'names', 'package', 'parsed_fields', 'short_name', 'text', 'types']
 
@@ -138,12 +119,12 @@ struct MD5Sum< ::roma_msgs::motion_cmds_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "b8d7592f04e59bfb9ef4b6b5b23f809d";
+    return "4f545a067a10b78db31f8ffc31ecfca8";
   }
 
   static const char* value(const ::roma_msgs::motion_cmds_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xb8d7592f04e59bfbULL;
-  static const uint64_t static_value2 = 0x9ef4b6b5b23f809dULL;
+  static const uint64_t static_value1 = 0x4f545a067a10b78dULL;
+  static const uint64_t static_value2 = 0xb31f8ffc31ecfca8ULL;
 };
 
 template<class ContainerAllocator>
@@ -164,9 +145,6 @@ struct Definition< ::roma_msgs::motion_cmds_<ContainerAllocator> >
   {
     return "float32 power\n\
 float32 steer_ang\n\
-bool near_cone\n\
-bool cone_visible\n\
-float32 opencv_error\n\
 ";
   }
 
@@ -187,9 +165,6 @@ namespace serialization
     {
       stream.next(m.power);
       stream.next(m.steer_ang);
-      stream.next(m.near_cone);
-      stream.next(m.cone_visible);
-      stream.next(m.opencv_error);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -212,12 +187,6 @@ struct Printer< ::roma_msgs::motion_cmds_<ContainerAllocator> >
     Printer<float>::stream(s, indent + "  ", v.power);
     s << indent << "steer_ang: ";
     Printer<float>::stream(s, indent + "  ", v.steer_ang);
-    s << indent << "near_cone: ";
-    Printer<uint8_t>::stream(s, indent + "  ", v.near_cone);
-    s << indent << "cone_visible: ";
-    Printer<uint8_t>::stream(s, indent + "  ", v.cone_visible);
-    s << indent << "opencv_error: ";
-    Printer<float>::stream(s, indent + "  ", v.opencv_error);
   }
 };
 

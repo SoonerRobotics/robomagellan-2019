@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(roma_msgs_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/home/jkleiber/robomagellan-2019/roma_ws/devel/include " STREQUAL " ")
+if(NOT "/home/jkleiber/robomagellan-2019/roma_ws/devel/include;/home/jkleiber/robomagellan-2019/roma_ws/src/roma_msgs/include " STREQUAL " ")
   set(roma_msgs_INCLUDE_DIRS "")
-  set(_include_dirs "/home/jkleiber/robomagellan-2019/roma_ws/devel/include")
+  set(_include_dirs "/home/jkleiber/robomagellan-2019/roma_ws/devel/include;/home/jkleiber/robomagellan-2019/roma_ws/src/roma_msgs/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -129,7 +129,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/jkleiber/robomagellan-2019/roma_ws/devel/lib;/home/jkleiber/robomagellan-2019/roma_ws/devel/lib;/opt/ros/kinetic/lib)
+    foreach(path /home/jkleiber/robomagellan-2019/roma_ws/devel/lib;/home/jkleiber/intro_robotics_ws/devel/lib;/opt/ros/kinetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

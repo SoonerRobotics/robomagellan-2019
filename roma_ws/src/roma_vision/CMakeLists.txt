@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(roma_vision)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -74,8 +74,6 @@ find_package(catkin REQUIRED COMPONENTS
 #   std_msgs
 # )
 
-generate_messages(DEPENDENCIES std_msgs)
-
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
 ################################################
@@ -108,7 +106,7 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES roma_vision
-#  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+   CATKIN_DEPENDS roscpp rospy std_msgs roma_msgs
 #  DEPENDS system_lib
 )
 
@@ -146,12 +144,10 @@ add_executable(obstacle_avoidance_node src/obstacle_avoidance.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(obstacle_avoidance_node ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(obstacle_avoidance_node
-   ${catkin_LIBRARIES}
- )
+target_link_libraries(obstacle_avoidance_node ${catkin_LIBRARIES})
 
 #############
 ## Install ##
