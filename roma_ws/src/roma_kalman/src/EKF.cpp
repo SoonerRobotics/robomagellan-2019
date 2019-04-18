@@ -1,34 +1,45 @@
-#include "roma_kalman/include/EKF.h"
+#include "roma_kalman/EKF.h"
 
+
+EKF::EKF()
+{
+
+}
 
 EKF::EKF(Eigen::VectorXd xo, Eigen::MatrixXd Po)
 {
+	this->init(xo, Po);
+}
+
+
+void EKF::init(Eigen::VectorXd xo, Eigen::MatrixXd Po)
+{
 	/**Initialize the Jacobians! **/
 	//Fk = Jacobian for motion model
-	this->Fk = Eigen::Identity(NUM_STATES, NUM_STATES);
+	this->Fk = Eigen::MatrixXd::Identity(NUM_STATES, NUM_STATES);
 
 	//Hk = Jacobian of the measurement function
-	this->Hk = Eigen::Identity(NUM_STATES, NUM_STATES);
+	this->Hk = Eigen::MatrixXd::Identity(NUM_STATES, NUM_STATES);
 
 	/** Set the filter initial conditions **/
-	this->state_vector = Eigen::Zero(NUM_STATES);
-	this->last_state = init_state;
-	this->Pk = Eigen::Identity(NUM_STATES, NUM_STATES) * 0.1;
+	this->state_vector = Eigen::VectorXd::Zero(NUM_STATES);
+	this->last_state = xo;
+	this->Pk = Eigen::MatrixXd::Identity(NUM_STATES, NUM_STATES) * 0.1;
 	this->Pk_last = Po;
 
 	/** Timing variables **/
 	this->last_time = ros::Time::now().toNSec() / 1000.0 / 1000.0 / 1000.0;
 
 	/** Set up the noise matrices **/
-	this->R = Eigen::Identity(NUM_STATES, NUM_STATES) * 0.5;
-	this->Q = Eigen::Identity(NUM_STATES, NUM_STATES) * 0.6;
+	this->R = Eigen::MatrixXd::Identity(NUM_STATES, NUM_STATES) * 0.5;
+	this->Q = Eigen::MatrixXd::Identity(NUM_STATES, NUM_STATES) * 0.6;
 
 	//Output that the kalman filter is initialized
 	printf("EKF initialized\n");
 }
 
 
-void EKF::run_filter(vector<double> sensor_data)
+void EKF::run_filter(std::vector<double> sensor_data)
 {
 	//Declare local variables
 	double current_time;
@@ -54,7 +65,7 @@ void EKF::run_filter(vector<double> sensor_data)
 
 	//Update the estimate vector and uncertainty matrix based on innovation and gain
 	this->state_vector = this->state_vector + this->Gk * (this->vk);
-	this->Pk = (Eigen::Identity(NUM_STATES, NUM_STATES) - (this->Gk * this->Hk)) * this->Pk;
+	this->Pk = (Eigen::MatrixXd::Identity(NUM_STATES, NUM_STATES) - (this->Gk * this->Hk)) * this->Pk;
 
 	//Update timing
 	this->last_time = current_time;
@@ -73,8 +84,8 @@ Eigen::VectorXd EKF::get_state_vector()
 
 roma_msgs::kalman_state EKF::get_state_msg()
 {
-	this->state_msg.gps_lat 	= this->state_vector(0);
-	this->state_msg.gps_lon 	= this->state_vector(1);
+	this->state_msg.latitude 	= this->state_vector(0);
+	this->state_msg.longitude 	= this->state_vector(1);
 	this->state_msg.velocity 	= this->state_vector(2);
 	this->state_msg.accel 		= this->state_vector(3);
 	this->state_msg.heading		= this->state_vector(4);
@@ -111,7 +122,7 @@ void EKF::motion_model(double deltaT)
 }
 
 
-Eigen::VectorXd measurement_model(vector<double> sensor_data)
+Eigen::VectorXd EKF::measurement_model(std::vector<double> sensor_data)
 {
 	//Declare local variables
 	Eigen::VectorXd zk;
