@@ -43,17 +43,16 @@ void intellectualWait(unsigned long ms) {
 void loop() 
 {
     //Form localization msg
-	local_data.gps_lat = 0; //gps.getLat();
-	local_data.gps_lon = 0; //gps.getLong();
+	local_data.gps_lat = gps.getLat();
+	local_data.gps_lon = gps.getLong();
 	local_data.vel = 0;
-	local_data.accel_x = 0; //imu0.getAccelX();
+	local_data.accel_x = imu0.getAccelX();
+	local_data.heading = imu0.getOrientX();
 
 	//Publish the message
 	data_pub.publish(&local_data);
 
 	localization_node.spinOnce();
-
-	Serial.println("yeet");
 
 	intellectualWait(100);	
 }
