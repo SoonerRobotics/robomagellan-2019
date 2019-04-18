@@ -1,23 +1,26 @@
 #ifndef MOTION_SETUP_H
 #define MOTION_SETUP_H
 
+#include <ros.h>
+#include <roma_msgs/motion_cmds.h>
+#include <roma_msgs/motion_feedback.h>
+
 #include <Wire.h>
 #include <SPI.h>
 #include "RF24.h"
 #include "MotionGlobals.h"
 #include "Drivetrain.h"
 
+//Set up the ROS node for this code
+ros::NodeHandle_<ArduinoHardware, 2, 2, 80, 105> motion_node;
+
 //Full serial data packet
 typedef struct DataPacket_u
 {
     //GPS Location Stuff
-    bool nearCone;          //true if near cone, false if not
-    float power;            //power to the drive motor
-    float steeringAngle;    //steering angle
+    float power = 0;            //power to the drive motor
+    float steeringAngle = 0;    //steering angle
 
-    //OpenCV Stuff
-    float opencv_error;     //error between center screen and percieved cone
-    bool canSeeCone;        //tells if the cone is in the viewport of the camera
 } DataPacket;
 
 //Declare systems
@@ -33,10 +36,19 @@ RF24 radio(9, 10);
 int robot_state;
 
 //Forward Declare Functions as needed
-void sendMotionSerialData(bool birth_packet);
+void command_update(const roma_msgs::motion_cmds& command);
+void sendMotionData();
 void reverseRoutine();
 void receive();
 
+
+//ROS subscribers
+//TODO: choose official topic (this should be good though)
+ros::Subscriber<roma_msgs::motion_cmds> cmd_sub("/roma_motion/cmd", &command_update);
+
+//ROS publishers
+roma_msgs::motion_feedback feedback_msg;
+ros::Publisher feedback_pub("/roma_motion/feedback", &feedback_msg);
 
 //Radio configuration
 byte addressesi[][6] = {"1Node","2Node"};
@@ -48,9 +60,15 @@ void motionSetup()
     Motor servo;
     RomaServo romaServo;
 
+	//Initialize ROS and pubs/subs
+	motion_node.initNode();
+	motion_node.subscribe(cmd_sub);
+	motion_node.advertise(feedback_pub);
+
+	//TODO: do we need this?
     //Start serial for input
     //Note: this baud rate must be standard across devices
-    Serial.begin(STD_BAUD_RATE);
+    //Serial.begin(STD_BAUD_RATE);
 
 	//Setup the radio
 	radio.begin();
@@ -80,96 +98,40 @@ void motionSetup()
     attachInterrupt(LIMIT_PIN, reverseRoutine, RISING);
 
 	//Disable the drivetrain and set the operation to paused
-	drivetrain.disable();
-	robot_state = PAUSE_STATE;
-
-    //Wait until the raspberry pi has booted up
-    while(Serial.peek() == -1)
-    { 
-        //Send messsages into the void
-        sendMotionSerialData(true);
-        delay(500); 
-    }
-
-    //Send first acknowledgement
-    sendMotionSerialData(true);
+	//drivetrain.disable();
+	//robot_state = PAUSE_STATE;
 }
 
 /******************************************
-            JSON Serial Handler
+             ROS Callbacks
 ******************************************/
 
 //Callback for received data
-void serialEvent()
+void command_update(const roma_msgs::motion_cmds& command)
 {
-    //Declare local variabls
-    String rawInput;
-    
-    //Initialize Local variables
-    rawInput = "";
-
-    //Read data off the bus
-    while(Serial.available())
-    {
-        //Get a data character and add it to the string
-        char data = (char)Serial.read();
-        rawInput += data;
-
-        //End transmission on newline
-        if(data == '\n')
-        {
-            break;
-        }
-    } 
-
-
-    //If the parse was successful, add the data to the struct
-    if(root.success())
-    {
-        curData.nearCone        = root["data"]["gps_near_cone"].as<bool>();
-        curData.power           = root["data"]["traj_power"].as<float>();
-        curData.steeringAngle   = root["data"]["steer_ang"].as<float>();
-        curData.opencv_error    = root["data"]["opencv_error"].as<int>();
-        curData.canSeeCone      = root["data"]["opencv_cone_visible"].as<bool>();
-    }
-
-    //Serial Test code REMOVE LATER
-    //jsonObject.printTo(Serial);
-    //Serial.println();
+    curData.power           = command.power;
+    curData.steeringAngle   = command.steer_ang;
+	
+	digitalWrite(13, HIGH);
+	delay(100);
+	digitalWrite(13, LOW);
+	delay(100);
+	digitalWrite(13, HIGH);
+	delay(100);
+	digitalWrite(13, LOW);
 }
 
 /**
- * Function that sends data to the main board. Will also send a birth packet to set up serial communication
+ * Function that sends data to the main board.
  */
-void sendMotionSerialData(bool birth_packet)
+void sendMotionData()
 {
-
-    //Set the device ID
-    root["id"] = MOTION_DEVICE_ID;
-
-    //For regular operation, send the robot's status
-    if(!birth_packet)
-    {
-        //Indicate normal operations
-        root["event"] = "feedback";
-
-        //Make the data array
-        
-        dataArray["steer_ang"] = drivetrain.getTurnAngle();
-    }
-    else
-    {
-        //Indicate normal operations
-        root["event"] = "birth";
-
-        //Make the data array
-        
-        dataArray["steer_ang"] = drivetrain.getTurnAngle();
-    }
-
-    //Send data to the main board
-    root.printTo(Serial);
-    Serial.write("\n");
+	//Form the motion feedback message
+    roma_msgs::motion_feedback feedback_data;
+	feedback_data.steer_ang = drivetrain.getTurnAngle();
+    
+	//Publish the feedback data
+	feedback_pub.publish(&feedback_data);
 }
 
 /**********************
@@ -177,7 +139,7 @@ void sendMotionSerialData(bool birth_packet)
  **********************/
 
 /**
- * Routine to run when the robot needs to revese away from an obstacle
+ * Routine to run when the robot needs to reverse away from an obstacle
  */
 void reverseRoutine()
 {
@@ -219,19 +181,21 @@ void receive()
 		{
 			//Disable the drivetrain
 			drivetrain.disable();
-
+Serial.println("killed");
 			//Run an infinite loop
 			while(true){}
 		}
 		//If a start message is sent, start the robot
 		else if(message == MSG_START) 
 		{
+    Serial.println("started");
 			drivetrain.enable();
 			robot_state = RUN_STATE;
 		}
 		//If the message is a pause message, toggle run state
 		else if(message == MSG_PAUSE) 
 		{
+    Serial.println("pause toggle");
 			if(robot_state == RUN_STATE) 
 			{
 				drivetrain.disable();

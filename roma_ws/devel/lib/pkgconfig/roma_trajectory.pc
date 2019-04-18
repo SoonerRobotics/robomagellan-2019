@@ -1,8 +1,0 @@
-prefix=/home/jkleiber/robomagellan-2019/roma_ws/devel
-
-Name: roma_trajectory
-Description: Description of roma_trajectory
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/jkleiber/robomagellan-2019/roma_ws/devel/lib 
-Requires: 

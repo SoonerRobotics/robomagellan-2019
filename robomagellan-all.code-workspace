@@ -22,8 +22,9 @@
 	"settings": {
 		"files.associations": {
 			"cmath": "cpp",
-			"cstdlib": "cpp"
-        },
+			"cstdlib": "cpp",
+			"vector": "cpp"
+		},
 		"editor.insertSpaces": false,
 		"editor.detectIndentation": false
 	}

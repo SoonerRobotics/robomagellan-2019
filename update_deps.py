@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import os
 from os.path import expanduser
 from os.path import basename
@@ -7,7 +9,8 @@ git_links = ["https://github.com/Sooner-Competitive-Robotics/RobotLib",
 				"https://github.com/Sooner-Competitive-Robotics/SCR_Adafruit_BNO055",
 				"https://github.com/adafruit/Adafruit_Sensor",
 				"https://github.com/mikalhart/TinyGPS",
-				"https://github.com/bblanchon/ArduinoJson.git"]
+				"https://github.com/bblanchon/ArduinoJson",
+				"https://github.com/nRF24/RF24"]
 
 #Path to the user's directory. This is the parent of the documents directory
 user_path = expanduser("~")
