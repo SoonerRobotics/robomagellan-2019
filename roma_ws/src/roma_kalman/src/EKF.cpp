@@ -17,7 +17,7 @@ EKF::EKF(Eigen::VectorXd xo, Eigen::MatrixXd Po)
 	this->Pk_last = Po;
 
 	/** Timing variables **/
-	this->last_time = ros::Time::now().toSec();//TODO: use finer grain time unit
+	this->last_time = ros::Time::now().toNSec() / 1000.0 / 1000.0 / 1000.0;
 
 	/** Set up the noise matrices **/
 	this->R = Eigen::Identity(NUM_STATES, NUM_STATES) * 0.5;
@@ -31,12 +31,11 @@ EKF::EKF(Eigen::VectorXd xo, Eigen::MatrixXd Po)
 void EKF::run_filter(vector<double> sensor_data)
 {
 	//Declare local variables
-	long current_time;
+	double current_time;
 	double deltaT;
 
-	//Get timing
-	current_time = ros::Time::now().toSec();//TODO: use finer grain time unit
-	//TODO: convert time to seconds to get decimal values
+	//Get timing in nsec and convert to seconds
+	current_time = ros::Time::now().toNSec() / 1000.0 / 1000.0 / 1000.0;
 	deltaT = current_time - this->last_time;
 
 	/**Predict the state of the robot based on the motion model (physics) **/
@@ -87,7 +86,28 @@ roma_msgs::kalman_state EKF::get_state_msg()
 
 void EKF::motion_model(double deltaT)
 {
-	//TODO: implement
+	//Run the physics equations to estimate current state
+	this->state_vector(0) = this->last_state(0) + (this->last_state(2) * cos(this->last_state(4) * M_PI / 180.0) * sin(last_state(5) * M_PI / 180.0) * deltaT);
+	this->state_vector(1) = this->last_state(1) + (this->last_state(2) * cos(this->last_state(4) * M_PI / 180.0) * cos(last_state(5) * M_PI / 180.0) * deltaT);
+	this->state_vector(2) = this->last_state(2) + (this->last_state(3) * deltaT);
+	this->state_vector(3) = this->last_state(3);
+	this->state_vector(4) = this->last_state(4) + (this->last_state(2) / WHEELBASE_LENGTH) * tan(this->last_state(5));
+	this->state_vector(5) = this->last_state(5);
+
+	//Update the jacobian of the motion model based on the last values
+	//Latitude depends on velocity, steering angle, and heading
+	this->Fk(0, 2) = cos(last_state(4) * M_PI / 180.0) * sin(last_state(5) * M_PI / 180.0);
+	this->Fk(0, 4) = last_state(2) * cos(last_state(4) * M_PI / 180.0) * cos(last_state(5) * M_PI / 180.0);
+	this->Fk(0, 5) = -last_state(2) * cos(last_state(4) * M_PI / 180.0) * sin(last_state(5) * M_PI / 180.0);
+	
+	//Longitude depends on the same things Latitude does
+	this->Fk(1, 2) = cos(last_state(4) * M_PI / 180.0) * cos(last_state(5) * M_PI / 180.0);
+	this->Fk(1, 4) = -last_state(2) * sin(last_state(4) * M_PI / 180.0) * cos(last_state(5) * M_PI / 180.0);
+	this->Fk(1, 5) = -last_state(2) * cos(last_state(4) * M_PI / 180.0) * sin(last_state(5) * M_PI / 180.0);
+
+	//Heading depends on velocity and steering angle
+	this->Fk(4, 2) = tan(last_state(5) * M_PI / 180) / WHEELBASE_LENGTH;
+	this->Fk(4, 5) = (last_state(2) / WHEELBASE_LENGTH) * pow(1 / tan(last_state(5)), 2);
 }
 
 

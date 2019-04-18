@@ -6,6 +6,7 @@
 
 //Include libraries
 #include <eigen3/Eigen/Dense.h>
+#include <math.h>
 
 //Include messages
 #include <roma_msgs/kalman_state.h>
@@ -50,7 +51,7 @@ class EKF
 
 		//Other Filter data
 		Eigen::VectorXd last_state;
-		long last_time;
+		double last_time;
 
 
 		void 
