@@ -1,8 +1,8 @@
 <launch>
 	
 	<!-- Launch two rosserial nodes for arduino interface -->
-	<node ns="motion" name="motion_serial" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyUSB0" output="screen" />
-	<node ns="localization" name="localization_serial" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyUSB1" output="screen" />
+	<node ns="roma_motion" name="motion_serial" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyUSB0" output="screen" />
+<!--<node ns="roma_localization" name="localization_serial" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyUSB1" output="screen" /> -->
 
 	<!-- Launch the EKF -->
 	<node pkg="roma_kalman" type="sensor_data_node" name="sensor_data_node" output="screen" />
@@ -11,7 +11,7 @@
 	<!-- TODO: Launch the trajectory nodes -->
 
 	<!-- Launch LiDAR -->
-	<include file="$(find ydlidar)/launch/lidar_custom.launch" />
+	<!--<include file="$(find ydlidar)/launch/lidar_custom.launch" /> -->
 
 	<!-- Launch the obstacle avoidance and OpenCV -->
 	<node pkg="roma_vision" type="obstacle_avoidance_node" name="obstacle_avoidance_node" output="screen" />
