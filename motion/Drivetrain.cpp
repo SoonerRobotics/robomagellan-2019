@@ -27,6 +27,8 @@ void Drivetrain::setPower(float power)
 
 void Drivetrain::setTurn(float angle)
 {    
+	this->turnServo.writeToAngle(angle);
+	/*
 	num = angle + minsteeringangle;
 	den = maxsteeringangle - minsteeringangle;
 	servorange = maxservoangle - minservoangle;
@@ -35,9 +37,13 @@ void Drivetrain::setTurn(float angle)
 
 	desired = rat * servorange + minservoangle;
 	
-	this->turnServo.write(desired);
+	this->turnServo.write(desired);*/
 }
 
+void Drivetrain::holdTurnPosition()
+{
+    this->turnServo.holdPosition();
+}
 
 
 void Drivetrain::disable()

@@ -68,7 +68,7 @@ void motionSetup()
 	//TODO: do we need this?
     //Start serial for input
     //Note: this baud rate must be standard across devices
-    //Serial.begin(STD_BAUD_RATE);
+    Serial.begin(STD_BAUD_RATE);
 
 	//Setup the radio
 	radio.begin();

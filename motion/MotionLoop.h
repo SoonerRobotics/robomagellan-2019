@@ -35,10 +35,10 @@ void motionLoop()
     currentTime = millis();
 
     //Check if we're near the next cone
-	if (curData.nearCone)
+	/*if (curData.nearCone)
 	{
 		/* DRIVETRAIN UPADTE */
-		drivetrainLoop(DEFAULT_POWER / 2);
+		/*drivetrainLoop(DEFAULT_POWER / 2);
 
 			if (curData.canSeeCone)
 			{
@@ -66,12 +66,14 @@ void motionLoop()
 			}
 	}
     else
-    {
+    {*/
+		Serial.println(drivetrain.getTurnAngle());
+
         /* DRIVETRAIN UPADTE */
         drivetrainLoop(curData.power);
 
-        //servoLoop(curData.steeringAngle);
-    }
+        servoLoop(curData.steeringAngle);
+    //}
 
     //Send steering angle feedback data
     rosLoop();

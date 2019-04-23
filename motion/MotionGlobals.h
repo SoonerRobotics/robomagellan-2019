@@ -40,7 +40,7 @@
 
 //JSON constants
 #define MOTION_DEVICE_ID    1                                               //Device ID for initial serial packets
-#define STD_BAUD_RATE       115200                                          //Baud rate of all devices
+#define STD_BAUD_RATE       57600                                           //Baud rate of all devices
 
 //Serial update
 #define SERIAL_UPDATE_RATE 100  //100 Hz update rate

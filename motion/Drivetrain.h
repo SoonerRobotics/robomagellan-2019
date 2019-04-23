@@ -25,7 +25,7 @@ class Drivetrain
 
     private:
         Motor driveMotor;
-		Servo turnServo;
+		RomaServo turnServo;
 		int pos;
 	
 
