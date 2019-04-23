@@ -5,6 +5,7 @@
 #include "roma_msgs/motion_cmds.h"
 
 ros::Publisher obstacle_pub;
+ros::Publisher cmd_pub;
 
 //CONSTANTS
 #define MAX_DISTANCE 5 //Max distance of 8 meters
@@ -92,7 +93,8 @@ void onLidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg) {
  */
 void opencvCallback(const roma_msgs::motion_cmds::ConstPtr& cmd)
 {
-
+	//TODO: Actually decide whether to pass through or not
+	cmd_pub.publish(*cmd);
 }
 
 
@@ -113,9 +115,10 @@ int main(int argc, char** argv)
     
 	//Create the publisher for the obstacle message
     obstacle_pub = obstacle_node.advertise<roma_msgs::obstacles>(obstacle_node.resolveName("/roma_vision/obstacles"), 10);
+	cmd_pub = obstacle_node.advertise<roma_msgs::motion_cmds>(obstacle_node.resolveName("/roma_motion/cmd"), 10);
     
 	//Create the subscribers
-    ros::Subscriber lidar_sub = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, onLidarCallback);
+    ros::Subscriber lidar_sub = obstacle_node.subscribe(obstacle_node.resolveName("/scan"), 10, &onLidarCallback);
     ros::Subscriber opencv_sub = obstacle_node.subscribe(obstacle_node.resolveName("/roma_vision/opencv_cmd"), 10, &opencvCallback);
     
 	//Automatically handle callbacks

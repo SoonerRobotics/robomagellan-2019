@@ -96,6 +96,7 @@ int main(int argc, char** argv)
 
 	//Read sensor data from these topics
 	ros::Subscriber localization_sub = sensor_data_node.subscribe(sensor_data_node.resolveName("/roma_localization/data"), 10, &localization_callback);
+	ros::Subscriber motion_sub = sensor_data_node.subscribe(sensor_data_node.resolveName("/roma_motion/feedback"), 10, &motion_callback);
 
 	//Publish current state data to this topic
 	state_pub = sensor_data_node.advertise<roma_msgs::sensor_data>(sensor_data_node.resolveName("/roma_kalman/sensor_data"), 10);
