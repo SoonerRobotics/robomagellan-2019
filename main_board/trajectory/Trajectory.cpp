@@ -179,22 +179,14 @@ std::queue<Point> Trajectory::findShortestConePath(Point start, Point* cones) {
 		tdIndex++; // increment total distance index
 	}
 
+	// variables for shortest path and distance
 	std::queue<Point> minPath;
-	double currentMinDist = 0.0;
-	// find the minimum total distance
-	for (int i = 0; i < 6; i++) {
-		if (totalDist[i] < currentMinDist) {
-			currentMinDist = totalDist[i];
-			minPath = paths[i];
-		}
-	}
+	double currentMinDist = totalDist[0];
 
-	std::queue<Point> minPath;
-	double currentMinDist = 0.0;
-	// find the minimum total distance
-	// 
-	for (int i = 0; i < 6; i++) {
+	// find the minimum total distance 
+	for (int i = 1; i < 6; i++) {
 		if (totalDist[i] < currentMinDist) {
+			// update shortest path and distance
 			currentMinDist = totalDist[i];
 			minPath = paths[i];
 		}
