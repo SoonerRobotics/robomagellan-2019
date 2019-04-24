@@ -83,26 +83,142 @@ std::queue<Point> Trajectory::buildTrajectoryTo(Point curr, Point next) {
 	// return all 3 coordinates in a queue 
 	return trajeQueue;}
 
-// TODO
+// TODO: test the function
 // find the shortest path from starting point to all 3 cones
 std::queue<Point> Trajectory::findShortestConePath(Point start, Point* cones) {
-	// A, B, C are cones' point, A = 0, B = 1, C = 2
-	double totalDist = 0; // total path distance
+	// A, B, C are cones' points, 
+	// cones [0], A is 0; cones[1], B is 1; cones[2], C is 2
+	double totalDist[6]; // total path distance
+	int tdIndex = 0; // total distance index
 	double currDist = 0; // current distance
-
-	std::queue<Point> conesQueue;
 	
-	// start -> A -> B -> C
+	// have a list of queue for paths
+	std::queue<Point> paths[6];
+	// var for first and current cones
+	Point firstCone;
+	Point currCone;
+	
+	/*
+	we know there are 6 possible paths:
+	start012, start021,	start102
+	start120, start201,	start210
+	*/
+	
+	// build the possible path 
+	for (int j = 0; j < 3; j++) {
+		// start always the first point
+		// start point added to path
+		paths[tdIndex].push(start);
 
-	// start -> A -> C -> B
+		// first cone waypoint added to path
+		paths[tdIndex].push(cones[j]);
+		
+		// reset current distance calculation
+		currDist = 0;
 
-	// start -> B -> A -> C
+		// calculate distance from start to the first cone
+		// start0, start1, start2
+		currDist += start.calcDistanceTo(cones[j]);
+		currCone = cones[j]; // update current cone
 
-	// start -> B -> C -> A
+		// first, third, fifth path
+		// start012, start102, start201
+		for (int k = 0; k < 3; k++) {
+			int conesCount = 1;
+			if (j != k) {
+				paths[tdIndex].push(cones[k]);
+				// calculate distance from the first cone to second cone or
+				// calculate distance from the second cone to third cone
+				// start01, start012
+				// start10, start102
+				// start20, start 201 
+				currDist += currCone.calcDistanceTo(cones[k]);
+				// update current cone
+				currCone = cones[k];
+				conesCount++;
+				if (conesCount == 3) {
+					totalDist[tdIndex] = currDist;
+				}
+			}
+		}
 
-	// start -> C -> A -> B
+		// new path
+		// increment total distance's index
+		tdIndex++;
+		// reset current distance calculation
+		currDist = 0;
 
-	// start -> C -> B -> A
+		// start always the first point
+		// start waypoint added to path
+		paths[tdIndex].push(start);
+		// first cone waypoint added to path
+		paths[tdIndex].push(cones[j]);
 
-	return conesQueue;
+		// calculate distance from start to the first cone
+		// start0, start1, start2
+		currDist += start.calcDistanceTo(cones[j]);
+		currCone = cones[j];
+		// second, fourth, sixth path
+		// start021, start120, start210 
+		for (int m = 2; m >= 0; m--) {
+			int conesCount = 1;
+			if (j != m) {				
+				paths[tdIndex].push(cones[m]);				
+				// start02, start021
+				// start12, start120
+				// start21, start210
+				currDist += currCone.calcDistanceTo(cones[m]);
+				// update current cone & its counter
+				currCone = cones[m];
+				conesCount++;
+				if (conesCount == 3) {
+					totalDist[tdIndex] = currDist;
+				}
+			}
+		}
+		tdIndex++; // increment total distance index
+	}
+
+	std::queue<Point> minPath;
+	double currentMinDist = 0.0;
+	// find the minimum total distance
+	for (int i = 0; i < 6; i++) {
+		if (totalDist[i] < currentMinDist) {
+			currentMinDist = totalDist[i];
+			minPath = paths[i];
+		}
+	}
+
+	std::queue<Point> minPath;
+	double currentMinDist = 0.0;
+	// find the minimum total distance
+	// 
+	for (int i = 0; i < 6; i++) {
+		if (totalDist[i] < currentMinDist) {
+			currentMinDist = totalDist[i];
+			minPath = paths[i];
+		}
+	}
+
+	return minPath;
+}
+
+// TODO: get current position & get update from LIDAR
+// update to the next point once the robot is within 5 metres of its target point
+void Trajectory::updatePosition(std::queue<Point> currQueue) {
+	// get the first point on queue
+	Point currTargetPoint = currQueue.front();
+	// set a 5 metres distance threshold
+	double distThreshold = 5.0; 
+	while (!currQueue.empty()) {
+		// TODO
+		// get the robot's current position
+		Point currPos;
+		if (currPos.calcDistanceTo(currTargetPoint) < distThreshold) {
+			currQueue.pop();
+			if (!currQueue.empty()) {
+				currTargetPoint = currQueue.front();
+			}			
+		}
+	}
 }
