@@ -17,7 +17,7 @@
 #define TURN_POT_PIN A0
 
 //Servo motor constants
-#define MAX_TURN_ANGLE      35                  //Maximum servo turn angle in degrees
+#define MAX_TURN_ANGLE      (float)(35)         //Maximum servo turn angle in degrees
 #define MAX_TURN_POWER      (float)(0.4)
 #define SERVO_KP            (float)(0.2)
 #define SERVO_KI            (float)(0.001)
