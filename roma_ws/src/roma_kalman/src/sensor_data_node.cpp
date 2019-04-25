@@ -23,7 +23,7 @@ ros::Publisher state_pub;
  * 
  * @param data 
  */
-void localization_callback(const roma_msgs::sensor_data::ConstPtr& data)
+void localization_callback(const roma_msgs::localization_data::ConstPtr& data)
 {
 	//Get the data from the localization board
 	sensor_data.gps_lat = data->gps_lat;

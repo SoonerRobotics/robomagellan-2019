@@ -47,8 +47,8 @@ void IMU::zero() {
   accel_offset_y = -acceleration.acceleration.y;
   accel_offset_z = -acceleration.acceleration.z;
 
-  vel.x = 0;
-  vel.y = 0;
+  _vel.x = 0;
+  _vel.y = 0;
 }
 
 bool IMU::calibrated() {
@@ -125,12 +125,12 @@ float IMU::getAccelZ() {
 
 float IMU::getVelocityX()
 {
-    return this->vel.x;
+    return this->_vel.x;
 }
 
 float IMU::getVelocityY()
 {
-    return this->vel.y;
+    return this->_vel.y;
 }
 
 void IMU::update() {
@@ -146,6 +146,6 @@ void IMU::update() {
     dT = ((acceleration.timestamp - prev_acceleration.timestamp) / 1000000.0);
 
     //Integrate to find velocity
-    this->vel.x += 0.5 * (acceleration.acceleration.x + prev_acceleration.acceleration.x) * dT;
-    this->vel.y += 0.5 * (acceleration.acceleration.y + prev_acceleration.acceleration.y) * dT;
+    this->_vel.x += 0.5 * (acceleration.acceleration.x + prev_acceleration.acceleration.x) * dT;
+    this->_vel.y += 0.5 * (acceleration.acceleration.y + prev_acceleration.acceleration.y) * dT;
 }

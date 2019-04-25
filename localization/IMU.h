@@ -46,7 +46,7 @@ private:
   float accel_offset_y = 0;
   float accel_offset_z = 0;
 	scr_sensors_event_t prev_acceleration; //the acceleration one time step back
-    velocity vel;   //velocity vector
+    velocity _vel;   //velocity vector
 
 	void calibrate();
 };
