@@ -65,11 +65,6 @@ void motionSetup()
 	motion_node.subscribe(cmd_sub);
 	motion_node.advertise(feedback_pub);
 
-	//TODO: do we need this?
-    //Start serial for input
-    //Note: this baud rate must be standard across devices
-    Serial.begin(STD_BAUD_RATE);
-
 	//Setup the radio
 	radio.begin();
 
@@ -155,7 +150,7 @@ void reverseRoutine()
 
 
 /**
- * 
+ * Routine that is run when the robot receives a command from Syndrome's remote
  */
 void receive()
 {
@@ -181,21 +176,18 @@ void receive()
 		{
 			//Disable the drivetrain
 			drivetrain.disable();
-Serial.println("killed");
 			//Run an infinite loop
 			while(true){}
 		}
 		//If a start message is sent, start the robot
 		else if(message == MSG_START) 
 		{
-    Serial.println("started");
 			drivetrain.enable();
 			robot_state = RUN_STATE;
 		}
 		//If the message is a pause message, toggle run state
 		else if(message == MSG_PAUSE) 
 		{
-    Serial.println("pause toggle");
 			if(robot_state == RUN_STATE) 
 			{
 				drivetrain.disable();
