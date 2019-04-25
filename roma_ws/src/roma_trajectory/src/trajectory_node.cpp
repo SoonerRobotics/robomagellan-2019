@@ -43,7 +43,6 @@ void ekfCallback(const roma_msgs::kalman_state::ConstPtr& filtered_state)
     motion_cmd.power = 0.3;
     motion_cmd.steer_ang = bearing(filtered_state->latitude, filtered_state->longitude, curCoord.lat, curCoord.lon) -  filtered_state->heading;
     
-    //TODO: Does the motion node clamp steering angles to it's max turn angles? This could give values (-180, 180)
     motion_cmd.steer_ang = motion_cmd.steer_ang > 180.0 ? motion_cmd.steer_ang - 360.0 : motion_cmd.steer_ang;
 
     motion_pub.publish(motion_cmd);
@@ -62,7 +61,7 @@ int main(int argc, char** argv)
     motion_pub = trajectory_node.advertise<roma_msgs::motion_cmds>(trajectory_node.resolveName("/roma_motion/cmd"), 10);
     
 	//Create the subscribers
-    ros::Subscriber ekf_sub = trajectory_node.subscribe(trajectory_node.resolveName("/roma_kalman/sensor_data"), 10, &ekfCallback);
+    ros::Subscriber ekf_sub = trajectory_node.subscribe(trajectory_node.resolveName("/roma_kalman/state"), 10, &ekfCallback);
 
     //Read coords and put into queue, hardcoded values for now.
     Coordinate ex1;
