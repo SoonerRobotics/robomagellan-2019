@@ -74,7 +74,7 @@ void motionSetup()
 	radio.begin();
 
 	//Configure the radio
-	radio.setPALevel(RF24_PA_LOW);
+	radio.setPALevel(RF24_PA_HIGH);
 	radio.maskIRQ(1,1,0);
 	radio.openWritingPipe(addressesi[0]);
 	radio.openReadingPipe(0,addressesi[1]);
