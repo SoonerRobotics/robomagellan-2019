@@ -6,7 +6,6 @@
 #include <roma_msgs/motion_feedback.h>
 
 #include <Wire.h>
-#include <SPI.h>
 #include "RF24.h"
 #include "MotionGlobals.h"
 #include "Drivetrain.h"
@@ -69,7 +68,7 @@ void motionSetup()
 	radio.begin();
 
 	//Configure the radio
-	radio.setPALevel(RF24_PA_HIGH);
+	radio.setPALevel(RF24_PA_MAX);
 	radio.maskIRQ(1,1,0);
 	radio.openWritingPipe(addressesi[0]);
 	radio.openReadingPipe(0,addressesi[1]);
