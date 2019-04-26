@@ -1,14 +1,14 @@
 #include "RF24.h"
 
-const int KILL_BUTTON = 2;
-const int RESET_BUTTON = 3;
-const int PAUSE_BUTTON = 4;
-const int SUCCESS_LED = 5;
-const int FAIL_LED = 6;
+#define KILL_BUTTON 2
+#define RESET_BUTTON 3
+#define PAUSE_BUTTON 4
+#define SUCCESS_LED 5
+#define FAIL_LED 6
 
-const unsigned long KILL = 1;
-const unsigned long RESET = 2;
-const unsigned long PAUSE = 3;
+#define MSG_KILL 1
+#define MSG_RESET 2
+#define MSG_PAUSE 3
 
 RF24 radio(9,10);
 
@@ -32,10 +32,10 @@ void setup() {
 	radio.startListening();
 }
 
-bool send_message(unsigned long message) {
+bool send_message(byte message) {
 	radio.stopListening();
 
-	if (!radio.write(&message,sizeof(unsigned long))) {
+	if (!radio.write(&message,sizeof(byte))) {
 		return 0; // Unable to write
 	}
 
@@ -51,10 +51,10 @@ bool send_message(unsigned long message) {
 		}
 	}
 
-	unsigned long response;
-	radio.read(&response, sizeof(unsigned long));
+	byte response;
+	radio.read(&response, sizeof(byte));
 
-	//Check response
+	// Check response
 	if (response == message) {
 		return 1; // Success
 	} else {
@@ -62,20 +62,20 @@ bool send_message(unsigned long message) {
 	}
 }
 
-unsigned long read_buttons() {
+byte read_buttons() {
 	if (digitalRead(KILL_BUTTON)) {
-		return KILL;
+		return MSG_KILL;
 	} else if (digitalRead(RESET_BUTTON)) {
-		return RESET;
+		return MSG_RESET;
 	} else if (digitalRead(PAUSE_BUTTON)) {
-		return PAUSE;
+		return MSG_PAUSE;
 	} else {
 		return 0;
 	}
 }
 
 void loop() {
-	unsigned long message;
+	byte message;
 	if (message = read_buttons()) {
 		if (send_message(message)) {
 			// Success
@@ -84,7 +84,7 @@ void loop() {
 			digitalWrite(SUCCESS_LED, LOW);
 		} else {
 			// Fail
-			for (int i=0;i<5;i++) {
+			for (byte i=0;i<5;i++) {
 				digitalWrite(FAIL_LED, HIGH);
 				delay(100);
 				digitalWrite(FAIL_LED, LOW);

@@ -154,7 +154,7 @@ void reverseRoutine()
 void receive()
 {
 	//Message to read over the air
-	unsigned long message;
+	byte message;
 
 	//If the radio has info for us...
 	if(radio.available()) 
@@ -162,12 +162,12 @@ void receive()
 		//Read the message
 		while(radio.available()) 
 		{
-			radio.read(&message, sizeof(unsigned long));
+			radio.read(&message, sizeof(byte));
 		}
 
 		//Send confirmation of message
 		radio.stopListening();
-		radio.write(&message, sizeof(unsigned long));
+		radio.write(&message, sizeof(byte));
 		radio.startListening();
 
 		//If a kill message is sent, disable movement and end the program
