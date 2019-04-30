@@ -1,15 +1,23 @@
-// Point.cpp file
+// TODO: need to be tested
+// point_node.cpp file
 
-#include "Point.h"
+// include ROS
+#include <ros/ros.h>
+
+// include messages
+#include <roma_msgs/kalman_state.h>
+
+// include libraries
+#include "roma_trajectory/Point.h"
+#include <queue>
 #include <math.h>
-#include <string.h>
-#include <iostream>
 
-static const double PI = 3.14159265358979323846;	// Pi 
-static const double earthRadius = 6371 * 1000;		// mean radius in Meters
+// define in header
+//static const double PI = 3.14159265358979323846;	// Pi 
+//static const double earthRadius = 6371 * 1000;		// mean radius in Meters
 
 // constructors
-Point::Point() {
+Point::Point() { // should this be empty instead?
 	this->latitude = 0;
 	this->longitude = 0;
 	this->heading = 0;
@@ -20,14 +28,14 @@ Point::Point(double latitude, double longitude) {
 	this->latitude = latitude;
 	this->longitude = longitude;
 	this->heading = 0;
-	this->velocity = 0;	
+	this->velocity = 0;
 }
 
-Point::Point(double latitude, double longitude, double heading) {
-	this->latitude = latitude;
-	this->longitude = longitude;
-	this->heading = heading;
-	this->velocity = 0;
+Point::Point(const roma_msgs::kalman_state::ConstPtr& kalman_state) {
+	this->latitude = kalman_state->latitude;
+	this->longitude = kalman_state->longitude;
+	this->heading = kalman_state->heading;
+	this->velocity = kalman_state->velocity;
 }
 
 // getters
@@ -59,6 +67,7 @@ void Point::setVelocity(double velocity) {
 }
 
 // functions
+//double  Point::calcDistanceTo(Point end) {
 double  Point::calcDistanceTo(Point end) {
 	// equation from https://www.sunearthtools.com/tools/distance.php
 	double d2r = (PI / 180.0); // degree to radian conversion
@@ -70,14 +79,15 @@ double  Point::calcDistanceTo(Point end) {
 	double destLong = end.longitude * d2r;
 
 	// calculate distance from current to destination
-	double distance = earthRadius * acos(sin(currentLat) * sin(destLat) +
+	double distance = EARTHRADIUS * acos(sin(currentLat) * sin(destLat) +
 		cos(currentLat) * cos(destLat) * cos(currentLong - destLong));
 
 	return distance; // in meters
 }
 
 // calculate the bearing from current coordinate to end (specified) coordinate
-double  Point::calcHeadingTo(Point end) {	
+//double  Point::calcHeadingTo(Point end) {	
+double  Point::calcHeadingTo(Point end) {
 	// github https://github.com/Sooner-Competitive-Robotics/robomagellan-2019/blob/ros/main_board/trajectory/point.py
 
 	double d2r = (PI / 180.0); // degree to radian conversion
@@ -128,10 +138,6 @@ double  Point::calcHeadingTo(Point end) {
 
 	double average_bearing = (compass_bearing + final_bearing) / 2;
 	*/
-	return compass_bearing;
-}
 
-// TODO
-double Point::calcTurnTo(Point next) {
-	return 0.00;
+	return compass_bearing;
 }

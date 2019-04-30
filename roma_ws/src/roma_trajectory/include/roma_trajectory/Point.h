@@ -2,6 +2,20 @@
 #ifndef POINT_H
 #define POINT_H
 
+// include ROS
+#include <ros/rosh.h>
+
+// include messagges
+#include <roma_msgs/kalman_state.h>
+#include <roma_msgs/obstacles.h>
+#include <roma_msgs/motion_cmds.h>
+
+//include libraries
+#include <math.h>
+
+#define PI 3.14159265358979323846
+#define earthRadius 6371000 // in metres
+
 class Point {
 
 private:
@@ -14,7 +28,7 @@ public:
 	// constructors
 	Point ();
 	Point(double latitude, double longitude);
-	Point(double latitude, double longitude, double heading);
+	Point(const roma_msgs::kalman_state::ConstPtr& kalman_state);
 
 	// getters
 	double getLat();
@@ -31,7 +45,6 @@ public:
 	// functions
 	double calcDistanceTo(Point end);
 	double calcHeadingTo(Point end);
-	double calcTurnTo(Point next);
 };
 
 #endif //!POINT_H
