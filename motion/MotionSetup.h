@@ -165,11 +165,6 @@ void receive()
 			radio.read(&message, sizeof(byte));
 		}
 
-		//Send confirmation of message
-		radio.stopListening();
-		radio.write(&message, sizeof(byte));
-		radio.startListening();
-
 		//If a kill message is sent, disable movement and end the program
 		if(message == MSG_KILL) 
 		{

@@ -14,7 +14,11 @@ RF24 radio(9,10);
 
 byte addresses[][6] = {"1Node","2Node"};
 
-void setup() {
+/*
+ * This method sets up all of the pins and the radio.
+ */
+void setup()
+{
 	// Setup pins
 	pinMode(KILL_BUTTON, INPUT);
 	pinMode(RESET_BUTTON, INPUT);
@@ -28,41 +32,18 @@ void setup() {
 	radio.begin();
 	radio.setPALevel(RF24_PA_MAX);
 	radio.openWritingPipe(addresses[1]);
-	radio.openReadingPipe(1,addresses[0]);
-	radio.startListening();
-}
-
-bool send_message(byte message) {
+	// May not be necessary
+	// radio.openReadingPipe(1,addresses[0]);
 	radio.stopListening();
-
-	if (!radio.write(&message,sizeof(byte))) {
-		return 0; // Unable to write
-	}
-
-	// Listen for confirmation message
-	radio.startListening();
-
-	unsigned long wait_start = micros();
-
-	// Don't wait forever
-	while (!radio.available()) {
-		if (micros() - wait_start > 1000000) {
-			return 0; // Timeout
-		}
-	}
-
-	byte response;
-	radio.read(&response, sizeof(byte));
-
-	// Check response
-	if (response == message) {
-		return 1; // Success
-	} else {
-		return 0; // Corruption
-	}
 }
 
-byte read_buttons() {
+/*
+ * Reads the buttons and returns the corresponding message.
+ * If none of the buttons are depressed, it returns zero.
+ * This is useful for is statements.
+ */
+byte read_buttons()
+{
 	if (digitalRead(KILL_BUTTON)) {
 		return MSG_KILL;
 	} else if (digitalRead(RESET_BUTTON)) {
@@ -74,22 +55,41 @@ byte read_buttons() {
 	}
 }
 
-void loop() {
+/*
+ * Blinks the success led to indicate success.
+ */
+void success()
+{
+	digitalWrite(SUCCESS_LED, HIGH);
+	delay(1000);
+	digitalWrite(SUCCESS_LED, LOW);
+}
+
+/*
+ * Blinks the failure led to indicate failure.
+ */
+void failure()
+{
+	for (byte i=0;i<5;i++) {
+		digitalWrite(FAIL_LED, HIGH);
+		delay(100);
+		digitalWrite(FAIL_LED, LOW);
+		delay(100);
+	}
+}
+
+/*
+ * This loop repeatedly reads the buttons and send a message when one is
+ * depressed.
+ */
+void loop()
+{
 	byte message;
 	if (message = read_buttons()) {
-		if (send_message(message)) {
-			// Success
-			digitalWrite(SUCCESS_LED, HIGH);
-			delay(1000);
-			digitalWrite(SUCCESS_LED, LOW);
+		if (radio.write(&message,sizeof(byte))) {
+			success();
 		} else {
-			// Fail
-			for (byte i=0;i<5;i++) {
-				digitalWrite(FAIL_LED, HIGH);
-				delay(100);
-				digitalWrite(FAIL_LED, LOW);
-				delay(100);
-			}
+			failure();
 		}
 	}
 }
