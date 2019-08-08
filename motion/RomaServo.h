@@ -5,8 +5,8 @@
 #include <RobotLib.h>
 #include "MotionGlobals.h"
 
-#define POT_MIN         301    //Min value of the analogRead
-#define POT_MAX         733    //Max value of analogRead
+#define POT_MIN         0    //Min value of the analogRead
+#define POT_MAX         340    //Max value of analogRead
 #define POT_MIDPOINT    (float)((POT_MAX + POT_MIN) / 2.0f)
                                 //Middle point of the analogRead
 
@@ -24,6 +24,8 @@ class RomaServo
 
         void writeToAngle(float angle);
         void holdPosition();
+		void disableOutput();
+		void enableOutput();
 
         float getAngle();
         int getRawAngle();

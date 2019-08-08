@@ -33,7 +33,7 @@ class Mapper(Process):
         Process.__init__(self)
 
 		# Set up the scanner on a given port, and at the required baud rate of 128000
-        self.scanner = lidar.Lidar(lidar_port, 128000)
+        #self.scanner = lidar.Lidar(lidar_port, 128000)
 		
         self.run_start_time = time.time()
         self.last_time = self.run_start_time
@@ -81,10 +81,10 @@ class Mapper(Process):
             self.scanner.readData()
 
             # Retrieve the current state of the environment
-            env_state = self.scanner.getData()
+            #env_state = self.scanner.getData()
 
             # Periodically log the data to a file for later viewing
-            if (self.cur_time - self.last_time) > 2:
+            if False:# (self.cur_time - self.last_time) > 2:
                 # Log the current cell data to a file
                 self.daddy_pipe.send(env_state)
                 with open(map_filename, 'a+', newline='') as map_file:
@@ -102,4 +102,4 @@ class Mapper(Process):
     def stop(self):
         # Stop scanning if the program ends
         logging.info("Stopping LiDAR Scan")
-        self.scanner.stopScan()
+        #self.scanner.stopScan()

@@ -27,7 +27,7 @@ unsigned long lastServoUpdate = 0;
 //Declare system loops
 void drivetrainLoop(float power);
 void servoLoop(float servoAngle);
-void serialLoop();
+void rosLoop();
 
 void motionLoop()
 {
@@ -35,10 +35,10 @@ void motionLoop()
     currentTime = millis();
 
     //Check if we're near the next cone
-	if (curData.nearCone)
+	/*if (curData.nearCone)
 	{
 		/* DRIVETRAIN UPADTE */
-		drivetrainLoop(DEFAULT_POWER / 2);
+		/*drivetrainLoop(DEFAULT_POWER / 2);
 
 			if (curData.canSeeCone)
 			{
@@ -66,15 +66,20 @@ void motionLoop()
 			}
 	}
     else
-    {
+    {*/
+		Serial.println(drivetrain.getTurnAngle());
+
         /* DRIVETRAIN UPADTE */
-        drivetrainLoop(DEFAULT_POWER);
+        drivetrainLoop(curData.power);
 
         servoLoop(curData.steeringAngle);
-    }
+    //}
 
     //Send steering angle feedback data
-    serialLoop();
+    rosLoop();
+
+	//Update ROS callbacks
+	motion_node.spinOnce();
 }
 
 /**********************
@@ -129,14 +134,14 @@ void servoLoop(float servoAngle)
 }
 
 /**
- * Serial update loop for steering angle feedback. Runs at a timed rate
+ * ROS topic update loop for steering angle feedback. Runs at a timed rate
  */
-void serialLoop()
+void rosLoop()
 {
     if((currentTime - lastSerialUpdate) > (1000 / SERIAL_UPDATE_RATE))
     {
 		lastSerialUpdate = currentTime;
-        sendMotionSerialData(false);
+        sendMotionData();
     }
 }
 

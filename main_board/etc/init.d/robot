@@ -1,0 +1,41 @@
+#!/bin/bash
+
+echo "" > /var/log/magellan.log
+
+case "$1" in
+
+	start)
+		pcs=$(ps aux | grep -ci python3)
+		if [ $pcs -ge 2 ]; then
+			echo "Deamon already started !"
+			exit 1
+		fi
+		echo "Starting daemon .."
+		cd /home/pi/Magellan/robomagellan-2019/main_board/
+		while true; do
+			sudo python3 main.py
+		done &
+		;;
+
+	stop)
+		pid=$(ps aux | grep -v grep | grep python3 | awk '{print $2}')
+		pid_d=$(ps aux | grep -v grep | grep stream | awk '{print $2}')
+		echo "Stopping daemon .."
+		#kill -9 $pid $pid_d
+		killall -9 python3 ; kill -9 $pid_d
+		;;
+
+	status)
+	    if [ $pcs -ge 2 ]; then
+			echo "1"
+			exit 1
+		fi
+		echo "0"
+		exit 1
+		;;
+
+	*)
+		echo "start/stop only !"
+		exit 1
+		;;
+esac

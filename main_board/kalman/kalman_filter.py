@@ -123,7 +123,7 @@ class kalman_filter:
 	# This will return the current state of the robot
 	def update(self, sensor_data):
 		# Calculate the Kalman Gain
-		self.Gk = (self.Pk.dot(np.transpose(self.Hk))).dot(inv(self.Hk.dot(self.Pk).dot(np.transpose(self.Hk)) + self.R))
+		self.Gk = (self.Pk.dot(np.transpose(self.Hk))).dot(inv(self.Hk.kdot(self.Pk).dot(np.transpose(self.Hk)) + self.R))
 
 		# Update the state and uncertainty
 		self.x_estimate = self.x_estimate + self.Gk(self.measurementModel(sensor_data))

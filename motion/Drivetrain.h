@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <RobotLib.h>
 #include "RomaServo.h"
+#include <Servo.h>
 
 class Drivetrain
 {
@@ -16,14 +17,21 @@ class Drivetrain
         void setPower(float power);
         void setTurn(float angle);
         void holdTurnPosition();
+		void disable();
+		void enable();
         
         float getTurnAngle();
         int   getRawTurnValue();
 
     private:
         Motor driveMotor;
+		RomaServo turnServo;
+		int pos;
+	
 
-        RomaServo turnServo;
+     
+
+		
 };
 
 #endif

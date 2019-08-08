@@ -1,26 +1,30 @@
 {
 	"folders": [
-        {
-            "path": "motion"
-        },
-        {
-            "path": "localization"
-        },
-        {
-            "path": "main_board"
-        },
-        {
-            "path": "remote"
-        },
-        {
-            "path": "utilities"
-        }
-    ],
+		{
+			"path": "motion"
+		},
+		{
+			"path": "localization"
+		},
+		{
+			"path": "main_board"
+		},
+		{
+			"path": "remote"
+		},
+		{
+			"path": "utilities"
+		},
+		{
+			"path": "roma_ws"
+		}
+	],
 	"settings": {
 		"files.associations": {
 			"cmath": "cpp",
-			"cstdlib": "cpp"
-        },
+			"cstdlib": "cpp",
+			"vector": "cpp"
+		},
 		"editor.insertSpaces": false,
 		"editor.detectIndentation": false
 	}
